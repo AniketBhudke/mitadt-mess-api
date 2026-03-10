@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Raj Mess Menu</title>
+
+<style>
+body { font-family: "Poppins", sans-serif; background: #fffaf3; margin:0; }
+.container{max-width:1000px;margin:auto;padding:20px}
+.mess-header{text-align:center;font-weight:700;color:#b3541e;margin-bottom:20px}
+.select-box{padding:8px 12px;border-radius:6px;border:1px solid #d68642;background:#fff7e6}
+.view-btn{background:#d68642;border:none;padding:8px 18px;border-radius:8px;color:white;font-weight:bold;cursor:pointer}
+.section-title{font-size:26px;font-weight:700;color:#d26a24;border-bottom:2px dotted #ffae6d;margin-bottom:20px}
+.menu-container{display:flex;flex-wrap:wrap;gap:25px;justify-content:center}
+.menu-card{background:#fffdf8;border-radius:16px;padding:15px;box-shadow:0 4px 10px rgba(255,160,60,0.25);text-align:center;width:280px;transition:0.3s}
+.menu-card:hover{transform:translateY(-5px)}
+.menu-card img{width:100%;height:160px;object-fit:cover;border-radius:14px;border:2px solid #ffdbb5}
+.dish-name{font-weight:600;margin-top:8px;font-size:18px;color:#383838}
+.rating-text{font-size:14px;font-weight:600;margin-top:6px;color:#4f4f4f}
+
+.star{
+  font-size:28px;
+  cursor:pointer;
+  margin:0 4px;
+  transition:0.15s;
+  user-select:none;
+}
+.star.active { color:#ffb703; }
+.star.inactive { color:#bdbdbd; }
+
+.small-note{font-size:13px;color:#666;margin-top:6px}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2 class="mess-header">🥗 Raj Mess Weekly Menu 🍽️</h2>
+
+  <form method="get" class="d-flex gap-3 justify-content-center mt-3 mb-3">
+      <label><b>Day:</b></label>
+      <select name="day" class="select-box">
+          <option value="">--Select Day--</option>
+          {% for day in days %}
+          <option value="{{ day }}" {% if selected_day == day %}selected{% endif %}>{{ day|title }}</option>
+          {% endfor %}
+      </select>
+
+      <label><b>Meal:</b></label>
+      <select name="meal" class="select-box">
+          <option value="">--Select Meal--</option>
+          {% for meal in meals %}
+          <option value="{{ meal }}" {% if selected_meal == meal %}selected{% endif %}>{{ meal|title }}</option>
+          {% endfor %}
+      </select>
+
+      <button type="submit" class="view-btn">🍴 View Menu</button>
+  </form>
+
+  {% if selected_day and selected_meal %}
+    <h3 class="section-title">{{ selected_day|title }} - {{ selected_meal|title }}</h3>
+
+    {% if dishes %}
+    <div class="menu-container">
+
+    {% for dish in dishes %}
+      <div class="menu-card" id="dish-{{ dish.id }}">
+        
+        <img src="{{ dish.image.url }}" alt="{{ dish.name }}">
+        
+        <div class="dish-name">{{ dish.name }}</div>
+
+        <div class="rating-text">Your Rating:</div>
+        <div id="rating-{{ dish.id }}" class="rating-stars" data-dish="{{ dish.id }}">
+          {% for i in rating_range %}
+            <span class="star {% if dish.user_rating_val >= i %}active{% else %}inactive{% endif %}" 
+                  data-dish="{{ dish.id }}" 
+                  data-value="{{ i }}">
+              {% if dish.user_rating_val >= i %}⭐{% else %}☆{% endif %}
+            </span>
+          {% endfor %}
+        </div>
+
+        <div class="rating-text">
+          Overall Rating: <strong id="avg-{{ dish.id }}">{{ dish.average_rating_val|floatformat:1 }}</strong> ⭐
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+  
+    {% else %}
+      <p class="text-center" style="color:#7a7a7a;font-weight:600;">No menu found.</p>
+    {% endif %}
+  
+  {% else %}
+    <p class="text-center" style="color:#7a7a7a;font-weight:600;">👉 Please select Day & Meal to view dishes</p>
+  {% endif %}
+</div>
+
+<script>
+let userRatings = {};
+
+function getCookie(name) {
+  let cookieValue = null;
+  document.cookie.split(';').forEach(cookie => {
+    cookie = cookie.trim();
+    if (cookie.startsWith(name + '=')) {
+      cookieValue = decodeURIComponent(cookie.split('=')[1]);
+    }
+  });
+  return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+function updateStars(dishId, rating) {
+  const stars = document.querySelectorAll(`#rating-${dishId} .star`);
+  stars.forEach((star, idx) => {
+    if (idx < rating) {
+      star.textContent = "⭐";
+      star.classList.add("active");
+      star.classList.remove("inactive");
+    } else {
+      star.textContent = "☆";
+      star.classList.add("inactive");
+      star.classList.remove("active");
+    }
+  });
+}
+
+document.addEventListener("click", function(e) {
+  if (!e.target.classList.contains("star")) return;
+
+  const dishId = e.target.dataset.dish;
+  const rating = parseInt(e.target.dataset.value);
+
+  userRatings[dishId] = rating;
+  updateStars(dishId, rating);
+
+  const fd = new FormData();
+  fd.append("dish_id", dishId);
+  fd.append("rating", rating);
+  fd.append("csrfmiddlewaretoken", csrftoken);
+
+  fetch("{% url 'rate_dish' %}", {
+    method: "POST",
+    body: fd,
+    credentials: "same-origin"
+  })
+  .then(r=>r.json())
+  .then(data => {
+    document.getElementById("avg-" + dishId).textContent = data.average_rating;
+  });
+});
+
+document.addEventListener("mouseover", function(e) {
+  if (!e.target.classList.contains("star")) return;
+  updateStars(e.target.dataset.dish, parseInt(e.target.dataset.value));
+});
+
+document.addEventListener("mouseout", function(e) {
+  if (!e.target.classList.contains("star")) return;
+  const dishId = e.target.dataset.dish;
+  const saved = userRatings[dishId] || 0;
+  updateStars(dishId, saved);
+});
+</script>
+
+</body>
+</html>

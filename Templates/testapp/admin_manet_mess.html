@@ -1,0 +1,216 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🍽️ MANET Mess - Add & Manage Dishes</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: "Poppins", sans-serif;
+            background: #fff8e6;
+        }
+
+        h1 {
+            text-align: center;
+            color: #a64b2a;
+            margin-bottom: 25px;
+        }
+
+        /* Form Styling */
+        form {
+            background: #fff3d4;
+            width: 50%;
+            margin: auto;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 35px;
+            border-left: 5px solid #ff9800;
+        }
+
+        form p {
+            margin-bottom: 12px;
+        }
+
+        form label {
+            font-weight: 600;
+            color: #a64b2a;
+        }
+
+        form input, form select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ffcc80;
+            margin-top: 5px;
+            font-size: 14px;
+            background-color: #fffaf0;
+        }
+
+        form button {
+            background: #ff9800;
+            padding: 10px 20px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+        }
+
+        form button:hover {
+            background: #e68900;
+        }
+
+        /* Weekly Menu Header */
+        h2 {
+            color: #d35400;
+            text-align: center;
+            margin-top: 40px;
+            text-transform: uppercase;
+        }
+
+        /* Day Section */
+        .day-heading {
+            background: #ffecd2;
+            padding: 10px;
+            font-size: 22px;
+            color: #a64b2a;
+            border-left: 5px solid #ff9800;
+            margin-top: 25px;
+            border-radius: 6px;
+        }
+
+        /* Meal Heading */
+        .meal-heading {
+            font-size: 19px;
+            margin-top: 10px;
+            margin-left: 20px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            font-weight: 600;
+            color: white;
+        }
+
+        .meal-heading.breakfast { background:#fbc02d; }
+        .meal-heading.lunch { background:#ff9800; }
+        .meal-heading.dinner { background:#e64a19; }
+
+        /* Dish Container as Grid */
+        .dish-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 14px;
+            padding: 10px 30px;
+        }
+
+        /* Dish Card */
+        .dish-card {
+            background: linear-gradient(135deg, #fff5e6, #ffe0b2);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 3px 12px rgba(255,149,0,0.2);
+            border: 1px solid #ffe0b2;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dish-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 18px rgba(255,149,0,0.3);
+        }
+
+        .dish-card img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+
+        .dish-card p {
+            font-weight: 600;
+            font-size: 15px;
+            color: #6b350f;
+            margin-bottom: 6px;
+        }
+
+        /* Delete Button */
+        .dish-card form {
+            margin-top: 5px;
+        }
+
+        .dish-card button {
+            background-color: #e60000;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .dish-card button:hover {
+            background-color: #b30000;
+        }
+
+        .no-dish {
+            margin-left: 40px;
+            color: gray;
+            font-style: italic;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>🍽️ Add Dish - MANET Mess Menu</h1>
+
+    <!-- Dish Form -->
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Dish</button>
+    </form>
+
+    <h2>Weekly Menu</h2>
+
+    {% for day, meals in menu.items %}
+        <div class="day-heading">{{ day|title }}</div>
+
+        {% for meal, dishes in meals.items %}
+            <div class="meal-heading {{ meal|lower }}">
+                {% if meal == 'breakfast' %}🍳{% elif meal == 'lunch' %}🍛{% else %}🍲{% endif %}
+                {{ meal|title }}
+            </div>
+
+            {% if dishes %}
+                <div class="dish-container">
+                    {% for dish in dishes %}
+                        <div class="dish-card">
+                            {% if dish.image %}
+                                <img src="{{ dish.image.url }}" alt="{{ dish.name }}">
+                            {% endif %}
+                            <p>{{ dish.name }}</p>
+                            <!-- Delete Button -->
+                            <form action="{% url 'delete_dish' dish.id %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit">Delete</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="no-dish">No dishes added</p>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+
+</body>
+</html>

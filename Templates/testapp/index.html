@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'testapp/css/styles.css' %}">
+
+    <title>Document</title>
+</head>
+<body>
+<!-- ====== navbar.html ====== -->
+<!-- ====== navbar.html (updated: hamburger moved AFTER Sign Up) ====== -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="navbar-inner container-fluid">
+
+    <!-- LOGO (left) -->
+    <a class="navbar-brand" href="{% url 'index' %}" aria-label="MIT-ADT home">
+      <img src="{% static 'testapp/image/mit-adt-logo.png' %}" alt="MIT-ADT logo" class="brand-logo">
+    </a>
+
+    <!-- TITLE -->
+    <div class="brand-title">
+      <h4>MIT-ADT Mess Hub</h4>
+    </div>
+
+    <!-- AUTH LINKS (pushed to right by margin-left:auto) -->
+    <div class="auth-links">
+      {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}" class="auth-link">Logout</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="auth-link">Login</a>
+        <a href="{% url 'signup' %}" class="auth-link auth-signup">Sign Up</a>
+      {% endif %}
+    </div>
+
+    <!-- HAMBURGER (NOW placed AFTER the Sign Up button, on the right) -->
+    <button id="hamburger" class="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="site-drawer">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+
+  </div>
+
+  <!-- OVERLAY -->
+  <div id="drawerOverlay" class="drawer-overlay" hidden></div>
+
+  <!-- LEFT SLIDING DRAWER -->
+  <aside id="site-drawer" class="side-drawer left" role="dialog" aria-hidden="true" aria-labelledby="drawerTitle">
+    <div class="drawer-header">
+      <button id="drawerClose" class="drawer-close" aria-label="Close menu">&times;</button>
+    </div>
+
+    <nav class="drawer-nav" aria-label="Site menu">
+      <h3 id="drawerTitle" class="drawer-title">Menu</h3>
+      <ul>
+        <li><a href="{% url 'weekly_suggestion' %}">Suggestion</a></li>
+        <li><a href="{% url 'complaint' %}">Submit Complaint</a></li>
+        <li><a href="{% url 'feedback' %}">Feedback</a></li>
+        <li><a href="{% url 'payment_selection' %}">Payment</a></li>
+      </ul>
+    </nav>
+  </aside>
+</nav>
+    <div class="container-fluid">
+    <h2 class="page-heading">All Mess In College Compus</h2>
+    <div class="rows">
+        <div class="column">
+            <div class="cards">
+                <img src="{% static 'testapp/image/manet-mess.webp' %}" alt="..." >
+                <div class="cards-body">
+                    <h5 class="cards-title">MANET Mess</h5>
+                    <p class="cards-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    <a href="{% url 'manet_mess' %}"><button>View Menu</button></a>
+                </div>
+            </div>
+        </div>
+         <div class="column">
+            <div class="cards">
+                <img src="{% static 'testapp/image/design-building.webp' %}" alt="...">
+                <div class="cards-body">
+                    <h5 class="cards-title">Design Mess</h5>
+                    <p class="cards-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    <a href="{% url 'design_mess' %}"><button>View Menu</button></a>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="cards">
+                <img src="{% static 'testapp/image/raj-building.webp' %}" alt="...">
+                <div class="cards-body">
+                    <h5 class="cards-title">Raj Mess</h5>
+                    <p class="cards-text">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+                    <a href="{% url 'raj_mess' %}"><button>View Menu</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- ========== 📢 Notice Section ========== -->
+<!-- Latest Notices (improved) -->
+<section class="notices-section">
+  <div class="notices-wrap container">
+    <div class="notices-content">
+      <h2 class="notices-heading">Latest Notices</h2>
+      <p class="notices-lead">
+        Important announcements from mess management — schedule changes, urgent alerts
+        and campus notices appear here. Stay tuned for updates.
+      </p>{% if notices %}
+        <ul class="notices-cards">
+          {% for notice in notices|slice:":4" %}
+            <li class="notice-card" role="listitem">
+              <div class="notice-card-left">
+                <h3 class="notice-title">{{ notice.title }}</h3>
+                {% if notice.summary %}
+                  <p class="notice-summary">{{ notice.summary|truncatechars:150 }}</p>
+                {% endif %}
+              </div>
+              <div class="notice-card-right">
+                <time class="notice-date">{{ notice.date|date:"d M Y" }}</time>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="no-notices">No current notices available.</p>
+      {% endif %}
+
+      <div class="notices-actions">
+        <a href="{% url 'all_notices' %}" class="btn btn-notice">View All Notices</a>
+      </div>
+    </div>
+
+    <figure class="notices-graphic" aria-hidden="true">
+      <!-- Bell icon (notification) SVG — replace with your SVG file if preferred -->
+      <svg class="bell-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Notices">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1">
+            <stop offset="0" stop-color="#ff8c00"/>
+            <stop offset="1" stop-color="#ff0077"/>
+          </linearGradient>
+        </defs>
+
+        <circle cx="32" cy="32" r="30" fill="rgba(0,0,0,0.06)"/>
+        <g transform="translate(10,6)">
+          <path d="M22 2c-6 0-10 4-10 10v6c0 1-1 2-1 3l-1 2h24l-1-2c0-1-1-2-1-3V12c0-6-4-10-10-10z" fill="#fff"/>
+          <path d="M22 0c-7 0-12 5-12 12v6c0 2-1 4-2 5l-2 3h32l-2-3c-1-1-2-3-2-5V12C34 5 29 0 22 0z" fill="url(#g1)" opacity="0.95"/>
+          <circle cx="22" cy="33" r="3" fill="#6a0080"/>
+        </g>
+      </svg>
+    </figure>
+  </div>
+</section>
+<script>
+(function(){
+  const hamburger = document.getElementById('hamburger');
+  const drawer = document.getElementById('site-drawer');
+  const overlay = document.getElementById('drawerOverlay');
+  const closeBtn = document.getElementById('drawerClose');
+
+  if (!hamburger || !drawer || !overlay) return;
+
+  function openDrawer(){
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    drawer.setAttribute('aria-hidden','false');
+    hamburger.setAttribute('aria-expanded','true');
+    overlay.hidden = false;
+    // focus first link
+    const first = drawer.querySelector('a');
+    if(first) first.focus();
+  }
+
+  function closeDrawer(){
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    drawer.setAttribute('aria-hidden','true');
+    hamburger.setAttribute('aria-expanded','false');
+    overlay.hidden = true;
+    hamburger.focus();
+  }
+
+  hamburger.addEventListener('click', function (e) {
+    if (drawer.classList.contains('open')) closeDrawer();
+    else openDrawer();
+  });
+
+  overlay.addEventListener('click', closeDrawer);
+  closeBtn && closeBtn.addEventListener('click', closeDrawer);
+
+  // close on Escape
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
+  });
+
+  // click outside closes
+  document.addEventListener('click', function (e) {
+    if (!drawer.classList.contains('open')) return;
+    const inside = drawer.contains(e.target) || hamburger.contains(e.target);
+    if (!inside) closeDrawer();
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mess Booking</title>
+
+<style>
+    body { font-family: Arial, sans-serif; background: #e8f0fe; margin: 0; padding: 0; }
+    .container { width: 400px; margin: 50px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: #0062cc; margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { font-weight: bold; }
+    select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    .qty-box { display: flex; align-items: center; gap: 10px; }
+    .qty-btn { width: 35px; height: 35px; border: none; border-radius: 50%; font-size: 20px; cursor: pointer; background: #0062cc; color: white; }
+    .qty-display { font-size: 18px; font-weight: bold; padding: 5px 15px; background: #f1f1f1; border-radius: 8px; }
+    .summary-box { margin-top: 20px; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .pay-btn { width: 100%; padding: 12px; background: #0062cc; color: white; border: none; border-radius: 10px; cursor: pointer; margin-top: 10px; font-size: 16px; }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Mess Booking</h2>
+
+    <!-- Mess Dropdown -->
+    <div class="form-group">
+        <label>Select Mess</label>
+        <select id="messSelect" onchange="updateSummary()">
+            <option value="">-- Select Mess --</option>
+            <option value="Raj Mess">Raj Mess</option>
+            <option value="MANET Mess">MANET Mess</option>
+            <option value="Sangeet Mess">Sangeet Mess</option>
+            <option value="Design Mess">Design Mess</option>
+            <option value="Sofa Mess">Sofa Mess</option>
+        </select>
+    </div>
+
+    <!-- Meal Dropdown -->
+    <div class="form-group">
+        <label>Select Meal</label>
+        <select id="mealSelect" onchange="updateSummary()">
+            <option value="">-- Select Meal --</option>
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Dinner">Dinner</option>
+        </select>
+    </div>
+
+    <!-- Quantity Section -->
+    <div class="form-group">
+        <label>Quantity</label><br>
+        <div class="qty-box">
+            <button class="qty-btn" onclick="updateQty(-1)">−</button>
+            <span class="qty-display" id="qty">1</span>
+            <button class="qty-btn" onclick="updateQty(1)">+</button>
+        </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="summary-box">
+        <h3 style="text-align:center; color:#0062cc;">Order Summary</h3>
+        <p><b>Mess:</b> <span id="sumMess">None</span></p>
+        <p><b>Meal:</b> <span id="sumMeal">None</span></p>
+        <p><b>Quantity:</b> <span id="sumQty">1</span></p>
+        <p><b>Total Amount:</b> ₹ <span id="sumAmount">0</span></p>
+        <button class="pay-btn">Proceed to Pay</button>
+    </div>
+</div>
+
+<script>
+    let qty = 1;
+
+    function updateQty(val) {
+        qty += val;
+        if (qty < 1) qty = 1;
+        document.getElementById("qty").innerText = qty;
+        updateSummary();
+    }
+
+    function updateSummary() {
+        let mess = document.getElementById("messSelect").value || "None";
+        let meal = document.getElementById("mealSelect").value || "None";
+
+        // Pricing logic
+        let price = 0;
+        if (meal === "Breakfast") price = 60;
+        else if (meal === "Lunch" || meal === "Dinner") price = 100;
+
+        let total = qty * price;
+
+        document.getElementById("sumMess").innerText = mess;
+        document.getElementById("sumMeal").innerText = meal;
+        document.getElementById("sumQty").innerText = qty;
+        document.getElementById("sumAmount").innerText = total;
+    }
+</script>
+
+</body>
+</html>

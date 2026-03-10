@@ -1,0 +1,93 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Complaint Submitted</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(to right, #ffe3c8, #ffd4ab);
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .success-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 40px 50px;
+      text-align: center;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+      border-top: 6px solid #ff6f3d;
+      max-width: 480px;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    .checkmark {
+      font-size: 70px;
+      color: #28a745;
+      margin-bottom: 15px;
+      animation: pop 0.4s ease-out;
+    }
+
+    h2 {
+      color: #ff5c2b;
+      font-weight: 800;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #5e3600;
+      font-size: 16px;
+      margin-bottom: 25px;
+    }
+
+    a.btn-home {
+      background: linear-gradient(to right, #ff5c2b, #ff8b5c);
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 12px 26px;
+      border-radius: 10px;
+      transition: 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    a.btn-home:hover {
+      background: linear-gradient(to right, #ff794c, #ff9f70);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(255,108,46,0.3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="success-card">
+    <div class="checkmark">✅</div>
+    <h2>Complaint Submitted!</h2>
+    <p>Thank you for your feedback.<br>
+       We value your input and will take appropriate action.</p>
+
+    <a href="{% url 'index' %}" class="btn-home">🏠 Back to Form</a>
+  </div>
+</body>
+</html>

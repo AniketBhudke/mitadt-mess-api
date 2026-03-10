@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'testapp/css/login.css' %}">
+    <title>Document</title>
+    <style>
+        /* Page Background (Food theme) */
+body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836') no-repeat center center/cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Login Card */
+.auth_form {
+    background: rgba(255, 255, 255, 0.88);
+    padding: 35px;
+    width: 380px;
+    border-radius: 15px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    text-align: center;
+}
+
+/* Heading */
+.auth_form h2 {
+    margin-bottom: 20px;
+    color: #d35400;           /* Warm food color */
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* Input Fields */
+.auth_form input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #d1d1d1;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.auth_form input:focus {
+    border-color: #e67e22;
+    box-shadow: 0 0 5px rgba(230,126,34,0.6);
+}
+
+/* Button */
+.auth_form button {
+    width: 100%;
+    padding: 12px;
+    background: #e67e22;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.auth_form button:hover {
+    background: #d35400;
+    transform: translateY(-2px);
+}
+
+/* Signup Text */
+.auth_form p {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #333;
+}
+
+.auth_form p a {
+    color: #d35400;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth_form p a:hover {
+    text-decoration: underline;
+}
+
+/* Message Box */
+.messages {
+    background: #ffe6d3;
+    padding: 10px;
+    border-radius: 5px;
+    list-style: none;
+    color: #c0392b;
+    margin-bottom: 10px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="auth_form">
+        <h2>Login Form</h2>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li>{{message}}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p>Don't have an account? <a href="{% url 'signup' %}">Sign Up</a></p>
+    </div>
+</body>
+</html>

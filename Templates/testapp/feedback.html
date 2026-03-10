@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SRM - MIT ADT Mess Feedback Form</title>
+
+<style>
+:root{
+  --primary:#0A66E8;
+  --bg:#eef3ff;
+  --card:#ffffff;
+  --border:#cfd7ff;
+  --input-bg:#fafbff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* wrapper */
+.form-wrapper{
+  max-width:900px;
+  margin:30px auto;
+  background:var(--card);
+  border-radius:16px;
+  padding:32px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.12);
+  border-top:6px solid var(--primary);
+}
+
+/* header */
+.title{ text-align:center; color:var(--primary); font-size:22px; font-weight:700; margin:0 0 4px; }
+.subtitle{ text-align:center; color:#555; font-size:14px; margin:0 0 20px; }
+
+/* grid */
+.row { display:flex; gap:16px; flex-wrap:wrap; }
+.col { flex:1 1 48%; min-width:260px; }
+
+/* form controls */
+.form-group{ margin-bottom:14px; }
+label{ display:block; font-weight:600; color:#222; margin-bottom:6px; font-size:14px; }
+input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, textarea {
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--input-bg);
+  font-size:15px;
+  transition:.15s;
+}
+input:focus, select:focus, textarea:focus{
+  outline:none;
+  border-color:var(--primary);
+  background:white;
+  box-shadow:0 0 6px rgba(10,102,232,0.16);
+}
+textarea{ min-height:100px; resize:vertical; }
+
+/* radios inline */
+.inline-group{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.inline-group label { font-weight:500; margin-right:6px; font-size:14px; }
+
+/* submit */
+button{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  background:var(--primary);
+  color:white;
+  font-weight:700;
+  border:none;
+  font-size:16px;
+  cursor:pointer;
+  margin-top:8px;
+}
+button:hover{ background:#0050c2; }
+
+/* helper text */
+.helper{ font-size:13px; color:#666; margin-top:4px; }
+
+/* responsive */
+@media (max-width:720px){
+  .col{ flex-basis:100%; }
+  .form-wrapper{ padding:22px; margin:14px; }
+}
+</style>
+</head>
+<body>
+
+<div class="form-wrapper">
+
+  <div class="title">Mess Services — MIT ADT University</div>
+  <div class="subtitle">Food Feedback Form — We appreciate your feedback!</div>
+
+  <form method="POST" novalidate>
+    {% csrf_token %}
+
+    <!-- Email -->
+    <div class="form-group">
+      <label>Email <span style="color:red">*</span></label>
+      {{ form.email }}
+    </div>
+
+    <div class="row">
+      <div class="col form-group">
+        <label>Full Name <span style="color:red">*</span></label>
+        {{ form.full_name }}
+      </div>
+
+      <div class="col form-group">
+        <label>Department <span style="color:red">*</span></label>
+        {{ form.department }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col form-group">
+        <label>Year <span style="color:red">*</span></label>
+        {{ form.year }}
+      </div>
+
+      <div class="col form-group">
+        <label>Mess Name <span style="color:red">*</span></label>
+        {{ form.mess_name }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col form-group">
+        <label>MIT ADT University Alumni?</label>
+        <div class="inline-group">
+          {{ form.alumni }}
+        </div>
+      </div>
+
+      <div class="col form-group">
+        <label>World Peace / Dome Visitor?</label>
+        <div class="inline-group">
+          {{ form.dome_visitor }}
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col form-group">
+        <label>Contact Information <span style="color:red">*</span></label>
+        {{ form.contact }}
+      </div>
+
+      <div class="col form-group">
+        <label>Date of Visit <span style="color:red">*</span></label>
+        {{ form.visit_date }}
+      </div>
+    </div>
+
+    <hr style="border:none; height:1px; background:#f0f2f8; margin:18px 0;">
+
+    <!-- Ratings -->
+    <div class="form-group">
+      <label>Rate Food Quality (1–5) <span style="color:red">*</span></label>
+      {{ form.food_rating }}
+      <div class="helper">Comments:</div>
+      {{ form.food_comment }}
+    </div>
+
+    <div class="form-group">
+      <label>Rate Service Quality (1–5) <span style="color:red">*</span></label>
+      {{ form.service_rating }}
+      <div class="helper">Comments:</div>
+      {{ form.service_comment }}
+    </div>
+
+    <div class="form-group">
+      <label>Rate Cleanliness (1–5) <span style="color:red">*</span></label>
+      {{ form.cleanliness_rating }}
+      <div class="helper">Comments:</div>
+      {{ form.cleanliness_comment }}
+    </div>
+
+    <div class="form-group">
+      <label>Overall Experience (1–5) <span style="color:red">*</span></label>
+      {{ form.overall_rating }}
+    </div>
+
+    <div class="form-group">
+      <label>Suggestions for Improvement <span style="color:red">*</span></label>
+      {{ form.suggestion }}
+    </div>
+
+    <button type="submit">Submit Feedback</button>
+  </form>
+</div>
+
+</body>
+</html>

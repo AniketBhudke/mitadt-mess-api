@@ -1,0 +1,113 @@
+/* Food Background */
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836') no-repeat center/cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Login Card */
+.auth-form {
+  width: 360px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  backdrop-filter: blur(6px);
+  border: 2px solid #ffefd9;
+}
+
+/* Heading */
+.auth-form h2 {
+  color: #c2571a;  /* Food theme color (Brownish-orange like grilled food) */
+  font-size: 26px;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+/* Inputs */
+.auth-form input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1.5px solid #f0c9a8;
+  background: #fff9f4;
+  font-size: 15px;
+  transition: 0.3s ease;
+}
+
+.auth-form input:focus {
+  border-color: #e67e22;
+  background: #fff3e4;
+  box-shadow: 0 0 5px rgba(230, 126, 34, 0.5);
+}
+
+/* Button: Replaced purple with food tone */
+.auth-form button {
+  background: linear-gradient(90deg, #e67e22, #d35400);
+  color: #fff;
+  border: none;
+  padding: 12px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 8px;
+  transition: 0.3s;
+}
+
+.auth-form button:hover {
+  background: linear-gradient(90deg, #d35400, #b84400);
+  transform: translateY(-2px);
+}
+
+/* Signup Link */
+.auth-form p {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.auth-form p a {
+  color: #d35400;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-form p a:hover {
+  text-decoration: underline;
+}
+
+/* Flash Messages */
+.messages {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+}
+
+.messages li {
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Error & Success Food-Themed Colors */
+.messages li.error {
+  background: #fff1f0;
+  color: #c0392b;
+  border-left: 5px solid #c0392b;
+}
+
+.messages li.success {
+  background: #e9f8ed;
+  color: #0b8a4a;
+  border-left: 5px solid #0b8a4a;
+}

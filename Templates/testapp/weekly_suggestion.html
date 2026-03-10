@@ -1,0 +1,225 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weekly Dish Feedback</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+/* Styles (kept from your design, with a small new rule for week-info) */
+body {
+    background: linear-gradient(to right, #ffe3c8, #ffd4ab);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+}
+.container {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 35px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    max-width: 950px;
+    border: 1px solid rgba(255, 137, 78, 0.3);
+}
+h2 {
+    font-family: "Poppins", sans-serif;
+    color: #ff5733;
+    font-weight: 800;
+    font-size: 34px;
+    letter-spacing: 1px;
+    text-shadow: 1px 2px 3px rgba(255,104,55,0.3);
+}
+.subtitle {
+    color: #a63f17;
+    font-size: 15px;
+    margin-bottom: 25px;
+}
+.week-info-container {
+  display:flex;
+  gap:12px;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+.week-card {
+  background: linear-gradient(to right,#fff8f4,#fff0e6);
+  border: 1px solid #ffd6bd;
+  padding:12px 16px;
+  border-radius:10px;
+  min-width: 220px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+.week-card h5 { margin:0; color:#ff6b3b; font-weight:700; }
+.week-card p { margin:4px 0 0; color:#a63f17; font-weight:600; }
+.section-title {
+    background: linear-gradient(to right, #ffe1c1, #ffd3ac);
+    padding: 12px 16px;
+    border-left: 6px solid #ff7447;
+    border-radius: 10px;
+    color: #c24605;
+    font-weight: 700;
+    font-size: 17px;
+    margin-top: 30px;
+    box-shadow: 0 3px 8px rgba(255,106,39,0.15);
+}
+label {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: #c34702;
+    margin-bottom: 5px;
+    display: block;
+}
+.form-control, input[type="text"], select {
+    width: 100%;
+    border-radius: 12px;
+    border: 2px solid #ffc18f;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    transition: 0.2s ease;
+    background: #fff;
+    height: 45px;
+}
+.form-control:focus, input[type="text"]:focus {
+    border-color: #ff6b3b;
+    box-shadow: 0 0 6px rgba(255,123,73,0.6);
+}
+.day-box {
+    background: #fffaf4;
+    border: 2px solid #ffe3c2;
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 15px;
+    box-shadow: 0 4px 12px rgba(244,132,60,0.12);
+    transition: 0.3s ease-in-out;
+}
+.day-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(255,108,46,0.2);
+}
+.day-title {
+    font-weight: 700;
+    color: #ff5722;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+button {
+    background: linear-gradient(to right, #ff5c2b, #ff8b5c);
+    border: none;
+    padding: 14px 40px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+button:hover {
+    background: linear-gradient(to right, #ff794c, #ff9f70);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 14px rgba(255,108,46,0.3);
+}
+button:active { transform: scale(0.98); }
+.alert { border-radius:10px; }
+</style>
+</head>
+<body>
+<div class="container mt-4 mb-5">
+
+    <h2 class="text-center mb-1">🍽 Weekly Dish Suggestion</h2>
+    <p class="text-center subtitle">Select dish for each day & meal 👇</p>
+
+    <!-- Week Duration + Deadline -->
+    <div class="week-info-container">
+      <div class="week-card">
+        <h5>🗓 Week Duration</h5>
+        <p>From: <strong>{{ week_start }}</strong> — To: <strong>{{ week_end }}</strong></p>
+      </div>
+      <div class="week-card">
+        <h5>⏰ Suggestion Deadline</h5>
+        <p>Submit Before: <strong>{{ deadline }} (11:59 PM)</strong></p>
+      </div>
+    </div>
+
+    <form method="post" action="{% url 'weekly_suggestion' %}{% if mess_name %}?mess={{ mess_name }}{% endif %}">
+        {% csrf_token %}
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Please correct the following errors:</strong>
+                <ul class="mb-0">
+                {% for field, errors in form.errors.items %}
+                    <li>{{ field|capfirst }}: {{ errors|join:", " }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="section-title">🏫 Mess & Student Info</div>
+
+        <div class="mb-3">
+            <label>Select Mess</label>
+            {{ form.mess_name }}
+        </div>
+
+        <div class="mb-3">
+            <label>Student Name</label>
+            {{ form.student_name }}
+        </div>
+
+        <div class="mb-3">
+            <label>Email</label>
+            {{ form.email }}
+        </div>
+
+        {% comment %}
+            Prefer querystring mess (so the form can be preselected).
+            Also include a hidden input so the POST handler gets mess_name
+        {% endcomment %}
+        {% if mess_name %}
+            <input type="hidden" name="mess_name" value="{{ mess_name }}">
+        {% endif %}
+
+        <!-- Day fields -->
+        {% for item in day_fields %}
+        <div class="day-box">
+            <div class="day-title">📅 {{ item.day }}</div>
+
+            <div class="mb-2">
+                <label>Breakfast</label>
+                {% if item.bf %}
+                    {{ item.bf }}
+                {% else %}
+                    <input type="text" name="{{ item.bf_name }}" class="form-control" placeholder="Enter breakfast">
+                {% endif %}
+            </div>
+
+            <div class="mb-2">
+                <label>Lunch</label>
+                {% if item.lf %}
+                    {{ item.lf }}
+                {% else %}
+                    <input type="text" name="{{ item.lf_name }}" class="form-control" placeholder="Enter lunch">
+                {% endif %}
+            </div>
+
+            <div class="mb-2">
+                <label>Dinner</label>
+                {% if item.df %}
+                    {{ item.df }}
+                {% else %}
+                    <input type="text" name="{{ item.df_name }}" class="form-control" placeholder="Enter dinner">
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="text-center mt-4 mb-2">
+            <button type="submit">✅ Submit Weekly Feedback</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+{% endblock %}
