@@ -21,51 +21,44 @@ from testapp.api_home import api_home
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
-    # API Home - No templates needed
-    path('', api_home, name='api_home'),
-    
-    path('admin/', admin.site.urls),
+    # Frontend URLs
+    path('', views.index_view, name='index'),
     path('signup/', views.sign_up_views, name='signup'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
-
-    #  Student Raj Mess Menu Page
+    
+    # Mess Pages
     path('raj_mess/', views.raj_mess_view, name='raj_mess'),
-
-#     Raj Mess Admin Page
+    path('design_mess/', views.design_mess_view, name='design_mess'),
+    path('manet_mess/', views.manet_mess_view, name='manet_mess'),
+    
+    # Admin Pages
+    path('admin/', admin.site.urls),
     path('admin_raj_mess/', views.add_dish, {'mess_id': 1}, name='admin_raj_mess'),
-
-    #  Add/Delete handlers
+    path('admin_design_mess/', views.design_mess_admin_view, name='admin_design_mess'),
+    path('admin_manet_mess/', views.manet_add_dish, name='admin_manet_mess'),
+    
+    # Actions
     path('add_dish/<int:mess_id>/', views.add_dish, name='add_dish'),
     path('delete-dish/<int:id>/', views.delete_dish, name='delete_dish'),
-
-    path('design_mess/',views.design_mess_view,name='design_mess'),
-    path('admin_design_mess/', views.design_mess_admin_view, name='admin_design_mess'),
     path("rate_design_dish/", views.rate_design_dish, name="rate_design_dish"),
-
-
-    path('manet_mess/', views.manet_mess_view, name='manet_mess'),
-    path('admin_manet_mess/', views.manet_add_dish, name='admin_manet_mess'),
     path("rate-manet/", views.rate_manet_dish, name="rate_manet_dish"),
-
     path("rate-dish/", views.rate_dish, name="rate_dish"),
-
+    
+    # Other Pages
     path("payment_selection/", views.mess_payment_select, name="payment_selection"),
-
     path("feedback/", views.feedback_form, name="feedback"),
     path('thank-you/', views.thank_you, name='thank_you'),
-
     path('weekly_suggestion/', views.weekly_suggestion, name='weekly_suggestion'),
     path('suggestion_success/', views.suggestion_success, name='suggestion_success'),
-    
-    path('notices/', views.all_notices, name='all_notices'), 
-    path('delete-notice/<int:id>/<int:mess_id>/', views.delete_notice, name='delete_notice'), # <-- View All should point here
+    path('notices/', views.all_notices, name='all_notices'),
+    path('delete-notice/<int:id>/<int:mess_id>/', views.delete_notice, name='delete_notice'),
     path('complaint/', views.complaint_view, name='complaint'),
-    path("complaint/success/", views.complaint_success, name="complaint_success"),  # ✅ new
+    path("complaint/success/", views.complaint_success, name="complaint_success"),
     
+    # API URLs
     path('api/', include('testapp.api_urls')),
-    
-    # API Documentation
+    path('api/home/', api_home, name='api_home'),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]
