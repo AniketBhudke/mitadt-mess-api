@@ -17,12 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from testapp import views
+from testapp.api_home import api_home
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from django.views.generic import RedirectView
 
 urlpatterns = [
-    # Redirect root to API documentation
-    path('', RedirectView.as_view(url='/api/docs/', permanent=False), name='index'),
+    # API Home - No templates needed
+    path('', api_home, name='api_home'),
     
     path('admin/', admin.site.urls),
     path('signup/', views.sign_up_views, name='signup'),
