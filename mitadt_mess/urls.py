@@ -18,14 +18,16 @@ from django.contrib import admin
 from django.urls import include, path
 from testapp import views
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from django.views.generic import RedirectView
 
 urlpatterns = [
+    # Redirect root to API documentation
+    path('', RedirectView.as_view(url='/api/docs/', permanent=False), name='index'),
+    
     path('admin/', admin.site.urls),
     path('signup/', views.sign_up_views, name='signup'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
-    # path('', include('testapp.urls')), 
-    path('', views.index_view,name='index'),
 
     #  Student Raj Mess Menu Page
     path('raj_mess/', views.raj_mess_view, name='raj_mess'),
