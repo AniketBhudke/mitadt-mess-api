@@ -17,7 +17,118 @@ def initialize_database(request):
         logger = logging.getLogger(__name__)
         results = []
         
-        # Run migrations first
+        # First, create all Django system tables manually
+        try:
+            cursor = connection.cursor()
+            
+            # Create django_session table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS django_session (
+                    session_key VARCHAR(40) PRIMARY KEY,
+                    session_data TEXT NOT NULL,
+                    expire_date DATETIME NOT NULL
+                );
+            """)
+            results.append("Created django_session table")
+            
+            # Create django_content_type table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS django_content_type (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    app_label VARCHAR(100) NOT NULL,
+                    model VARCHAR(100) NOT NULL,
+                    UNIQUE(app_label, model)
+                );
+            """)
+            results.append("Created django_content_type table")
+            
+            # Create django_migrations table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS django_migrations (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    app VARCHAR(255) NOT NULL,
+                    name VARCHAR(255) NOT NULL,
+                    applied DATETIME NOT NULL
+                );
+            """)
+            results.append("Created django_migrations table")
+            
+            # Create auth_permission table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS auth_permission (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name VARCHAR(255) NOT NULL,
+                    content_type_id INTEGER NOT NULL,
+                    codename VARCHAR(100) NOT NULL,
+                    UNIQUE(content_type_id, codename)
+                );
+            """)
+            results.append("Created auth_permission table")
+            
+            # Create auth_group table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS auth_group (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name VARCHAR(150) UNIQUE NOT NULL
+                );
+            """)
+            results.append("Created auth_group table")
+            
+            # Create auth_group_permissions table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS auth_group_permissions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    group_id INTEGER NOT NULL,
+                    permission_id INTEGER NOT NULL,
+                    UNIQUE(group_id, permission_id)
+                );
+            """)
+            results.append("Created auth_group_permissions table")
+            
+            # Create auth_user table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS auth_user (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    password VARCHAR(128) NOT NULL,
+                    last_login DATETIME,
+                    is_superuser BOOLEAN NOT NULL DEFAULT 0,
+                    username VARCHAR(150) NOT NULL UNIQUE,
+                    first_name VARCHAR(150) NOT NULL DEFAULT '',
+                    last_name VARCHAR(150) NOT NULL DEFAULT '',
+                    email VARCHAR(254) NOT NULL DEFAULT '',
+                    is_staff BOOLEAN NOT NULL DEFAULT 0,
+                    is_active BOOLEAN NOT NULL DEFAULT 1,
+                    date_joined DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+            results.append("Created auth_user table")
+            
+            # Create auth_user_groups table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS auth_user_groups (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    group_id INTEGER NOT NULL,
+                    UNIQUE(user_id, group_id)
+                );
+            """)
+            results.append("Created auth_user_groups table")
+            
+            # Create auth_user_user_permissions table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS auth_user_user_permissions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    permission_id INTEGER NOT NULL,
+                    UNIQUE(user_id, permission_id)
+                );
+            """)
+            results.append("Created auth_user_user_permissions table")
+            
+        except Exception as e:
+            results.append(f"Manual table creation error: {str(e)}")
+        
+        # Run migrations
         try:
             call_command('migrate', verbosity=0, interactive=False)
             results.append("Migrations completed successfully")
@@ -30,31 +141,6 @@ def initialize_database(request):
             results.append(f"User table accessible, contains {user_count} users")
         except Exception as e:
             results.append(f"User table error: {str(e)}")
-            
-            # Try to create tables manually if migrations failed
-            try:
-                from django.db import connection
-                cursor = connection.cursor()
-                
-                # Create auth_user table manually
-                cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS auth_user (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        password VARCHAR(128) NOT NULL,
-                        last_login DATETIME,
-                        is_superuser BOOLEAN NOT NULL DEFAULT 0,
-                        username VARCHAR(150) NOT NULL UNIQUE,
-                        first_name VARCHAR(150) NOT NULL DEFAULT '',
-                        last_name VARCHAR(150) NOT NULL DEFAULT '',
-                        email VARCHAR(254) NOT NULL DEFAULT '',
-                        is_staff BOOLEAN NOT NULL DEFAULT 0,
-                        is_active BOOLEAN NOT NULL DEFAULT 1,
-                        date_joined DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-                    );
-                """)
-                results.append("Created auth_user table manually")
-            except Exception as manual_error:
-                results.append(f"Manual table creation failed: {str(manual_error)}")
         
         # Create superuser if doesn't exist
         try:
