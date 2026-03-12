@@ -4,7 +4,7 @@ services:
     env: python
     region: oregon
     plan: free
-    buildCommand: "pip install -r requirements.txt && python manage.py makemigrations testapp && python manage.py migrate"
+    buildCommand: "pip install -r requirements.txt && python manage.py makemigrations --empty testapp && python manage.py makemigrations testapp && python manage.py migrate --run-syncdb"
     startCommand: "python manage.py collectstatic --noinput && gunicorn mitadt_mess.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: PYTHON_VERSION

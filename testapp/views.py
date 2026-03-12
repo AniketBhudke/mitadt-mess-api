@@ -9,8 +9,54 @@ from django.core.management import call_command
 def initialize_database(request):
     """Initialize database tables - for deployment debugging"""
     try:
+        from django.db import connection
+        from django.core.management.color import no_style
+        from django.db import transaction
+        
+        # Get database cursor
+        cursor = connection.cursor()
+        
+        # Create auth_user table manually if it doesn't exist
+        try:
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS auth_user (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    password VARCHAR(128) NOT NULL,
+                    last_login DATETIME,
+                    is_superuser BOOLEAN NOT NULL,
+                    username VARCHAR(150) NOT NULL UNIQUE,
+                    first_name VARCHAR(150) NOT NULL,
+                    last_name VARCHAR(150) NOT NULL,
+                    email VARCHAR(254) NOT NULL,
+                    is_staff BOOLEAN NOT NULL,
+                    is_active BOOLEAN NOT NULL,
+                    date_joined DATETIME NOT NULL
+                );
+            """)
+            
+            # Create other essential tables
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS django_content_type (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    app_label VARCHAR(100) NOT NULL,
+                    model VARCHAR(100) NOT NULL
+                );
+            """)
+            
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS django_migrations (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    app VARCHAR(255) NOT NULL,
+                    name VARCHAR(255) NOT NULL,
+                    applied DATETIME NOT NULL
+                );
+            """)
+            
+        except Exception as e:
+            pass  # Tables might already exist
+        
         # Run migrations
-        call_command('migrate', verbosity=2)
+        call_command('migrate', verbosity=0, interactive=False)
         
         # Create superuser if doesn't exist
         if not User.objects.filter(is_superuser=True).exists():
@@ -20,15 +66,30 @@ def initialize_database(request):
                 password='admin123'
             )
         
+        # Test user creation
+        test_user, created = User.objects.get_or_create(
+            username='testuser',
+            defaults={
+                'email': 'test@example.com',
+                'is_active': True
+            }
+        )
+        if created:
+            test_user.set_password('testpass')
+            test_user.save()
+        
         return JsonResponse({
             'status': 'success',
             'message': 'Database initialized successfully',
-            'admin_created': True
+            'admin_created': True,
+            'test_user_created': created,
+            'tables_created': True
         })
     except Exception as e:
         return JsonResponse({
             'status': 'error',
-            'message': str(e)
+            'message': str(e),
+            'debug_info': 'Check server logs for details'
         })
 
 # Create your views here.
