@@ -432,6 +432,10 @@ def rate_design_dish(request):
         'your_rating': rating_value
     })
 
+def simple_signup_view(request):
+    """Simple signup page that uses API internally"""
+    return render(request, 'testapp/simple_signup.html')
+
 def sign_up_views(request):
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()

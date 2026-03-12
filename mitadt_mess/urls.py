@@ -27,6 +27,7 @@ urlpatterns = [
     # Frontend URLs
     path('', views.index_view, name='index'),
     path('signup/', views.sign_up_views, name='signup'),
+    path('simple-signup/', views.simple_signup_view, name='simple_signup'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     
