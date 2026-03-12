@@ -21,6 +21,9 @@ from testapp.api_home import api_home
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
+    # Database initialization (for debugging)
+    path('init-db/', views.initialize_database, name='init_db'),
+    
     # Frontend URLs
     path('', views.index_view, name='index'),
     path('signup/', views.sign_up_views, name='signup'),

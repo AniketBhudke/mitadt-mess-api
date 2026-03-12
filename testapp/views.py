@@ -4,6 +4,33 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import  login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.management import call_command
+
+def initialize_database(request):
+    """Initialize database tables - for deployment debugging"""
+    try:
+        # Run migrations
+        call_command('migrate', verbosity=2)
+        
+        # Create superuser if doesn't exist
+        if not User.objects.filter(is_superuser=True).exists():
+            User.objects.create_superuser(
+                username='admin',
+                email='admin@mitadt.edu.in',
+                password='admin123'
+            )
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Database initialized successfully',
+            'admin_created': True
+        })
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        })
+
 # Create your views here.
 
 def index_view(request):
