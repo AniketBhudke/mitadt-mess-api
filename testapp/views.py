@@ -508,6 +508,27 @@ def simple_signup_view(request):
     """Working signup page that bypasses browser interference"""
     return render(request, 'testapp/working_signup.html')
 
+
+def check_users_view(request):
+    """Debug view to check what users exist"""
+    try:
+        users = User.objects.all()
+        user_info = []
+        for user in users:
+            user_info.append({
+                'username': user.username,
+                'email': user.email,
+                'is_active': user.is_active,
+                'date_joined': user.date_joined.strftime('%Y-%m-%d %H:%M')
+            })
+        
+        return JsonResponse({
+            'total_users': len(user_info),
+            'users': user_info
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)})
+
 def sign_up_views(request):
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
@@ -554,36 +575,50 @@ def login_view(request):
             return render(request, 'testapp/working_login.html')
         
         try:
+            # Debug: Let's see what we're looking for
+            print(f"DEBUG: Looking for user: '{email_or_username}'")
+            
             # Try to find user by email first
             user = None
             if '@' in email_or_username:
                 # It's an email
                 try:
                     user = User.objects.get(email=email_or_username)
+                    print(f"DEBUG: Found user by email: {user.username}")
                 except User.DoesNotExist:
+                    print(f"DEBUG: No user found with email: {email_or_username}")
                     pass
             
             # If not found by email, try username
             if user is None:
                 try:
                     user = User.objects.get(username=email_or_username)
+                    print(f"DEBUG: Found user by username: {user.username}")
                 except User.DoesNotExist:
+                    print(f"DEBUG: No user found with username: {email_or_username}")
                     pass
             
             if user is None:
-                messages.error(request, "No account found with this email/username.")
+                # Let's see what users actually exist
+                all_users = User.objects.all()
+                print(f"DEBUG: Available users: {[u.username for u in all_users]}")
+                messages.error(request, f"No account found with '{email_or_username}'. Available users: {', '.join([u.username for u in all_users[:5]])}")
                 return render(request, 'testapp/working_login.html')
             
             # Check password
+            print(f"DEBUG: Checking password for user: {user.username}")
             if user.check_password(password):
+                print(f"DEBUG: Password correct for user: {user.username}")
                 login(request, user)
                 messages.success(request, "Logged in successfully.")
                 return redirect('index')
             else:
-                messages.error(request, "Incorrect password.")
+                print(f"DEBUG: Password incorrect for user: {user.username}")
+                messages.error(request, f"Incorrect password for user '{user.username}'.")
                 
         except Exception as e:
-            messages.error(request, "Login failed. Please try again.")
+            print(f"DEBUG: Exception occurred: {str(e)}")
+            messages.error(request, f"Login failed: {str(e)}")
 
     return render(request, 'testapp/working_login.html')    
 
