@@ -407,28 +407,38 @@ def rate_design_dish(request):
 
 def sign_up_views(request):
     if request.method == 'POST':
-        username = request.POST.get('username').strip()
-        email = request.POST.get('email').strip()
-        password = request.POST.get('password')
-        confirm = request.POST.get('confirm')
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '')
+        confirm = request.POST.get('confirm', '')
 
+        # Validation
+        if not username or not email or not password:
+            messages.error(request, "All fields are required.")
+            return render(request, 'testapp/signup.html')
 
         if password != confirm:
-            messages.error(request,"passwords do not match. ")
-            return redirect('signup')
+            messages.error(request, "Passwords do not match.")
+            return render(request, 'testapp/signup.html')
         
-        if User.objects.filter(email=email).exists():
-            messages.error(request, 'Email already in use.')
-            return redirect('signup')
-        
-        if User.objects.filter(username=username).exists():
-            messages.error(request,"Username Already taken")
+        try:
+            if User.objects.filter(email=email).exists():
+                messages.error(request, 'Email already in use.')
+                return render(request, 'testapp/signup.html')
+            
+            if User.objects.filter(username=username).exists():
+                messages.error(request, "Username already taken.")
+                return render(request, 'testapp/signup.html')
+            
+            user = User.objects.create_user(username=username, email=email, password=password)
+            user.save()
+            messages.success(request, "Account created successfully. You can now log in.")
             return redirect('login')
-        
-        user = User.objects.create_user(username=username,email=email,password=password)
-        user.save()
-        messages.success(request, "Account created Successfully. you can now log in.")
-        return redirect('login')
+            
+        except Exception as e:
+            messages.error(request, "Failed to create account. Please try again.")
+            return render(request, 'testapp/signup.html')
+    
     return render(request, 'testapp/signup.html')
 
 def login_view(request):
