@@ -359,36 +359,72 @@ def login_api(request):
 )
 @api_view(['POST'])
 def register_api(request):
-    username = request.data.get('username', '').strip()
-    email = request.data.get('email', '').strip()
-    password = request.data.get('password', '')
-    first_name = request.data.get('first_name', '').strip()
-    last_name = request.data.get('last_name', '').strip()
-    
-    if not username or not email or not password:
-        return Response({"error": "Username, email, and password are required"}, status=400)
-    
-    # Check if user already exists
-    if User.objects.filter(username=username).exists():
-        return Response({"error": "Username already exists"}, status=400)
-    
-    if User.objects.filter(email=email).exists():
-        return Response({"error": "Email already registered"}, status=400)
-    
+    """Register a new user via API"""
     try:
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name
-        )
-        return Response({
-            "message": "Account created successfully",
-            "user": UserSerializer(user).data
-        }, status=201)
+        username = request.data.get('username', '').strip()
+        email = request.data.get('email', '').strip()
+        password = request.data.get('password', '')
+        first_name = request.data.get('first_name', '').strip()
+        last_name = request.data.get('last_name', '').strip()
+        
+        if not username or not email or not password:
+            return Response({"error": "Username, email, and password are required"}, status=400)
+        
+        # Validate password length
+        if len(password) < 6:
+            return Response({"error": "Password must be at least 6 characters long"}, status=400)
+        
+        # Check if user already exists
+        if User.objects.filter(username=username).exists():
+            return Response({"error": "Username already exists"}, status=400)
+        
+        if User.objects.filter(email=email).exists():
+            return Response({"error": "Email already registered"}, status=400)
+        
+        try:
+            # Ensure database is ready
+            User.objects.count()  # Test database access
+            
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+            return Response({
+                "message": "Account created successfully",
+                "user": UserSerializer(user).data
+            }, status=201)
+            
+        except Exception as db_error:
+            # If database error, try to initialize and retry once
+            try:
+                from django.core.management import call_command
+                call_command('migrate', verbosity=0, interactive=False)
+                
+                user = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name
+                )
+                return Response({
+                    "message": "Account created successfully (after database initialization)",
+                    "user": UserSerializer(user).data
+                }, status=201)
+            except Exception as retry_error:
+                return Response({
+                    "error": "Database not ready. Please visit /init-db/ first, then try again.",
+                    "debug": str(retry_error)
+                }, status=500)
+                
     except Exception as e:
-        return Response({"error": "Failed to create account"}, status=400)
+        return Response({
+            "error": "Failed to create account",
+            "debug": str(e)
+        }, status=400)
 
 # ============ USER API ============
 
@@ -404,3 +440,16 @@ def user_profile_api(request):
     
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def users_list_api(request):
+    """List all users (for debugging)"""
+    try:
+        users = User.objects.all()
+        return Response({
+            'count': users.count(),
+            'users': [{'id': u.id, 'username': u.username, 'email': u.email, 'is_active': u.is_active} for u in users[:10]]
+        })
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)

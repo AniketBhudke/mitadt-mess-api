@@ -33,4 +33,5 @@ urlpatterns = [
     
     # User API
     path('user/profile/', user_profile_api, name='user_profile_api'),
+    path('auth/users/', users_list_api, name='users_list_api'),
 ]

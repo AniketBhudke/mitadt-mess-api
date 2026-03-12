@@ -10,85 +10,96 @@ def initialize_database(request):
     """Initialize database tables - for deployment debugging"""
     try:
         from django.db import connection
-        from django.core.management.color import no_style
+        from django.core.management import call_command
         from django.db import transaction
+        import logging
         
-        # Get database cursor
-        cursor = connection.cursor()
+        logger = logging.getLogger(__name__)
+        results = []
         
-        # Create auth_user table manually if it doesn't exist
+        # Run migrations first
         try:
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS auth_user (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    password VARCHAR(128) NOT NULL,
-                    last_login DATETIME,
-                    is_superuser BOOLEAN NOT NULL,
-                    username VARCHAR(150) NOT NULL UNIQUE,
-                    first_name VARCHAR(150) NOT NULL,
-                    last_name VARCHAR(150) NOT NULL,
-                    email VARCHAR(254) NOT NULL,
-                    is_staff BOOLEAN NOT NULL,
-                    is_active BOOLEAN NOT NULL,
-                    date_joined DATETIME NOT NULL
-                );
-            """)
-            
-            # Create other essential tables
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS django_content_type (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    app_label VARCHAR(100) NOT NULL,
-                    model VARCHAR(100) NOT NULL
-                );
-            """)
-            
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS django_migrations (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    app VARCHAR(255) NOT NULL,
-                    name VARCHAR(255) NOT NULL,
-                    applied DATETIME NOT NULL
-                );
-            """)
-            
+            call_command('migrate', verbosity=0, interactive=False)
+            results.append("Migrations completed successfully")
         except Exception as e:
-            pass  # Tables might already exist
+            results.append(f"Migration error: {str(e)}")
         
-        # Run migrations
-        call_command('migrate', verbosity=0, interactive=False)
+        # Check if User table exists and is accessible
+        try:
+            user_count = User.objects.count()
+            results.append(f"User table accessible, contains {user_count} users")
+        except Exception as e:
+            results.append(f"User table error: {str(e)}")
+            
+            # Try to create tables manually if migrations failed
+            try:
+                from django.db import connection
+                cursor = connection.cursor()
+                
+                # Create auth_user table manually
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS auth_user (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        password VARCHAR(128) NOT NULL,
+                        last_login DATETIME,
+                        is_superuser BOOLEAN NOT NULL DEFAULT 0,
+                        username VARCHAR(150) NOT NULL UNIQUE,
+                        first_name VARCHAR(150) NOT NULL DEFAULT '',
+                        last_name VARCHAR(150) NOT NULL DEFAULT '',
+                        email VARCHAR(254) NOT NULL DEFAULT '',
+                        is_staff BOOLEAN NOT NULL DEFAULT 0,
+                        is_active BOOLEAN NOT NULL DEFAULT 1,
+                        date_joined DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
+                """)
+                results.append("Created auth_user table manually")
+            except Exception as manual_error:
+                results.append(f"Manual table creation failed: {str(manual_error)}")
         
         # Create superuser if doesn't exist
-        if not User.objects.filter(is_superuser=True).exists():
-            User.objects.create_superuser(
-                username='admin',
-                email='admin@mitadt.edu.in',
-                password='admin123'
-            )
+        try:
+            if not User.objects.filter(is_superuser=True).exists():
+                User.objects.create_superuser(
+                    username='admin',
+                    email='admin@mitadt.edu.in',
+                    password='admin123'
+                )
+                results.append("Created admin superuser")
+            else:
+                results.append("Admin superuser already exists")
+        except Exception as e:
+            results.append(f"Superuser creation error: {str(e)}")
         
-        # Test user creation
-        test_user, created = User.objects.get_or_create(
-            username='testuser',
-            defaults={
-                'email': 'test@example.com',
-                'is_active': True
-            }
-        )
-        if created:
-            test_user.set_password('testpass')
-            test_user.save()
+        # Test user creation to verify everything works
+        try:
+            test_username = f'testuser_{User.objects.count()}'
+            test_user, created = User.objects.get_or_create(
+                username=test_username,
+                defaults={
+                    'email': f'{test_username}@example.com',
+                    'is_active': True
+                }
+            )
+            if created:
+                test_user.set_password('testpass')
+                test_user.save()
+                results.append(f"Created test user: {test_username}")
+            else:
+                results.append(f"Test user already exists: {test_username}")
+        except Exception as e:
+            results.append(f"Test user creation error: {str(e)}")
         
         return JsonResponse({
             'status': 'success',
-            'message': 'Database initialized successfully',
-            'admin_created': True,
-            'test_user_created': created,
-            'tables_created': True
+            'message': 'Database initialization completed',
+            'results': results,
+            'total_users': User.objects.count() if 'User table accessible' in str(results) else 0
         })
+        
     except Exception as e:
         return JsonResponse({
             'status': 'error',
-            'message': str(e),
+            'message': f'Database initialization failed: {str(e)}',
             'debug_info': 'Check server logs for details'
         })
 
@@ -494,8 +505,8 @@ def rate_design_dish(request):
     })
 
 def simple_signup_view(request):
-    """Simple signup page that uses API internally"""
-    return render(request, 'testapp/simple_signup.html')
+    """Working signup page that bypasses browser interference"""
+    return render(request, 'testapp/working_signup.html')
 
 def sign_up_views(request):
     if request.method == 'POST':

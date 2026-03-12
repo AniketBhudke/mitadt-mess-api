@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.shortcuts import render
 from testapp import views
 from testapp.api_home import api_home
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
@@ -26,8 +27,9 @@ urlpatterns = [
     
     # Frontend URLs
     path('', views.index_view, name='index'),
-    path('signup/', views.sign_up_views, name='signup'),
-    path('simple-signup/', views.simple_signup_view, name='simple_signup'),
+    path('signup/', views.simple_signup_view, name='signup'),  # Use working signup page
+    path('old-signup/', views.sign_up_views, name='old_signup'),  # Keep old one as backup
+    path('test-signup/', lambda request: render(request, 'testapp/signup_test.html'), name='test_signup'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     

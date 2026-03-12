@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup Test - MIT ADT Mess</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        .info { background: #d1ecf1; border-color: #bee5eb; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 10px; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MIT ADT Mess - Signup System Test</h1>
+        
+        <div class="test-section info">
+            <h3>System Status Check</h3>
+            <button onclick="checkDatabase()">Check Database</button>
+            <button onclick="initDatabase()">Initialize Database</button>
+            <div id="dbResult" class="result"></div>
+        </div>
+        
+        <div class="test-section info">
+            <h3>API Test</h3>
+            <button onclick="testAPI()">Test Registration API</button>
+            <div id="apiResult" class="result"></div>
+        </div>
+        
+        <div class="test-section success">
+            <h3>Working Signup Page</h3>
+            <p>The main signup page has been fixed to bypass browser interference.</p>
+            <a href="/signup/" style="background: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Go to Signup Page</a>
+        </div>
+        
+        <div class="test-section info">
+            <h3>Quick Links</h3>
+            <a href="/login/" style="background: #17a2b8; color: white; padding: 8px 16px; text-decoration: none; border-radius: 3px; margin: 5px;">Login</a>
+            <a href="/api/docs/" style="background: #6c757d; color: white; padding: 8px 16px; text-decoration: none; border-radius: 3px; margin: 5px;">API Docs</a>
+            <a href="/" style="background: #fd7e14; color: white; padding: 8px 16px; text-decoration: none; border-radius: 3px; margin: 5px;">Home</a>
+        </div>
+    </div>
+
+    <script>
+        async function checkDatabase() {
+            const result = document.getElementById('dbResult');
+            result.innerHTML = 'Checking database...';
+            
+            try {
+                const response = await fetch('/api/auth/users/');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    result.innerHTML = `<div class="success">✅ Database OK - Found ${data.length} users</div>`;
+                } else {
+                    result.innerHTML = `<div class="error">❌ Database Error: ${data.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ Connection Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function initDatabase() {
+            const result = document.getElementById('dbResult');
+            result.innerHTML = 'Initializing database...';
+            
+            try {
+                const response = await fetch('/init-db/');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    result.innerHTML = `<div class="success">✅ Database Initialized<br>Results: ${data.results.join('<br>')}</div>`;
+                } else {
+                    result.innerHTML = `<div class="error">❌ Init Failed: ${data.message}</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ Init Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testAPI() {
+            const result = document.getElementById('apiResult');
+            result.innerHTML = 'Testing API...';
+            
+            const testUser = {
+                username: `testuser_${Date.now()}`,
+                email: `test_${Date.now()}@example.com`,
+                password: 'testpass123'
+            };
+            
+            try {
+                const response = await fetch('/api/auth/register/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify(testUser)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    result.innerHTML = `<div class="success">✅ API Working - Created user: ${testUser.username}</div>`;
+                } else {
+                    result.innerHTML = `<div class="error">❌ API Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ API Test Failed: ${error.message}</div>`;
+            }
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>
