@@ -317,24 +317,44 @@ def mess_selection_api(request):
 )
 @api_view(['POST'])
 def login_api(request):
-    email = request.data.get('email', '').strip()
+    """Login API that accepts both email and username"""
+    email_or_username = request.data.get('email', '').strip()
     password = request.data.get('password', '')
     
-    if not email or not password:
-        return Response({"error": "Email and password are required"}, status=400)
+    if not email_or_username or not password:
+        return Response({"error": "Email/username and password are required"}, status=400)
     
     try:
-        user = User.objects.get(email=email)
+        # Try to find user by email first
+        user = None
+        if '@' in email_or_username:
+            # It's an email
+            try:
+                user = User.objects.get(email=email_or_username)
+            except User.DoesNotExist:
+                pass
+        
+        # If not found by email, try username
+        if user is None:
+            try:
+                user = User.objects.get(username=email_or_username)
+            except User.DoesNotExist:
+                pass
+        
+        if user is None:
+            return Response({"error": "No account found with this email/username"}, status=400)
+        
+        # Check password
         if user.check_password(password):
-            # In a real app, you'd return a JWT token here
             return Response({
                 "message": "Login successful",
                 "user": UserSerializer(user).data
             })
         else:
             return Response({"error": "Invalid password"}, status=400)
-    except User.DoesNotExist:
-        return Response({"error": "No account found with this email"}, status=400)
+            
+    except Exception as e:
+        return Response({"error": "Login failed"}, status=400)
 
 @extend_schema(
     summary="Register user",

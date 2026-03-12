@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MIT ADT Mess</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .signup-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e1e5e9;
+        }
+        
+        .signup-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>MIT ADT Mess</h1>
+            <p>Welcome Back</p>
+        </div>
+        
+        <div id="messageContainer">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {% if message.tags %}{{ message.tags }}{% else %}error{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+        <form method="post" id="loginForm" autocomplete="off">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="loginField">Email or Username</label>
+                <input 
+                    type="text" 
+                    id="loginField" 
+                    name="email" 
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    required
+                    placeholder="Enter your email or username"
+                >
+                <div class="help-text">You can use either your email address or username</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input 
+                    type="password" 
+                    id="loginPassword" 
+                    name="password" 
+                    autocomplete="current-password"
+                    required
+                    placeholder="Enter your password"
+                >
+            </div>
+            
+            <button type="submit" class="btn-login" id="submitBtn">
+                Login
+            </button>
+            
+            <div class="loading" id="loadingDiv">
+                <div class="spinner"></div>
+                Logging you in...
+            </div>
+        </form>
+        
+        <div class="signup-link">
+            <p>Don't have an account? <a href="/signup/">Create Account</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Prevent browser autofill interference
+        setTimeout(function() {
+            document.getElementById('loginField').value = '';
+            document.getElementById('loginPassword').value = '';
+        }, 100);
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const submitBtn = document.getElementById('submitBtn');
+            const loadingDiv = document.getElementById('loadingDiv');
+            
+            // Show loading
+            submitBtn.disabled = true;
+            loadingDiv.style.display = 'block';
+            
+            // Re-enable after 5 seconds in case of issues
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                loadingDiv.style.display = 'none';
+            }, 5000);
+        });
+        
+        // Clear form on page load to prevent autofill
+        window.addEventListener('load', function() {
+            document.getElementById('loginForm').reset();
+        });
+    </script>
+</body>
+</html>

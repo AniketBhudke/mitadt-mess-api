@@ -546,28 +546,46 @@ def sign_up_views(request):
 
 def login_view(request):
     if request.method == 'POST':
-        email = request.POST.get('email', '').strip()
+        email_or_username = request.POST.get('email', '').strip()
         password = request.POST.get('password', '')
         
-        if not email or not password:
-            messages.error(request, "Please provide both email and password.")
-            return render(request, 'testapp/login.html')
+        if not email_or_username or not password:
+            messages.error(request, "Please provide both email/username and password.")
+            return render(request, 'testapp/working_login.html')
         
         try:
-            user = User.objects.get(email=email)
+            # Try to find user by email first
+            user = None
+            if '@' in email_or_username:
+                # It's an email
+                try:
+                    user = User.objects.get(email=email_or_username)
+                except User.DoesNotExist:
+                    pass
+            
+            # If not found by email, try username
+            if user is None:
+                try:
+                    user = User.objects.get(username=email_or_username)
+                except User.DoesNotExist:
+                    pass
+            
+            if user is None:
+                messages.error(request, "No account found with this email/username.")
+                return render(request, 'testapp/working_login.html')
+            
+            # Check password
             if user.check_password(password):
                 login(request, user)
                 messages.success(request, "Logged in successfully.")
                 return redirect('index')
             else:
                 messages.error(request, "Incorrect password.")
-        except User.DoesNotExist:
-            messages.error(request, "No account found with this email.")
+                
         except Exception as e:
             messages.error(request, "Login failed. Please try again.")
 
-    return render(request, 'testapp/login.html')
-    return render(request, 'testapp/login.html')    
+    return render(request, 'testapp/working_login.html')    
 
 def logout_view(request):
     if request.method == 'POST':
