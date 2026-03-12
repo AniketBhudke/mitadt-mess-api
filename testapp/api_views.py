@@ -295,6 +295,101 @@ def mess_selection_api(request):
     
     return Response(serializer.errors, status=400)
 
+# ============ AUTHENTICATION APIs ============
+
+@extend_schema(
+    summary="Login user",
+    description="Authenticate user with email and password",
+    request={
+        'application/json': {
+            'type': 'object',
+            'properties': {
+                'email': {'type': 'string', 'description': 'User email'},
+                'password': {'type': 'string', 'description': 'User password'}
+            },
+            'required': ['email', 'password']
+        }
+    },
+    responses={
+        200: {'type': 'object', 'properties': {'message': {'type': 'string'}, 'user': UserSerializer}},
+        400: {'type': 'object', 'properties': {'error': {'type': 'string'}}}
+    }
+)
+@api_view(['POST'])
+def login_api(request):
+    email = request.data.get('email', '').strip()
+    password = request.data.get('password', '')
+    
+    if not email or not password:
+        return Response({"error": "Email and password are required"}, status=400)
+    
+    try:
+        user = User.objects.get(email=email)
+        if user.check_password(password):
+            # In a real app, you'd return a JWT token here
+            return Response({
+                "message": "Login successful",
+                "user": UserSerializer(user).data
+            })
+        else:
+            return Response({"error": "Invalid password"}, status=400)
+    except User.DoesNotExist:
+        return Response({"error": "No account found with this email"}, status=400)
+
+@extend_schema(
+    summary="Register user",
+    description="Create a new user account",
+    request={
+        'application/json': {
+            'type': 'object',
+            'properties': {
+                'username': {'type': 'string'},
+                'email': {'type': 'string'},
+                'password': {'type': 'string'},
+                'first_name': {'type': 'string'},
+                'last_name': {'type': 'string'}
+            },
+            'required': ['username', 'email', 'password']
+        }
+    },
+    responses={
+        201: {'type': 'object', 'properties': {'message': {'type': 'string'}, 'user': UserSerializer}},
+        400: {'type': 'object', 'properties': {'error': {'type': 'string'}}}
+    }
+)
+@api_view(['POST'])
+def register_api(request):
+    username = request.data.get('username', '').strip()
+    email = request.data.get('email', '').strip()
+    password = request.data.get('password', '')
+    first_name = request.data.get('first_name', '').strip()
+    last_name = request.data.get('last_name', '').strip()
+    
+    if not username or not email or not password:
+        return Response({"error": "Username, email, and password are required"}, status=400)
+    
+    # Check if user already exists
+    if User.objects.filter(username=username).exists():
+        return Response({"error": "Username already exists"}, status=400)
+    
+    if User.objects.filter(email=email).exists():
+        return Response({"error": "Email already registered"}, status=400)
+    
+    try:
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name
+        )
+        return Response({
+            "message": "Account created successfully",
+            "user": UserSerializer(user).data
+        }, status=201)
+    except Exception as e:
+        return Response({"error": "Failed to create account"}, status=400)
+
 # ============ USER API ============
 
 @extend_schema(

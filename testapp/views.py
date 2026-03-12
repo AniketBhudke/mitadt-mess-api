@@ -433,8 +433,12 @@ def sign_up_views(request):
 
 def login_view(request):
     if request.method == 'POST':
-        email = request.POST.get('email').strip()
-        password = request.POST.get('password')
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '')
+        
+        if not email or not password:
+            messages.error(request, "Please provide both email and password.")
+            return render(request, 'testapp/login.html')
         
         try:
             user = User.objects.get(email=email)
@@ -446,8 +450,10 @@ def login_view(request):
                 messages.error(request, "Incorrect password.")
         except User.DoesNotExist:
             messages.error(request, "No account found with this email.")
+        except Exception as e:
+            messages.error(request, "Login failed. Please try again.")
 
-        return redirect('login')
+    return render(request, 'testapp/login.html')
     return render(request, 'testapp/login.html')    
 
 def logout_view(request):

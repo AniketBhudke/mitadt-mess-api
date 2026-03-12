@@ -2,6 +2,10 @@ from django.urls import path
 from .api_views import *
 
 urlpatterns = [
+    # Authentication APIs
+    path('auth/login/', login_api, name='login_api'),
+    path('auth/register/', register_api, name='register_api'),
+    
     # Dish APIs
     path('dishes/', dish_list_api, name='dish_list_api'),
     path('raj-mess/', raj_mess_api, name='raj_mess_api'),
