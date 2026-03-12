@@ -125,6 +125,21 @@ def initialize_database(request):
             """)
             results.append("Created auth_user_user_permissions table")
             
+            # Create django_admin_log table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS django_admin_log (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    action_time DATETIME NOT NULL,
+                    object_id TEXT,
+                    object_repr VARCHAR(200) NOT NULL,
+                    action_flag SMALLINT UNSIGNED NOT NULL,
+                    change_message TEXT NOT NULL,
+                    content_type_id INTEGER,
+                    user_id INTEGER NOT NULL
+                );
+            """)
+            results.append("Created django_admin_log table")
+            
         except Exception as e:
             results.append(f"Manual table creation error: {str(e)}")
         
@@ -724,13 +739,20 @@ def login_view(request):
     return render(request, 'testapp/working_login.html')    
 
 def logout_view(request):
-    if request.method == 'POST':
-        user = request.user
-        user.delete()
-        logout(request)
+    """Logout user and redirect to home page"""
+    try:
+        if request.user.is_authenticated:
+            logout(request)
+            messages.success(request, "You have been logged out successfully.")
         return redirect('index')
-        
-    return render(request,'testapp/logput.html')
+    except Exception as e:
+        # If logout fails due to database issues, clear session manually
+        try:
+            request.session.flush()
+        except:
+            pass
+        messages.info(request, "Logged out (session cleared).")
+        return redirect('index')
 
 
 #after filling feedback then we have to submit the form using these 
