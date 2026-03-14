@@ -101,12 +101,41 @@ class WeeklysuggestionForm(forms.ModelForm):
         required=True
     )
 
+    # Explicitly define all meal fields as ChoiceFields
+    monday_breakfast = forms.ChoiceField(choices=[], required=True)
+    monday_lunch = forms.ChoiceField(choices=[], required=True)
+    monday_dinner = forms.ChoiceField(choices=[], required=True)
+    
+    tuesday_breakfast = forms.ChoiceField(choices=[], required=True)
+    tuesday_lunch = forms.ChoiceField(choices=[], required=True)
+    tuesday_dinner = forms.ChoiceField(choices=[], required=True)
+    
+    wednesday_breakfast = forms.ChoiceField(choices=[], required=True)
+    wednesday_lunch = forms.ChoiceField(choices=[], required=True)
+    wednesday_dinner = forms.ChoiceField(choices=[], required=True)
+    
+    thursday_breakfast = forms.ChoiceField(choices=[], required=True)
+    thursday_lunch = forms.ChoiceField(choices=[], required=True)
+    thursday_dinner = forms.ChoiceField(choices=[], required=True)
+    
+    friday_breakfast = forms.ChoiceField(choices=[], required=True)
+    friday_lunch = forms.ChoiceField(choices=[], required=True)
+    friday_dinner = forms.ChoiceField(choices=[], required=True)
+    
+    saturday_breakfast = forms.ChoiceField(choices=[], required=True)
+    saturday_lunch = forms.ChoiceField(choices=[], required=True)
+    saturday_dinner = forms.ChoiceField(choices=[], required=True)
+    
+    sunday_breakfast = forms.ChoiceField(choices=[], required=True)
+    sunday_lunch = forms.ChoiceField(choices=[], required=True)
+    sunday_dinner = forms.ChoiceField(choices=[], required=True)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Define dish choices for each meal type
         breakfast_choices = [
-            ('', 'Select Dish'),
+            ('', 'Select Breakfast Dish'),
             ("Kanda Poha", "Kanda Poha"),
             ("Fruit", "Fruit"), 
             ("Wada Sample", "Wada Sample"),
@@ -120,10 +149,12 @@ class WeeklysuggestionForm(forms.ModelForm):
             ("Aloo Paratha", "Aloo Paratha"),
             ("Poha", "Poha"),
             ("Upma", "Upma"),
+            ("Sandwich", "Sandwich"),
+            ("Pancakes", "Pancakes"),
         ]
 
         lunch_choices = [
-            ('', 'Select Dish'),
+            ('', 'Select Lunch Dish'),
             ("Bean Salad", "Bean Salad"),
             ("Rajma Masala", "Rajma Masala"),
             ("Peas Pulao", "Peas Pulao"),
@@ -143,10 +174,13 @@ class WeeklysuggestionForm(forms.ModelForm):
             ("Mixed Vegetables", "Mixed Vegetables"),
             ("Chole Rice", "Chole Rice"),
             ("Aloo Gobi", "Aloo Gobi"),
+            ("Pasta", "Pasta"),
+            ("Burger", "Burger"),
+            ("Fries", "Fries"),
         ]
 
         dinner_choices = [
-            ('', 'Select Dish'),
+            ('', 'Select Dinner Dish'),
             ("Green Salad", "Green Salad"),
             ("Mix Veg Curry", "Mix Veg Curry"),
             ("Plain Varan", "Plain Varan"),
@@ -166,31 +200,52 @@ class WeeklysuggestionForm(forms.ModelForm):
             ("Dal Tadka", "Dal Tadka"),
             ("Roti", "Roti"),
             ("Palak Paneer", "Palak Paneer"),
+            ("Pizza", "Pizza"),
+            ("Soup", "Soup"),
+            ("Grilled Chicken", "Grilled Chicken"),
         ]
 
         # Apply choices to all meal fields
-        meal_fields = [
+        breakfast_fields = [
             'monday_breakfast', 'tuesday_breakfast', 'wednesday_breakfast', 
-            'thursday_breakfast', 'friday_breakfast', 'saturday_breakfast', 'sunday_breakfast',
+            'thursday_breakfast', 'friday_breakfast', 'saturday_breakfast', 'sunday_breakfast'
+        ]
+        
+        lunch_fields = [
             'monday_lunch', 'tuesday_lunch', 'wednesday_lunch',
-            'thursday_lunch', 'friday_lunch', 'saturday_lunch', 'sunday_lunch',
+            'thursday_lunch', 'friday_lunch', 'saturday_lunch', 'sunday_lunch'
+        ]
+        
+        dinner_fields = [
             'monday_dinner', 'tuesday_dinner', 'wednesday_dinner',
-            'thursday_dinner', 'friday_dinner', 'saturday_dinner', 'sunday_dinner',
+            'thursday_dinner', 'friday_dinner', 'saturday_dinner', 'sunday_dinner'
         ]
 
-        for field_name in meal_fields:
+        # Set choices for breakfast fields
+        for field_name in breakfast_fields:
             if field_name in self.fields:
-                if 'breakfast' in field_name:
-                    self.fields[field_name].choices = breakfast_choices
-                elif 'lunch' in field_name:
-                    self.fields[field_name].choices = lunch_choices
-                elif 'dinner' in field_name:
-                    self.fields[field_name].choices = dinner_choices
-                
-                self.fields[field_name].required = True
+                self.fields[field_name].choices = breakfast_choices
                 self.fields[field_name].widget.attrs.update({
-                    "required": "required",
-                    "class": "form-select"
+                    "class": "form-select",
+                    "required": "required"
+                })
+
+        # Set choices for lunch fields
+        for field_name in lunch_fields:
+            if field_name in self.fields:
+                self.fields[field_name].choices = lunch_choices
+                self.fields[field_name].widget.attrs.update({
+                    "class": "form-select",
+                    "required": "required"
+                })
+
+        # Set choices for dinner fields
+        for field_name in dinner_fields:
+            if field_name in self.fields:
+                self.fields[field_name].choices = dinner_choices
+                self.fields[field_name].widget.attrs.update({
+                    "class": "form-select",
+                    "required": "required"
                 })
 
         # ✅ Student Fields Mandatory with placeholders

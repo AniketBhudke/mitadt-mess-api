@@ -71,7 +71,7 @@ label {
     margin-bottom: 5px;
     display: block;
 }
-.form-control, input[type="text"], select {
+.form-control, .form-select, input[type="text"], select {
     width: 100%;
     border-radius: 12px;
     border: 2px solid #ffc18f;
@@ -81,9 +81,10 @@ label {
     background: #fff;
     height: 45px;
 }
-.form-control:focus, input[type="text"]:focus {
+.form-control:focus, .form-select:focus, input[type="text"]:focus, select:focus {
     border-color: #ff6b3b;
     box-shadow: 0 0 6px rgba(255,123,73,0.6);
+    outline: none;
 }
 .day-box {
     background: #fffaf4;
@@ -188,29 +189,17 @@ button:active { transform: scale(0.98); }
 
             <div class="mb-2">
                 <label>Breakfast</label>
-                {% if item.bf %}
-                    {{ item.bf }}
-                {% else %}
-                    <input type="text" name="{{ item.bf_name }}" class="form-control" placeholder="Enter breakfast">
-                {% endif %}
+                {{ item.bf }}
             </div>
 
             <div class="mb-2">
                 <label>Lunch</label>
-                {% if item.lf %}
-                    {{ item.lf }}
-                {% else %}
-                    <input type="text" name="{{ item.lf_name }}" class="form-control" placeholder="Enter lunch">
-                {% endif %}
+                {{ item.lf }}
             </div>
 
             <div class="mb-2">
                 <label>Dinner</label>
-                {% if item.df %}
-                    {{ item.df }}
-                {% else %}
-                    <input type="text" name="{{ item.df_name }}" class="form-control" placeholder="Enter dinner">
-                {% endif %}
+                {{ item.df }}
             </div>
         </div>
         {% endfor %}
