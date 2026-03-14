@@ -216,7 +216,17 @@ def initialize_database(request):
 
 def index_view(request):
     """Main index page"""
-    return render(request, 'testapp/index.html')
+    context = {
+        'user': request.user if request.user.is_authenticated else None,
+        'is_authenticated': request.user.is_authenticated
+    }
+    
+    # Add cache control headers to prevent browser caching issues
+    response = render(request, 'testapp/index.html', context)
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+    return response
 
 #manet page 
 from django.shortcuts import render, get_object_or_404
@@ -731,8 +741,15 @@ def login_view(request):
                 print(f"DEBUG: Password correct for user: {user.username}")
                 try:
                     login(request, user)
-                    messages.success(request, "Logged in successfully.")
-                    return redirect('index')
+                    messages.success(request, f"Welcome back, {user.username}!")
+                    
+                    # Clear any password manager interference
+                    response = redirect('index')
+                    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+                    response['Pragma'] = 'no-cache'
+                    response['Expires'] = '0'
+                    return response
+                    
                 except Exception as session_error:
                     # If session login fails, show success message but redirect to a simple page
                     messages.success(request, f"Login successful for {user.username}! (Session error bypassed)")

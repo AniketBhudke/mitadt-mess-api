@@ -205,6 +205,84 @@
     if (!inside) closeDrawer();
   });
 })();
+
+// Handle browser password manager popups after login
+(function() {
+    // Function to dismiss browser password manager popups
+    function dismissPasswordManagerPopups() {
+        // Try to find and close Chrome password manager popups
+        const popups = document.querySelectorAll('[role="dialog"], .password-manager-popup, [data-testid="password-manager"]');
+        popups.forEach(popup => {
+            if (popup.textContent.includes('password') || popup.textContent.includes('breach')) {
+                const closeBtn = popup.querySelector('button[aria-label="Close"], .close, [data-testid="close"]');
+                if (closeBtn) closeBtn.click();
+            }
+        });
+        
+        // Also try to dismiss any overlay popups
+        const overlays = document.querySelectorAll('.overlay, [role="presentation"]');
+        overlays.forEach(overlay => {
+            if (overlay.style.zIndex > 1000) {
+                overlay.style.display = 'none';
+            }
+        });
+    }
+    
+    // Run dismissal function after page load
+    window.addEventListener('load', function() {
+        setTimeout(dismissPasswordManagerPopups, 1000);
+        setTimeout(dismissPasswordManagerPopups, 3000);
+    });
+    
+    // Also run when DOM changes (in case popup appears later)
+    if (window.MutationObserver) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.addedNodes.length > 0) {
+                    setTimeout(dismissPasswordManagerPopups, 500);
+                }
+            });
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+    
+    // Show welcome message for logged-in users
+    {% if user.is_authenticated %}
+        setTimeout(function() {
+            const welcomeMsg = document.createElement('div');
+            welcomeMsg.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-family: 'Segoe UI', sans-serif;
+                font-size: 14px;
+                max-width: 300px;
+            `;
+            welcomeMsg.innerHTML = `
+                <strong>Welcome back, {{ user.username }}!</strong><br>
+                <small>You are successfully logged in.</small>
+            `;
+            document.body.appendChild(welcomeMsg);
+            
+            // Auto-remove after 4 seconds
+            setTimeout(() => {
+                welcomeMsg.style.opacity = '0';
+                welcomeMsg.style.transition = 'opacity 0.5s';
+                setTimeout(() => welcomeMsg.remove(), 500);
+            }, 4000);
+        }, 2000);
+    {% endif %}
+})();
 </script>
 </body>
 </html>

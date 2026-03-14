@@ -243,6 +243,9 @@
             submitBtn.disabled = true;
             loadingDiv.style.display = 'block';
             
+            // Add form attributes to prevent password manager interference
+            this.setAttribute('autocomplete', 'off');
+            
             // Re-enable after 5 seconds in case of issues
             setTimeout(() => {
                 submitBtn.disabled = false;
@@ -253,7 +256,24 @@
         // Clear form on page load to prevent autofill
         window.addEventListener('load', function() {
             document.getElementById('loginForm').reset();
+            
+            // Additional password manager interference prevention
+            const form = document.getElementById('loginForm');
+            form.setAttribute('autocomplete', 'off');
+            
+            // Disable browser password saving suggestions
+            const inputs = form.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.setAttribute('autocomplete', 'off');
+                input.setAttribute('data-lpignore', 'true');
+            });
         });
+        
+        // Handle successful login redirect
+        if (window.location.search.includes('login=success')) {
+            // Clear the URL parameter
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
     </script>
 </body>
 </html>
