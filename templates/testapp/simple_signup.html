@@ -44,6 +44,30 @@
             border-color: #007bff;
             outline: none;
         }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+            font-size: 18px;
+            user-select: none;
+            transition: color 0.3s ease;
+        }
+        
+        .password-toggle:hover {
+            color: #007bff;
+        }
+        
+        .password-container input {
+            padding-right: 45px;
+        }
         .btn {
             width: 100%;
             padding: 12px;
@@ -102,12 +126,18 @@
             
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required autocomplete="new-password">
+                <div class="password-container">
+                    <input type="password" id="password" name="password" required autocomplete="new-password">
+                    <span class="password-toggle" onclick="togglePassword('password', this)">👁️</span>
+                </div>
             </div>
             
             <div class="form-group">
                 <label for="confirm">Confirm Password:</label>
-                <input type="password" id="confirm" name="confirm" required autocomplete="new-password">
+                <div class="password-container">
+                    <input type="password" id="confirm" name="confirm" required autocomplete="new-password">
+                    <span class="password-toggle" onclick="togglePassword('confirm', this)">👁️</span>
+                </div>
             </div>
             
             <button type="submit" class="btn">Create Account</button>
@@ -120,6 +150,15 @@
     </div>
 
     <script>
+        // Password visibility toggle function
+        function togglePassword(inputId, toggleElement) {
+            const passwordInput = document.getElementById(inputId);
+            const isPassword = passwordInput.type === 'password';
+            
+            passwordInput.type = isPassword ? 'text' : 'password';
+            toggleElement.textContent = isPassword ? '🙈' : '👁️';
+        }
+        
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             

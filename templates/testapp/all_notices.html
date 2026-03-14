@@ -13,6 +13,25 @@
     .notice-meta { color:#888; font-size:14px; }
     .back-btn { border-radius: 10px; }
     .attachment-link { margin-top:8px; display:inline-block; }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body { padding: 20px 0; }
+      .container { padding: 0 15px; }
+      .d-flex { flex-direction: column; gap: 15px; align-items: flex-start !important; }
+      .back-btn { align-self: flex-end; }
+      .notice-card { padding: 15px; }
+      h2 { font-size: 24px; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 15px 0; }
+      .container { padding: 0 10px; }
+      .notice-card { padding: 12px; margin-bottom: 12px; }
+      h2 { font-size: 20px; }
+      .notice-title { font-size: 16px; }
+      .back-btn { font-size: 14px; padding: 6px 12px; }
+    }
   </style>
 </head>
 <body>

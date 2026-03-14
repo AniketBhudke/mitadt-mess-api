@@ -9,10 +9,12 @@
 <style>
 body { font-family: "Poppins", sans-serif; background: #fffaf3; margin:0; }
 .container{max-width:1000px;margin:auto;padding:20px}
-.mess-header{text-align:center;font-weight:700;color:#b3541e;margin-bottom:20px}
-.select-box{padding:8px 12px;border-radius:6px;border:1px solid #d68642;background:#fff7e6}
-.view-btn{background:#d68642;border:none;padding:8px 18px;border-radius:8px;color:white;font-weight:bold;cursor:pointer}
-.section-title{font-size:26px;font-weight:700;color:#d26a24;border-bottom:2px dotted #ffae6d;margin-bottom:20px}
+.mess-header{text-align:center;font-weight:700;color:#b3541e;margin-bottom:20px;font-size:28px}
+.form-controls{display:flex;gap:15px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:25px}
+.select-box{padding:8px 12px;border-radius:6px;border:1px solid #d68642;background:#fff7e6;min-width:120px}
+.view-btn{background:#d68642;border:none;padding:8px 18px;border-radius:8px;color:white;font-weight:bold;cursor:pointer;transition:0.3s}
+.view-btn:hover{background:#b8541a;transform:translateY(-2px)}
+.section-title{font-size:26px;font-weight:700;color:#d26a24;border-bottom:2px dotted #ffae6d;margin-bottom:20px;text-align:center}
 .menu-container{display:flex;flex-wrap:wrap;gap:25px;justify-content:center}
 .menu-card{background:#fffdf8;border-radius:16px;padding:15px;box-shadow:0 4px 10px rgba(255,160,60,0.25);text-align:center;width:280px;transition:0.3s}
 .menu-card:hover{transform:translateY(-5px)}
@@ -31,6 +33,29 @@ body { font-family: "Poppins", sans-serif; background: #fffaf3; margin:0; }
 .star.inactive { color:#bdbdbd; }
 
 .small-note{font-size:13px;color:#666;margin-top:6px}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container{padding:15px}
+  .mess-header{font-size:24px;margin-bottom:15px}
+  .form-controls{flex-direction:column;gap:10px;align-items:stretch}
+  .select-box{width:100%;max-width:300px;margin:0 auto}
+  .view-btn{width:100%;max-width:300px;margin:0 auto}
+  .section-title{font-size:22px}
+  .menu-card{width:100%;max-width:350px;margin:0 auto}
+  .menu-container{gap:20px}
+}
+
+@media (max-width: 480px) {
+  .container{padding:10px}
+  .mess-header{font-size:20px}
+  .section-title{font-size:18px}
+  .menu-card{padding:12px}
+  .menu-card img{height:140px}
+  .dish-name{font-size:16px}
+  .star{font-size:24px;margin:0 2px}
+  .rating-text{font-size:13px}
+}
 </style>
 </head>
 
@@ -39,7 +64,7 @@ body { font-family: "Poppins", sans-serif; background: #fffaf3; margin:0; }
 <div class="container">
   <h2 class="mess-header">🥗 Raj Mess Weekly Menu 🍽️</h2>
 
-  <form method="get" class="d-flex gap-3 justify-content-center mt-3 mb-3">
+  <form method="get" class="form-controls">
       <label><b>Day:</b></label>
       <select name="day" class="select-box">
           <option value="">--Select Day--</option>

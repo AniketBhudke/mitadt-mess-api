@@ -59,23 +59,56 @@ class WeeklyFeedbackAdmin(admin.ModelAdmin):
     list_per_page = 20
 
 from django.contrib import admin
-from .models import MessFeedback
+from .models import MessFeedback, FeedbackPeriod
 
 class MessFeedbackAdmin(admin.ModelAdmin):
     list_display = (
         "full_name", "email", "department", "year", "mess_name", 
-        "visit_date", "overall_rating", "submitted_at"
+        "visit_date", "overall_rating", "submitted_at", "feedback_period_start", "feedback_period_end"
     )
 
     search_fields = ("full_name", "email", "department", "mess_name")
 
-    list_filter = ("year", "mess_name", "visit_date", "overall_rating")
+    list_filter = ("year", "mess_name", "visit_date", "overall_rating", "feedback_period_start")
 
     ordering = ("-submitted_at",)  # latest first
 
-    readonly_fields = ("submitted_at",)  # cannot edit timestamp
+    readonly_fields = ("submitted_at", "feedback_period_start", "feedback_period_end")  # cannot edit timestamp
 
 admin.site.register(MessFeedback, MessFeedbackAdmin)
+
+
+class FeedbackPeriodAdmin(admin.ModelAdmin):
+    list_display = (
+        "name", "start_date", "end_date", "submission_deadline", 
+        "is_active", "created_at"
+    )
+    
+    search_fields = ("name",)
+    
+    list_filter = ("is_active", "start_date", "end_date", "submission_deadline")
+    
+    ordering = ("-start_date",)
+    
+    readonly_fields = ("created_at",)
+    
+    fieldsets = (
+        ("Period Information", {
+            "fields": ("name", "start_date", "end_date", "submission_deadline")
+        }),
+        ("Status", {
+            "fields": ("is_active",)
+        }),
+        ("Metadata", {
+            "fields": ("created_at",),
+            "classes": ("collapse",)
+        })
+    )
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).order_by('-start_date')
+
+admin.site.register(FeedbackPeriod, FeedbackPeriodAdmin)
 
 from django.contrib import admin
 from .models import Notice, Complaint

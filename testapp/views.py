@@ -1332,17 +1332,81 @@ def mess_payment_select(request):
 
 from django.shortcuts import render, redirect
 from .forms import MessFeedbackForm
+from .models import FeedbackPeriod, MessFeedback
+from django.utils import timezone
+from django.db import IntegrityError
 
 def feedback_form(request):
+    # Get current feedback period
+    current_period = FeedbackPeriod.get_current_period()
+    
+    # Check if feedback collection is currently active
+    if not current_period or not current_period.is_submission_allowed():
+        messages.error(request, "Feedback submission is currently not available. Please check back during the active feedback period.")
+        return render(request, "testapp/feedback.html", {
+            "form": None,
+            "period_closed": True,
+            "current_period": current_period
+        })
+    
     if request.method == "POST":
         form = MessFeedbackForm(request.POST)
         if form.is_valid():
-            form.save()
-            return render(request, "testapp/thankyou.html")
+            try:
+                # Check if user already submitted feedback for this period
+                email = form.cleaned_data['email']
+                existing_feedback = MessFeedback.objects.filter(
+                    email=email,
+                    feedback_period_start=current_period.start_date,
+                    feedback_period_end=current_period.end_date
+                ).exists()
+                
+                if existing_feedback:
+                    messages.error(request, f"You have already submitted feedback for the period {current_period.name}. Duplicate submissions are not allowed.")
+                    return render(request, "testapp/feedback.html", {
+                        "form": form,
+                        "current_period": current_period,
+                        "already_submitted": True
+                    })
+                
+                # Save feedback with period information
+                feedback = form.save(commit=False)
+                feedback.feedback_period_start = current_period.start_date
+                feedback.feedback_period_end = current_period.end_date
+                feedback.save()
+                
+                # Redirect to success page
+                return render(request, "testapp/feedback_success.html", {
+                    "period": current_period,
+                    "next_period_info": "Next feedback period will be announced soon."
+                })
+                
+            except IntegrityError:
+                messages.error(request, "You have already submitted feedback for this period. Duplicate submissions are not allowed.")
+                return render(request, "testapp/feedback.html", {
+                    "form": form,
+                    "current_period": current_period,
+                    "already_submitted": True
+                })
     else:
+        # Check if user already submitted (if email is in session or user is logged in)
         form = MessFeedbackForm()
+        already_submitted = False
+        
+        # If user is logged in, check if they already submitted
+        if request.user.is_authenticated:
+            existing_feedback = MessFeedback.objects.filter(
+                email=request.user.email,
+                feedback_period_start=current_period.start_date,
+                feedback_period_end=current_period.end_date
+            ).exists()
+            already_submitted = existing_feedback
 
-    return render(request, "testapp/feedback.html", {"form": form})
+    return render(request, "testapp/feedback.html", {
+        "form": form,
+        "current_period": current_period,
+        "already_submitted": already_submitted
+    })
 
 def thank_you(request):
     return render(request, "thank_you.html")

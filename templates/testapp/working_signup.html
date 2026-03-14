@@ -30,6 +30,27 @@
             max-width: 400px;
         }
         
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body { padding: 15px; }
+            .signup-container { 
+                padding: 30px 25px; 
+                max-width: 100%;
+                margin: 0 auto;
+            }
+            .logo h1 { font-size: 24px; }
+            .form-group input { padding: 12px; font-size: 14px; }
+            .btn-signup { padding: 12px; font-size: 14px; }
+        }
+        
+        @media (max-width: 480px) {
+            .signup-container { padding: 25px 20px; }
+            .logo h1 { font-size: 22px; }
+            .logo p { font-size: 12px; }
+            .form-group input { padding: 10px; }
+            .btn-signup { padding: 10px; }
+        }
+        
         .logo {
             text-align: center;
             margin-bottom: 30px;
@@ -72,6 +93,30 @@
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+            font-size: 18px;
+            user-select: none;
+            transition: color 0.3s ease;
+        }
+        
+        .password-toggle:hover {
+            color: #667eea;
+        }
+        
+        .password-container input {
+            padding-right: 45px;
         }
         
         .btn-signup {
@@ -195,26 +240,32 @@
             
             <div class="form-group">
                 <label for="newPassword">Password</label>
-                <input 
-                    type="password" 
-                    id="newPassword" 
-                    name="password" 
-                    autocomplete="new-password"
-                    required
-                    placeholder="Create a password"
-                >
+                <div class="password-container">
+                    <input 
+                        type="password" 
+                        id="newPassword" 
+                        name="password" 
+                        autocomplete="new-password"
+                        required
+                        placeholder="Create a password"
+                    >
+                    <span class="password-toggle" onclick="togglePassword('newPassword', this)">👁️</span>
+                </div>
             </div>
             
             <div class="form-group">
                 <label for="confirmPassword">Confirm Password</label>
-                <input 
-                    type="password" 
-                    id="confirmPassword" 
-                    name="confirm" 
-                    autocomplete="new-password"
-                    required
-                    placeholder="Confirm your password"
-                >
+                <div class="password-container">
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirm" 
+                        autocomplete="new-password"
+                        required
+                        placeholder="Confirm your password"
+                    >
+                    <span class="password-toggle" onclick="togglePassword('confirmPassword', this)">👁️</span>
+                </div>
             </div>
             
             <button type="submit" class="btn-signup" id="submitBtn">
@@ -233,6 +284,15 @@
     </div>
 
     <script>
+        // Password visibility toggle function
+        function togglePassword(inputId, toggleElement) {
+            const passwordInput = document.getElementById(inputId);
+            const isPassword = passwordInput.type === 'password';
+            
+            passwordInput.type = isPassword ? 'text' : 'password';
+            toggleElement.textContent = isPassword ? '🙈' : '👁️';
+        }
+        
         // Prevent browser autofill
         setTimeout(function() {
             document.getElementById('newUsername').value = '';

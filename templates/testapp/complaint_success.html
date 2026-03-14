@@ -77,6 +77,57 @@
       0% { transform: scale(0.5); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
     }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px;
+      }
+      
+      .success-card {
+        padding: 30px 35px;
+        max-width: 90%;
+      }
+      
+      h2 {
+        font-size: 24px;
+      }
+      
+      .checkmark {
+        font-size: 60px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 15px;
+      }
+      
+      .success-card {
+        padding: 25px 20px;
+        border-radius: 15px;
+      }
+      
+      h2 {
+        font-size: 22px;
+        margin-bottom: 8px;
+      }
+      
+      .checkmark {
+        font-size: 50px;
+        margin-bottom: 12px;
+      }
+      
+      p {
+        font-size: 15px;
+        margin-bottom: 20px;
+      }
+      
+      a.btn-home {
+        font-size: 15px;
+        padding: 10px 22px;
+      }
+    }
   </style>
 </head>
 

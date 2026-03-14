@@ -18,6 +18,38 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body { padding: 15px; }
+            .container { 
+                padding: 25px 20px; 
+                margin: 0;
+            }
+            h1 { font-size: 24px; }
+            .test-section { 
+                padding: 12px; 
+                margin: 15px 0; 
+            }
+            button { 
+                padding: 8px 15px; 
+                font-size: 14px; 
+                margin: 3px; 
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container { padding: 20px 15px; }
+            h1 { font-size: 22px; }
+            .test-section { padding: 10px; }
+            button { 
+                padding: 6px 12px; 
+                font-size: 13px; 
+                display: block;
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
         .test-section {
             margin: 20px 0;
             padding: 15px;

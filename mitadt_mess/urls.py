@@ -30,6 +30,7 @@ urlpatterns = [
     
     # Frontend URLs
     path('', views.index_view, name='index'),
+    path('responsive-test/', lambda request: render(request, 'testapp/responsive_test.html'), name='responsive_test'),
     path('signup/', views.simple_signup_view, name='signup'),  # Use working signup page
     path('old-signup/', views.sign_up_views, name='old_signup'),  # Keep old one as backup
     path('test-signup/', lambda request: render(request, 'testapp/signup_test.html'), name='test_signup'),

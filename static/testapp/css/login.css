@@ -90,3 +90,49 @@ body {
     color: #c0392b;
     margin-bottom: 10px;
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 20px;
+        align-items: flex-start;
+        padding-top: 50px;
+    }
+    
+    .auth_form {
+        width: 100%;
+        max-width: 400px;
+        padding: 25px;
+    }
+    
+    .auth_form h2 {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 15px;
+        padding-top: 30px;
+    }
+    
+    .auth_form {
+        padding: 20px;
+        border-radius: 12px;
+    }
+    
+    .auth_form h2 {
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+    
+    .auth_form input {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .auth_form button {
+        padding: 10px;
+        font-size: 15px;
+    }
+}

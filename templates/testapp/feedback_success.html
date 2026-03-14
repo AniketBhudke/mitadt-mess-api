@@ -6,11 +6,159 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feedback Submitted</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8ff);
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        
+        .success-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-top: 6px solid #28a745;
+            max-width: 600px;
+            width: 90%;
+        }
+        
+        .checkmark {
+            font-size: 60px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: #28a745;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .period-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        
+        .period-info h4 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .period-info p {
+            color: #6c757d;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .btn-home {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.3s;
+            margin: 10px;
+        }
+        
+        .btn-home:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .next-period {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .success-container {
+                padding: 30px 25px;
+                margin: 20px;
+            }
+            
+            h2 {
+                font-size: 24px;
+            }
+            
+            .checkmark {
+                font-size: 50px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .success-container {
+                padding: 25px 20px;
+                margin: 15px;
+                border-radius: 15px;
+            }
+            
+            h2 {
+                font-size: 20px;
+            }
+            
+            .checkmark {
+                font-size: 45px;
+            }
+            
+            .btn-home {
+                padding: 10px 20px;
+                font-size: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="container mt-5 text-center p-5 shadow-lg rounded" style="background-color: #f8fff7;">
-    <h2 class="text-success mb-3">✅ Thank you for your feedback!</h2>
-    <p class="text-muted">Your weekly dish suggestions have been successfully recorded.</p>
+<div class="success-container">
+    <div class="checkmark">✅</div>
+    <h2>Thank you for your feedback!</h2>
+    <p class="text-muted">Your feedback has been successfully submitted and recorded.</p>
     
-    <a href="/" class="btn btn-success mt-3 px-4">🏠 Bac
+    {% if period %}
+    <div class="period-info">
+        <h4>📅 Feedback Period: {{ period.name }}</h4>
+        <p><strong>Week Duration:</strong> {{ period.start_date|date:"M d, Y" }} to {{ period.end_date|date:"M d, Y" }}</p>
+        <p><strong>Submission Deadline:</strong> {{ period.submission_deadline|date:"M d, Y" }}</p>
+        <p><strong>Submitted:</strong> {{ period.submitted_at|date:"M d, Y H:i" }}</p>
+    </div>
+    {% endif %}
+    
+    <div style="margin: 25px 0;">
+        <p><strong>Important:</strong> You cannot submit another feedback for this period. Duplicate submissions are not allowed.</p>
+    </div>
+    
+    {% if next_period_info %}
+    <div class="next-period">
+        <strong>📢 Next Feedback Period:</strong><br>
+        {{ next_period_info }}
+    </div>
+    {% endif %}
+    
+    <div style="margin-top: 30px;">
+        <a href="/" class="btn-home">🏠 Back to Home</a>
+        <a href="/feedback/" class="btn-home" style="background: #6c757d;">📝 View Feedback Form</a>
+    </div>
+</div>
+
+</body>
+</html>

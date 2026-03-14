@@ -22,6 +22,61 @@ body {
     max-width: 950px;
     border: 1px solid rgba(255, 137, 78, 0.3);
 }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 25px 20px;
+        margin: 15px;
+        border-radius: 15px;
+    }
+    h2 { font-size: 28px; }
+    .week-info-container { 
+        flex-direction: column; 
+        gap: 15px; 
+    }
+    .week-card { 
+        min-width: 100%; 
+        text-align: center; 
+    }
+    .day-box { 
+        padding: 15px; 
+        margin-top: 10px; 
+    }
+    .day-title { font-size: 16px; }
+    .form-control, .form-select { 
+        height: 40px; 
+        font-size: 14px; 
+    }
+    button { 
+        padding: 12px 30px; 
+        font-size: 16px; 
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 20px 15px;
+        margin: 10px;
+    }
+    h2 { font-size: 24px; }
+    .subtitle { font-size: 13px; }
+    .week-card { padding: 10px 12px; }
+    .week-card h5 { font-size: 14px; }
+    .week-card p { font-size: 12px; }
+    .day-box { padding: 12px; }
+    .day-title { font-size: 15px; }
+    .form-control, .form-select { 
+        height: 38px; 
+        font-size: 13px; 
+        padding: 8px 10px; 
+    }
+    label { font-size: 13px; }
+    button { 
+        padding: 10px 25px; 
+        font-size: 14px; 
+    }
+}
 h2 {
     font-family: "Poppins", sans-serif;
     color: #ff5733;

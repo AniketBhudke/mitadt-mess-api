@@ -17,6 +17,32 @@
     .qty-display { font-size: 18px; font-weight: bold; padding: 5px 15px; background: #f1f1f1; border-radius: 8px; }
     .summary-box { margin-top: 20px; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
     .pay-btn { width: 100%; padding: 12px; background: #0062cc; color: white; border: none; border-radius: 10px; cursor: pointer; margin-top: 10px; font-size: 16px; }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container { 
+            width: 90%; 
+            max-width: 450px; 
+            margin: 30px auto; 
+            padding: 20px; 
+        }
+        h2 { font-size: 24px; }
+    }
+
+    @media (max-width: 480px) {
+        .container { 
+            width: 95%; 
+            margin: 20px auto; 
+            padding: 18px; 
+            border-radius: 12px;
+        }
+        h2 { font-size: 20px; margin-bottom: 15px; }
+        select { padding: 8px; font-size: 14px; }
+        .qty-btn { width: 32px; height: 32px; font-size: 18px; }
+        .qty-display { font-size: 16px; padding: 4px 12px; }
+        .summary-box { padding: 15px; }
+        .pay-btn { padding: 10px; font-size: 15px; }
+    }
 </style>
 
 </head>
