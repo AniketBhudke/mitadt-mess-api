@@ -462,7 +462,7 @@ def user_profile_api(request):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def users_list_api(request):
     """List all users (for debugging)"""
     try:
@@ -473,3 +473,86 @@ def users_list_api(request):
         })
     except Exception as e:
         return Response({'error': str(e)}, status=500)
+
+
+@api_view(['POST'])
+def forgot_password_api(request):
+    """Forgot password API endpoint"""
+    email_or_username = request.data.get('email_or_username', '').strip()
+    
+    if not email_or_username:
+        return Response({"error": "Email or username is required"}, status=400)
+    
+    try:
+        # Try to find user by email first
+        user = None
+        if '@' in email_or_username:
+            try:
+                user = User.objects.get(email=email_or_username)
+            except User.DoesNotExist:
+                pass
+        
+        # If not found by email, try username
+        if user is None:
+            try:
+                user = User.objects.get(username=email_or_username)
+            except User.DoesNotExist:
+                pass
+        
+        if user is None:
+            return Response({"error": "No account found with this email/username"}, status=400)
+        
+        # Generate reset token
+        from django.contrib.auth.tokens import default_token_generator
+        from django.utils.http import urlsafe_base64_encode
+        from django.utils.encoding import force_bytes
+        
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        
+        # For API, return the reset link
+        reset_link = f"/reset-password/{uid}/{token}/"
+        
+        return Response({
+            "message": "Password reset link generated",
+            "reset_link": reset_link,
+            "note": "In production, this would be sent via email"
+        })
+        
+    except Exception as e:
+        return Response({"error": "Failed to process request"}, status=400)
+
+
+@api_view(['POST'])
+def password_reset_confirm_api(request):
+    """Password reset confirmation API endpoint"""
+    uidb64 = request.data.get('uidb64', '')
+    token = request.data.get('token', '')
+    new_password = request.data.get('new_password', '')
+    
+    if not all([uidb64, token, new_password]):
+        return Response({"error": "uidb64, token, and new_password are required"}, status=400)
+    
+    try:
+        from django.utils.http import urlsafe_base64_decode
+        from django.utils.encoding import force_str
+        from django.contrib.auth.tokens import default_token_generator
+        
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+        
+        if default_token_generator.check_token(user, token):
+            if len(new_password) < 6:
+                return Response({"error": "Password must be at least 6 characters long"}, status=400)
+            
+            user.set_password(new_password)
+            user.save()
+            
+            return Response({"message": "Password reset successful"})
+        else:
+            return Response({"error": "Invalid or expired token"}, status=400)
+            
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        return Response({"error": "Invalid reset link"}, status=400)
+    except Exception as e:
+        return Response({"error": "Failed to reset password"}, status=400)

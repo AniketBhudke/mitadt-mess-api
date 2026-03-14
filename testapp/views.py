@@ -5,6 +5,14 @@ from django.contrib import messages
 from django.contrib.auth import  login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.management import call_command
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
+from django.conf import settings
+from django.urls import reverse
+import secrets
+import string
 
 def initialize_database(request):
     """Initialize database tables - for deployment debugging"""
@@ -754,6 +762,105 @@ def logout_view(request):
             pass
         messages.info(request, "Logged out (session cleared).")
         return redirect('index')
+
+
+def forgot_password_view(request):
+    """Forgot password page"""
+    if request.method == 'POST':
+        email_or_username = request.POST.get('email_or_username', '').strip()
+        
+        if not email_or_username:
+            messages.error(request, "Please provide your email or username.")
+            return render(request, 'testapp/forgot_password.html')
+        
+        try:
+            # Try to find user by email first
+            user = None
+            if '@' in email_or_username:
+                try:
+                    user = User.objects.get(email=email_or_username)
+                except User.DoesNotExist:
+                    pass
+            
+            # If not found by email, try username
+            if user is None:
+                try:
+                    user = User.objects.get(username=email_or_username)
+                except User.DoesNotExist:
+                    pass
+            
+            if user is None:
+                messages.error(request, "No account found with this email/username.")
+                return render(request, 'testapp/forgot_password.html')
+            
+            # Generate reset token
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            
+            # Create reset link
+            reset_link = request.build_absolute_uri(
+                reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+            )
+            
+            # For development/demo purposes, show the reset link instead of sending email
+            # In production, you would send this via email
+            messages.success(request, f"Password reset link: {reset_link}")
+            
+            # Uncomment below for actual email sending in production:
+            # try:
+            #     send_mail(
+            #         'Password Reset - MIT ADT Mess',
+            #         f'Click this link to reset your password: {reset_link}',
+            #         settings.DEFAULT_FROM_EMAIL,
+            #         [user.email],
+            #         fail_silently=False,
+            #     )
+            #     messages.success(request, "Password reset link sent to your email.")
+            # except Exception as e:
+            #     messages.error(request, "Failed to send email. Please try again.")
+            
+        except Exception as e:
+            messages.error(request, "An error occurred. Please try again.")
+    
+    return render(request, 'testapp/forgot_password.html')
+
+
+def password_reset_confirm_view(request, uidb64, token):
+    """Password reset confirmation page"""
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            new_password = request.POST.get('new_password', '')
+            confirm_password = request.POST.get('confirm_password', '')
+            
+            if not new_password or not confirm_password:
+                messages.error(request, "Please fill in both password fields.")
+                return render(request, 'testapp/password_reset_confirm.html', {'valid_link': True})
+            
+            if new_password != confirm_password:
+                messages.error(request, "Passwords do not match.")
+                return render(request, 'testapp/password_reset_confirm.html', {'valid_link': True})
+            
+            if len(new_password) < 6:
+                messages.error(request, "Password must be at least 6 characters long.")
+                return render(request, 'testapp/password_reset_confirm.html', {'valid_link': True})
+            
+            # Set new password
+            user.set_password(new_password)
+            user.save()
+            
+            messages.success(request, "Password reset successful! You can now login with your new password.")
+            return redirect('login')
+        
+        return render(request, 'testapp/password_reset_confirm.html', {'valid_link': True})
+    else:
+        messages.error(request, "Invalid or expired password reset link.")
+        return render(request, 'testapp/password_reset_confirm.html', {'valid_link': False})
 
 
 #after filling feedback then we have to submit the form using these 

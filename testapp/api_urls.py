@@ -5,6 +5,8 @@ urlpatterns = [
     # Authentication APIs
     path('auth/login/', login_api, name='login_api'),
     path('auth/register/', register_api, name='register_api'),
+    path('auth/forgot-password/', forgot_password_api, name='forgot_password_api'),
+    path('auth/reset-password/', password_reset_confirm_api, name='password_reset_confirm_api'),
     
     # Dish APIs
     path('dishes/', dish_list_api, name='dish_list_api'),
