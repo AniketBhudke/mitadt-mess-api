@@ -207,6 +207,7 @@ def initialize_database(request):
 # Create your views here.
 
 def index_view(request):
+    """Main index page"""
     return render(request, 'testapp/index.html')
 
 #manet page 

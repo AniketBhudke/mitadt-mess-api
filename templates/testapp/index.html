@@ -27,11 +27,14 @@
 
     <!-- AUTH LINKS (pushed to right by margin-left:auto) -->
     <div class="auth-links">
-      {% if user.is_authenticated %}
+      {% if safe_user_authenticated %}
         <a href="{% url 'logout' %}" class="auth-link">Logout</a>
       {% else %}
         <a href="{% url 'login' %}" class="auth-link">Login</a>
         <a href="{% url 'signup' %}" class="auth-link auth-signup">Sign Up</a>
+      {% endif %}
+      {% if auth_error %}
+        <a href="/init-db/" class="auth-link" style="background: #dc3545; color: white;">Fix Database</a>
       {% endif %}
     </div>
 
