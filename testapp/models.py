@@ -284,6 +284,19 @@ class FeedbackPeriod(models.Model):
         from django.utils import timezone
         today = timezone.now().date()
         return self.is_active and today <= self.submission_deadline
+    
+    def clean(self):
+        """Validate model data"""
+        from django.core.exceptions import ValidationError
+        if self.start_date and self.end_date and self.start_date > self.end_date:
+            raise ValidationError("Start date cannot be after end date.")
+        if self.submission_deadline and self.end_date and self.submission_deadline > self.end_date:
+            raise ValidationError("Submission deadline cannot be after end date.")
+    
+    class Meta:
+        ordering = ['-start_date']
+        verbose_name = "Feedback Period"
+        verbose_name_plural = "Feedback Periods"
 
 
 class Notice(models.Model):

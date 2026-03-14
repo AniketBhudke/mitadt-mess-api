@@ -1335,6 +1335,7 @@ from .forms import MessFeedbackForm
 from .models import FeedbackPeriod, MessFeedback
 from django.utils import timezone
 from django.db import IntegrityError
+from django.contrib import messages
 
 def feedback_form(request):
     # Get current feedback period
@@ -1348,6 +1349,18 @@ def feedback_form(request):
             "period_closed": True,
             "current_period": current_period
         })
+    
+    # Initialize variables
+    already_submitted = False
+    
+    # Check if user already submitted (for GET requests)
+    if request.user.is_authenticated and hasattr(request.user, 'email') and request.user.email:
+        existing_feedback = MessFeedback.objects.filter(
+            email=request.user.email,
+            feedback_period_start=current_period.start_date,
+            feedback_period_end=current_period.end_date
+        ).exists()
+        already_submitted = existing_feedback
     
     if request.method == "POST":
         form = MessFeedbackForm(request.POST)
@@ -1381,26 +1394,25 @@ def feedback_form(request):
                     "next_period_info": "Next feedback period will be announced soon."
                 })
                 
-            except IntegrityError:
+            except IntegrityError as e:
                 messages.error(request, "You have already submitted feedback for this period. Duplicate submissions are not allowed.")
                 return render(request, "testapp/feedback.html", {
                     "form": form,
                     "current_period": current_period,
                     "already_submitted": True
                 })
+            except Exception as e:
+                messages.error(request, f"An error occurred while submitting your feedback. Please try again. Error: {str(e)}")
+                return render(request, "testapp/feedback.html", {
+                    "form": form,
+                    "current_period": current_period,
+                    "already_submitted": False
+                })
+        else:
+            # Form validation errors
+            messages.error(request, "Please correct the errors below and try again.")
     else:
-        # Check if user already submitted (if email is in session or user is logged in)
         form = MessFeedbackForm()
-        already_submitted = False
-        
-        # If user is logged in, check if they already submitted
-        if request.user.is_authenticated:
-            existing_feedback = MessFeedback.objects.filter(
-                email=request.user.email,
-                feedback_period_start=current_period.start_date,
-                feedback_period_end=current_period.end_date
-            ).exists()
-            already_submitted = existing_feedback
 
     return render(request, "testapp/feedback.html", {
         "form": form,
