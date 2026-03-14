@@ -25,6 +25,7 @@ urlpatterns = [
     # Database initialization (for debugging)
     path('init-db/', views.initialize_database, name='init_db'),
     path('check-users/', views.check_users_view, name='check_users'),
+    path('populate-data/', views.populate_sample_data, name='populate_data'),
     
     # Frontend URLs
     path('', views.index_view, name='index'),

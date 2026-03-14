@@ -49,6 +49,7 @@
             <button onclick="checkDatabase()">Check Database</button>
             <button onclick="initDatabase()">Initialize Database</button>
             <button onclick="checkUsers()">Check Users</button>
+            <button onclick="populateData()">Populate Sample Data</button>
             <div id="dbResult" class="result"></div>
         </div>
         
@@ -138,6 +139,24 @@
                 }
             } catch (error) {
                 result.innerHTML = `<div class="error">❌ API Test Failed: ${error.message}</div>`;
+            }
+        }
+        
+        async function populateData() {
+            const result = document.getElementById('dbResult');
+            result.innerHTML = 'Populating sample data...';
+            
+            try {
+                const response = await fetch('/populate-data/');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    result.innerHTML = `<div class="success">✅ Sample data populated:<br>${data.results.join('<br>')}</div>`;
+                } else {
+                    result.innerHTML = `<div class="error">❌ Error: ${data.message}</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
             }
         }
         

@@ -148,6 +148,55 @@ def initialize_database(request):
             """)
             results.append("Created django_admin_log table")
             
+            # Create testapp_manet_menu table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS testapp_manet_menu (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name VARCHAR(50) NOT NULL,
+                    image VARCHAR(100),
+                    meal VARCHAR(50) NOT NULL,
+                    day VARCHAR(10) NOT NULL
+                );
+            """)
+            results.append("Created testapp_manet_menu table")
+            
+            # Create testapp_design_menu table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS testapp_design_menu (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name VARCHAR(50) NOT NULL,
+                    image VARCHAR(100),
+                    meal VARCHAR(40) NOT NULL,
+                    day VARCHAR(40) NOT NULL
+                );
+            """)
+            results.append("Created testapp_design_menu table")
+            
+            # Create testapp_manetrating table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS testapp_manetrating (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    dish_id INTEGER NOT NULL,
+                    rating INTEGER NOT NULL DEFAULT 0,
+                    UNIQUE(user_id, dish_id)
+                );
+            """)
+            results.append("Created testapp_manetrating table")
+            
+            # Create testapp_designrating table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS testapp_designrating (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    design_menu_id INTEGER NOT NULL,
+                    rating INTEGER NOT NULL DEFAULT 0,
+                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(user_id, design_menu_id)
+                );
+            """)
+            results.append("Created testapp_designrating table")
+            
         except Exception as e:
             results.append(f"Manual table creation error: {str(e)}")
         
@@ -197,6 +246,38 @@ def initialize_database(request):
                 results.append(f"Test user already exists: {test_username}")
         except Exception as e:
             results.append(f"Test user creation error: {str(e)}")
+        
+        # Add sample Manet menu data
+        try:
+            from .models import manet_menu
+            
+            # Check if sample data already exists
+            if manet_menu.objects.count() == 0:
+                sample_dishes = [
+                    {'name': 'Aloo Paratha', 'meal': 'breakfast', 'day': 'monday'},
+                    {'name': 'Tea/Coffee', 'meal': 'breakfast', 'day': 'monday'},
+                    {'name': 'Dal Rice', 'meal': 'lunch', 'day': 'monday'},
+                    {'name': 'Vegetable Curry', 'meal': 'lunch', 'day': 'monday'},
+                    {'name': 'Chapati', 'meal': 'dinner', 'day': 'monday'},
+                    {'name': 'Paneer Curry', 'meal': 'dinner', 'day': 'monday'},
+                    
+                    {'name': 'Poha', 'meal': 'breakfast', 'day': 'tuesday'},
+                    {'name': 'Tea/Coffee', 'meal': 'breakfast', 'day': 'tuesday'},
+                    {'name': 'Rajma Rice', 'meal': 'lunch', 'day': 'tuesday'},
+                    {'name': 'Mixed Vegetables', 'meal': 'lunch', 'day': 'tuesday'},
+                    {'name': 'Roti', 'meal': 'dinner', 'day': 'tuesday'},
+                    {'name': 'Dal Tadka', 'meal': 'dinner', 'day': 'tuesday'},
+                ]
+                
+                for dish_data in sample_dishes:
+                    manet_menu.objects.create(**dish_data)
+                
+                results.append(f"Created {len(sample_dishes)} sample Manet menu items")
+            else:
+                results.append(f"Manet menu already has {manet_menu.objects.count()} items")
+                
+        except Exception as e:
+            results.append(f"Sample data creation error: {str(e)}")
         
         return JsonResponse({
             'status': 'success',
@@ -648,6 +729,82 @@ def check_users_view(request):
         })
     except Exception as e:
         return JsonResponse({'error': str(e)})
+
+
+def populate_sample_data(request):
+    """Populate sample data for all messes"""
+    try:
+        from .models import manet_menu, design_menu
+        results = []
+        
+        # Manet menu sample data
+        if manet_menu.objects.count() == 0:
+            manet_dishes = [
+                {'name': 'Aloo Paratha', 'meal': 'breakfast', 'day': 'monday'},
+                {'name': 'Tea/Coffee', 'meal': 'breakfast', 'day': 'monday'},
+                {'name': 'Dal Rice', 'meal': 'lunch', 'day': 'monday'},
+                {'name': 'Vegetable Curry', 'meal': 'lunch', 'day': 'monday'},
+                {'name': 'Chapati', 'meal': 'dinner', 'day': 'monday'},
+                {'name': 'Paneer Curry', 'meal': 'dinner', 'day': 'monday'},
+                
+                {'name': 'Poha', 'meal': 'breakfast', 'day': 'tuesday'},
+                {'name': 'Tea/Coffee', 'meal': 'breakfast', 'day': 'tuesday'},
+                {'name': 'Rajma Rice', 'meal': 'lunch', 'day': 'tuesday'},
+                {'name': 'Mixed Vegetables', 'meal': 'lunch', 'day': 'tuesday'},
+                {'name': 'Roti', 'meal': 'dinner', 'day': 'tuesday'},
+                {'name': 'Dal Tadka', 'meal': 'dinner', 'day': 'tuesday'},
+                
+                {'name': 'Upma', 'meal': 'breakfast', 'day': 'wednesday'},
+                {'name': 'Tea/Coffee', 'meal': 'breakfast', 'day': 'wednesday'},
+                {'name': 'Chole Rice', 'meal': 'lunch', 'day': 'wednesday'},
+                {'name': 'Aloo Gobi', 'meal': 'lunch', 'day': 'wednesday'},
+                {'name': 'Chapati', 'meal': 'dinner', 'day': 'wednesday'},
+                {'name': 'Palak Paneer', 'meal': 'dinner', 'day': 'wednesday'},
+            ]
+            
+            for dish_data in manet_dishes:
+                manet_menu.objects.create(**dish_data)
+            
+            results.append(f"Created {len(manet_dishes)} Manet menu items")
+        else:
+            results.append(f"Manet menu already has {manet_menu.objects.count()} items")
+        
+        # Design menu sample data
+        if design_menu.objects.count() == 0:
+            design_dishes = [
+                {'name': 'Sandwich', 'meal': 'breakfast', 'day': 'monday'},
+                {'name': 'Fresh Juice', 'meal': 'breakfast', 'day': 'monday'},
+                {'name': 'Pasta', 'meal': 'lunch', 'day': 'monday'},
+                {'name': 'Salad', 'meal': 'lunch', 'day': 'monday'},
+                {'name': 'Pizza', 'meal': 'dinner', 'day': 'monday'},
+                {'name': 'Soup', 'meal': 'dinner', 'day': 'monday'},
+                
+                {'name': 'Pancakes', 'meal': 'breakfast', 'day': 'tuesday'},
+                {'name': 'Coffee', 'meal': 'breakfast', 'day': 'tuesday'},
+                {'name': 'Burger', 'meal': 'lunch', 'day': 'tuesday'},
+                {'name': 'Fries', 'meal': 'lunch', 'day': 'tuesday'},
+                {'name': 'Grilled Chicken', 'meal': 'dinner', 'day': 'tuesday'},
+                {'name': 'Rice', 'meal': 'dinner', 'day': 'tuesday'},
+            ]
+            
+            for dish_data in design_dishes:
+                design_menu.objects.create(**dish_data)
+            
+            results.append(f"Created {len(design_dishes)} Design menu items")
+        else:
+            results.append(f"Design menu already has {design_menu.objects.count()} items")
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Sample data populated successfully',
+            'results': results
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to populate sample data: {str(e)}'
+        })
 
 def sign_up_views(request):
     if request.method == 'POST':
