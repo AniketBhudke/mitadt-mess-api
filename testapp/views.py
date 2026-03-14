@@ -297,17 +297,43 @@ def initialize_database(request):
 
 def index_view(request):
     """Main index page"""
-    context = {
-        'user': request.user if request.user.is_authenticated else None,
-        'is_authenticated': request.user.is_authenticated
-    }
-    
-    # Add cache control headers to prevent browser caching issues
-    response = render(request, 'testapp/index.html', context)
-    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response['Pragma'] = 'no-cache'
-    response['Expires'] = '0'
-    return response
+    try:
+        # Safely check authentication without triggering session errors
+        is_authenticated = False
+        user = None
+        
+        try:
+            is_authenticated = request.user.is_authenticated
+            user = request.user if is_authenticated else None
+        except Exception as session_error:
+            # If session fails, treat as anonymous user
+            is_authenticated = False
+            user = None
+        
+        context = {
+            'user': user,
+            'is_authenticated': is_authenticated,
+            'safe_user_authenticated': is_authenticated  # For template safety
+        }
+        
+        # Add cache control headers to prevent browser caching issues
+        response = render(request, 'testapp/index.html', context)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response['Pragma'] = 'no-cache'
+        response['Expires'] = '0'
+        return response
+        
+    except Exception as e:
+        # Fallback: render basic page without user context
+        context = {
+            'user': None,
+            'is_authenticated': False,
+            'safe_user_authenticated': False,
+            'auth_error': True
+        }
+        response = render(request, 'testapp/index.html', context)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        return response
 
 #manet page 
 from django.shortcuts import render, get_object_or_404
@@ -806,6 +832,51 @@ def populate_sample_data(request):
             'message': f'Failed to populate sample data: {str(e)}'
         })
 
+
+def fix_sessions(request):
+    """Fix session-related issues"""
+    try:
+        from django.core.management import call_command
+        results = []
+        
+        # Clear any existing session data
+        try:
+            request.session.flush()
+            results.append("Cleared existing session data")
+        except:
+            results.append("No session data to clear")
+        
+        # Run migrations for sessions
+        try:
+            call_command('migrate', 'sessions', verbosity=0, interactive=False)
+            results.append("Applied session migrations")
+        except Exception as e:
+            results.append(f"Session migration error: {str(e)}")
+        
+        # Test session functionality
+        try:
+            request.session['test'] = 'working'
+            test_value = request.session.get('test')
+            if test_value == 'working':
+                results.append("Session functionality test: PASSED")
+                del request.session['test']
+            else:
+                results.append("Session functionality test: FAILED")
+        except Exception as e:
+            results.append(f"Session test error: {str(e)}")
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Session fix completed',
+            'results': results
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Session fix failed: {str(e)}'
+        })
+
 def sign_up_views(request):
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
@@ -897,6 +968,7 @@ def login_view(request):
             if user.check_password(password):
                 print(f"DEBUG: Password correct for user: {user.username}")
                 try:
+                    # Try to login with session
                     login(request, user)
                     messages.success(request, f"Welcome back, {user.username}!")
                     
@@ -908,9 +980,26 @@ def login_view(request):
                     return response
                     
                 except Exception as session_error:
-                    # If session login fails, show success message but redirect to a simple page
-                    messages.success(request, f"Login successful for {user.username}! (Session error bypassed)")
-                    return render(request, 'testapp/working_login.html', {'login_success': True, 'user': user})
+                    print(f"DEBUG: Session error during login: {str(session_error)}")
+                    # If session login fails, try to initialize database and retry
+                    try:
+                        from django.core.management import call_command
+                        call_command('migrate', verbosity=0, interactive=False)
+                        
+                        # Try login again
+                        login(request, user)
+                        messages.success(request, f"Welcome back, {user.username}! (Database initialized)")
+                        return redirect('index')
+                        
+                    except Exception as retry_error:
+                        print(f"DEBUG: Retry login failed: {str(retry_error)}")
+                        # Show success but redirect to a safe page
+                        messages.success(request, f"Login successful for {user.username}! Please visit /init-db/ to fix session issues.")
+                        return render(request, 'testapp/working_login.html', {
+                            'login_success': True, 
+                            'user': user,
+                            'session_error': True
+                        })
             else:
                 print(f"DEBUG: Password incorrect for user: {user.username}")
                 messages.error(request, f"Incorrect password for user '{user.username}'.")

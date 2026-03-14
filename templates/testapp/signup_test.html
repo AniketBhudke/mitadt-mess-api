@@ -50,6 +50,7 @@
             <button onclick="initDatabase()">Initialize Database</button>
             <button onclick="checkUsers()">Check Users</button>
             <button onclick="populateData()">Populate Sample Data</button>
+            <button onclick="fixSessions()">Fix Sessions</button>
             <div id="dbResult" class="result"></div>
         </div>
         
@@ -139,6 +140,24 @@
                 }
             } catch (error) {
                 result.innerHTML = `<div class="error">❌ API Test Failed: ${error.message}</div>`;
+            }
+        }
+        
+        async function fixSessions() {
+            const result = document.getElementById('dbResult');
+            result.innerHTML = 'Fixing session issues...';
+            
+            try {
+                const response = await fetch('/fix-sessions/');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    result.innerHTML = `<div class="success">✅ Session fix completed:<br>${data.results.join('<br>')}</div>`;
+                } else {
+                    result.innerHTML = `<div class="error">❌ Session fix failed: ${data.message}</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
             }
         }
         
