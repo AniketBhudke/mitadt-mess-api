@@ -101,73 +101,111 @@ class WeeklysuggestionForm(forms.ModelForm):
         required=True
     )
 
-    # ✅ Weekly Fields
-    monday_breakfast = forms.ChoiceField(choices=make_choices([]))
-    monday_lunch = forms.ChoiceField(choices=make_choices([]))
-    monday_dinner = forms.ChoiceField(choices=make_choices([]))
-
-    tuesday_breakfast = forms.ChoiceField(choices=make_choices([]))
-    tuesday_lunch = forms.ChoiceField(choices=make_choices([]))
-    tuesday_dinner = forms.ChoiceField(choices=make_choices([]))
-
-    wednesday_breakfast = forms.ChoiceField(choices=make_choices([]))
-    wednesday_lunch = forms.ChoiceField(choices=make_choices([]))
-    wednesday_dinner = forms.ChoiceField(choices=make_choices([]))
-
-    thursday_breakfast = forms.ChoiceField(choices=make_choices([]))
-    thursday_lunch = forms.ChoiceField(choices=make_choices([]))
-    thursday_dinner = forms.ChoiceField(choices=make_choices([]))
-
-    friday_breakfast = forms.ChoiceField(choices=make_choices([]))
-    friday_lunch = forms.ChoiceField(choices=make_choices([]))
-    friday_dinner = forms.ChoiceField(choices=make_choices([]))
-
-    saturday_breakfast = forms.ChoiceField(choices=make_choices([]))
-    saturday_lunch = forms.ChoiceField(choices=make_choices([]))
-    saturday_dinner = forms.ChoiceField(choices=make_choices([]))
-
-    sunday_breakfast = forms.ChoiceField(choices=make_choices([]))
-    sunday_lunch = forms.ChoiceField(choices=make_choices([]))
-    sunday_dinner = forms.ChoiceField(choices=make_choices([]))
-
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        meal_fields = [
-            'monday_breakfast', 'monday_lunch', 'monday_dinner',
-            'tuesday_breakfast', 'tuesday_lunch', 'tuesday_dinner',
-            'wednesday_breakfast', 'wednesday_lunch', 'wednesday_dinner',
-            'thursday_breakfast', 'thursday_lunch', 'thursday_dinner',
-            'friday_breakfast', 'friday_lunch', 'friday_dinner',
-            'saturday_breakfast', 'saturday_lunch', 'saturday_dinner',
-            'sunday_breakfast', 'sunday_lunch', 'sunday_dinner',
+        # Define dish choices for each meal type
+        breakfast_choices = [
+            ('', 'Select Dish'),
+            ("Kanda Poha", "Kanda Poha"),
+            ("Fruit", "Fruit"), 
+            ("Wada Sample", "Wada Sample"),
+            ("Sprouts", "Sprouts"),
+            ("Veg Upma", "Veg Upma"),
+            ("Aloo Sabudana Khichadi", "Aloo Sabudana Khichadi"),
+            ("Misal Pav", "Misal Pav"),
+            ("Bread Besan Toast", "Bread Besan Toast"),
+            ("Mix Veg Paratha", "Mix Veg Paratha"),
+            ("Tea/Coffee", "Tea/Coffee"),
+            ("Aloo Paratha", "Aloo Paratha"),
+            ("Poha", "Poha"),
+            ("Upma", "Upma"),
         ]
 
-        # ✅ Map dishes by type
-        meal_map = {
-            'breakfast': UNIQUE_BREAKFAST,
-            'lunch': UNIQUE_LUNCH,
-            'dinner': UNIQUE_DINNER,
-        }
+        lunch_choices = [
+            ('', 'Select Dish'),
+            ("Bean Salad", "Bean Salad"),
+            ("Rajma Masala", "Rajma Masala"),
+            ("Peas Pulao", "Peas Pulao"),
+            ("Chapati", "Chapati"),
+            ("Curd", "Curd"),
+            ("Roasted Papad", "Roasted Papad"),
+            ("Beetroot Pachadi", "Beetroot Pachadi"),
+            ("Paneer Makhaniwala", "Paneer Makhaniwala"),
+            ("Bhurani Raita", "Bhurani Raita"),
+            ("Green Salad", "Green Salad"),
+            ("Dal Makhani", "Dal Makhani"),
+            ("Hot & Sour Soup", "Hot & Sour Soup"),
+            ("Veg Hakka Noodles", "Veg Hakka Noodles"),
+            ("Dal Rice", "Dal Rice"),
+            ("Vegetable Curry", "Vegetable Curry"),
+            ("Rajma Rice", "Rajma Rice"),
+            ("Mixed Vegetables", "Mixed Vegetables"),
+            ("Chole Rice", "Chole Rice"),
+            ("Aloo Gobi", "Aloo Gobi"),
+        ]
 
-        # ✅ Apply common settings to fields
-        for field in meal_fields:
-            meal_type = field.split('_')[1]
-            dish_list = meal_map[meal_type]
+        dinner_choices = [
+            ('', 'Select Dish'),
+            ("Green Salad", "Green Salad"),
+            ("Mix Veg Curry", "Mix Veg Curry"),
+            ("Plain Varan", "Plain Varan"),
+            ("Jeera Rice", "Jeera Rice"),
+            ("Chapati", "Chapati"),
+            ("Curd", "Curd"),
+            ("Black Chana Usal", "Black Chana Usal"),
+            ("Steam Rice", "Steam Rice"),
+            ("Chilli Paneer", "Chilli Paneer"),
+            ("Kadhi Pakoda", "Kadhi Pakoda"),
+            ("Dal Khichadi", "Dal Khichadi"),
+            ("Mutter Paneer", "Mutter Paneer"),
+            ("Veg Dum Biryani", "Veg Dum Biryani"),
+            ("Jeera Aloo", "Jeera Aloo"),
+            ("Pav Bhaji", "Pav Bhaji"),
+            ("Paneer Curry", "Paneer Curry"),
+            ("Dal Tadka", "Dal Tadka"),
+            ("Roti", "Roti"),
+            ("Palak Paneer", "Palak Paneer"),
+        ]
 
-            self.fields[field].choices = [('', 'Select Dish')] + [(d, d) for d in dish_list]
-            self.fields[field].required = True
-            self.fields[field].widget.attrs.update({
-                "required": "required",
-                "class": "form-select"
-            })
+        # Apply choices to all meal fields
+        meal_fields = [
+            'monday_breakfast', 'tuesday_breakfast', 'wednesday_breakfast', 
+            'thursday_breakfast', 'friday_breakfast', 'saturday_breakfast', 'sunday_breakfast',
+            'monday_lunch', 'tuesday_lunch', 'wednesday_lunch',
+            'thursday_lunch', 'friday_lunch', 'saturday_lunch', 'sunday_lunch',
+            'monday_dinner', 'tuesday_dinner', 'wednesday_dinner',
+            'thursday_dinner', 'friday_dinner', 'saturday_dinner', 'sunday_dinner',
+        ]
+
+        for field_name in meal_fields:
+            if field_name in self.fields:
+                if 'breakfast' in field_name:
+                    self.fields[field_name].choices = breakfast_choices
+                elif 'lunch' in field_name:
+                    self.fields[field_name].choices = lunch_choices
+                elif 'dinner' in field_name:
+                    self.fields[field_name].choices = dinner_choices
+                
+                self.fields[field_name].required = True
+                self.fields[field_name].widget.attrs.update({
+                    "required": "required",
+                    "class": "form-select"
+                })
 
         # ✅ Student Fields Mandatory with placeholders
-        for f in ["student_name", "email"]:
-            self.fields[f].required = True
-            self.fields[f].widget.attrs.update({
-                "placeholder": f"Enter {f.replace('_',' ').title()}",
+        if 'student_name' in self.fields:
+            self.fields['student_name'].required = True
+            self.fields['student_name'].widget.attrs.update({
+                "placeholder": "Enter Student Name",
+                "class": "form-control",
+                "required": "required"
+            })
+
+        if 'email' in self.fields:
+            self.fields['email'].required = True
+            self.fields['email'].widget.attrs.update({
+                "placeholder": "Enter Email",
                 "class": "form-control",
                 "required": "required"
             })

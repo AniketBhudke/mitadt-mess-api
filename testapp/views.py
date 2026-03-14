@@ -197,6 +197,39 @@ def initialize_database(request):
             """)
             results.append("Created testapp_designrating table")
             
+            # Create testapp_weekly_suggestion table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS testapp_weekly_suggestion (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    mess_name VARCHAR(100) NOT NULL,
+                    student_name VARCHAR(100),
+                    email VARCHAR(254),
+                    monday_breakfast VARCHAR(100) NOT NULL,
+                    monday_lunch VARCHAR(100) NOT NULL,
+                    monday_dinner VARCHAR(100) NOT NULL,
+                    tuesday_breakfast VARCHAR(100) NOT NULL,
+                    tuesday_lunch VARCHAR(100) NOT NULL,
+                    tuesday_dinner VARCHAR(100) NOT NULL,
+                    wednesday_breakfast VARCHAR(100) NOT NULL,
+                    wednesday_lunch VARCHAR(100) NOT NULL,
+                    wednesday_dinner VARCHAR(100) NOT NULL,
+                    thursday_breakfast VARCHAR(100) NOT NULL,
+                    thursday_lunch VARCHAR(100) NOT NULL,
+                    thursday_dinner VARCHAR(100) NOT NULL,
+                    friday_breakfast VARCHAR(100) NOT NULL,
+                    friday_lunch VARCHAR(100) NOT NULL,
+                    friday_dinner VARCHAR(100) NOT NULL,
+                    saturday_breakfast VARCHAR(100) NOT NULL,
+                    saturday_lunch VARCHAR(100) NOT NULL,
+                    saturday_dinner VARCHAR(100) NOT NULL,
+                    sunday_breakfast VARCHAR(100) NOT NULL,
+                    sunday_lunch VARCHAR(100) NOT NULL,
+                    sunday_dinner VARCHAR(100) NOT NULL,
+                    submitted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+            results.append("Created testapp_weekly_suggestion table")
+            
         except Exception as e:
             results.append(f"Manual table creation error: {str(e)}")
         
@@ -1149,70 +1182,74 @@ def weekly_suggestion(request):
     - Validates mess_name and prevents NOT NULL insertion
     - Shows success message and redirects to 'suggestion_success'
     """
+    try:
+        # Prefer querystring mess, but accept hidden input in POST too
+        mess_name_from_query = request.GET.get('mess')
+        mess_name_from_post = request.POST.get('mess_name') if request.method == "POST" else None
+        mess_name_query_or_post = mess_name_from_query or mess_name_from_post
 
-    # Prefer querystring mess, but accept hidden input in POST too
-    mess_name_from_query = request.GET.get('mess')
-    mess_name_from_post = request.POST.get('mess_name') if request.method == "POST" else None
-    mess_name_query_or_post = mess_name_from_query or mess_name_from_post
+        # Prepare week info: start and end of current week + deadline (previous day)
+        today = date.today()
+        start_of_week = today - timedelta(days=today.weekday())  # Monday
+        end_of_week = start_of_week + timedelta(days=6)          # Sunday
+        # Set submission deadline to previous Sunday 23:59 (you can change)
+        deadline = start_of_week - timedelta(days=1)
 
-    # Prepare week info: start and end of current week + deadline (previous day)
-    today = date.today()
-    start_of_week = today - timedelta(days=today.weekday())  # Monday
-    end_of_week = start_of_week + timedelta(days=6)          # Sunday
-    # Set submission deadline to previous Sunday 23:59 (you can change)
-    deadline = start_of_week - timedelta(days=1)
+        # Days to render
+        days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-    # Days to render
-    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        if request.method == "POST":
+            try:
+                form = WeeklysuggestionForm(request.POST)
 
-    if request.method == "POST":
-        form = WeeklysuggestionForm(request.POST)
+                # Build day_fields from the bound form for template rendering (BoundField objects)
+                day_fields = []
+                for day in days:
+                    key_base = day.lower()
+                    bf_name = f"{key_base}_breakfast"
+                    lf_name = f"{key_base}_lunch"
+                    df_name = f"{key_base}_dinner"
 
-        # Build day_fields from the bound form for template rendering (BoundField objects)
-        day_fields = []
-        for day in days:
-            key_base = day.lower()
-            bf_name = f"{key_base}_breakfast"
-            lf_name = f"{key_base}_lunch"
-            df_name = f"{key_base}_dinner"
+                    day_fields.append({
+                        "day": day,
+                        "bf_name": bf_name,
+                        "lf_name": lf_name,
+                        "df_name": df_name,
+                        "bf": form[bf_name] if bf_name in form.fields else None,
+                        "lf": form[lf_name] if lf_name in form.fields else None,
+                        "df": form[df_name] if df_name in form.fields else None,
+                    })
 
-            day_fields.append({
-                "day": day,
-                "bf_name": bf_name,
-                "lf_name": lf_name,
-                "df_name": df_name,
-                "bf": form[bf_name] if bf_name in form.fields else None,
-                "lf": form[lf_name] if lf_name in form.fields else None,
-                "df": form[df_name] if df_name in form.fields else None,
-            })
+                if form.is_valid():
+                    feedback = form.save(commit=False)
 
-        if form.is_valid():
-            feedback = form.save(commit=False)
+                    # Determine final mess_name (querystring > posted hidden > form field)
+                    mess_name = mess_name_from_query or mess_name_from_post or form.cleaned_data.get('mess_name')
 
-            # Determine final mess_name (querystring > posted hidden > form field)
-            mess_name = mess_name_from_query or mess_name_from_post or form.cleaned_data.get('mess_name')
+                    if not mess_name:
+                        # safe handling: add form error and fall through to render again
+                        form.add_error('mess_name', "Please select a mess.")
+                    else:
+                        feedback.mess_name = mess_name
+                        feedback.save()
+                        messages.success(request, "Thank you — your weekly feedback was submitted.")
+                        return redirect(reverse('suggestion_success'))
 
-            if not mess_name:
-                # safe handling: add form error and fall through to render again
-                form.add_error('mess_name', "Please select a mess.")
-            else:
-                feedback.mess_name = mess_name
-                feedback.save()
-                messages.success(request, "Thank you — your weekly feedback was submitted.")
-                return redirect(reverse('suggestion_success'))
+                # If invalid or mess_name missing, render with errors
+                context = {
+                    "form": form,
+                    "mess_name": mess_name_query_or_post,
+                    "day_fields": day_fields,
+                    "week_start": start_of_week.strftime("%b %d, %Y"),
+                    "week_end": end_of_week.strftime("%b %d, %Y"),
+                    "deadline": deadline.strftime("%b %d, %Y"),
+                }
+                return render(request, "testapp/weekly_suggestion.html", context)
+                
+            except Exception as form_error:
+                messages.error(request, f"Form error: {str(form_error)}. Please try again.")
+                # Fall through to GET logic to show fresh form
 
-        # If invalid or mess_name missing, render with errors
-        context = {
-            "form": form,
-            "mess_name": mess_name_query_or_post,
-            "day_fields": day_fields,
-            "week_start": start_of_week.strftime("%b %d, %Y"),
-            "week_end": end_of_week.strftime("%b %d, %Y"),
-            "deadline": deadline.strftime("%b %d, %Y"),
-        }
-        return render(request, "testapp/weekly_suggestion.html", context)
-
-    else:
         # GET -> unbound form (pre-fill mess_name if provided in query)
         initial = {}
         if mess_name_from_query:
@@ -1244,6 +1281,21 @@ def weekly_suggestion(request):
             "week_start": start_of_week.strftime("%b %d, %Y"),
             "week_end": end_of_week.strftime("%b %d, %Y"),
             "deadline": deadline.strftime("%b %d, %Y"),
+        }
+        return render(request, "testapp/weekly_suggestion.html", context)
+        
+    except Exception as e:
+        messages.error(request, f"An error occurred: {str(e)}. Please try again or contact support.")
+        # Return a simple form as fallback
+        form = WeeklysuggestionForm()
+        context = {
+            "form": form,
+            "mess_name": None,
+            "day_fields": [],
+            "week_start": date.today().strftime("%b %d, %Y"),
+            "week_end": date.today().strftime("%b %d, %Y"),
+            "deadline": date.today().strftime("%b %d, %Y"),
+            "error": True
         }
         return render(request, "testapp/weekly_suggestion.html", context)
 
