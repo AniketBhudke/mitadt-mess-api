@@ -260,6 +260,19 @@ def initialize_database(request):
             """)
             results.append("Created testapp_feedbackperiod table")
             
+            # Create testapp_complaint table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS testapp_complaint (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    student_name VARCHAR(100) NOT NULL,
+                    email VARCHAR(254) NOT NULL,
+                    mess_name VARCHAR(100),
+                    message TEXT NOT NULL,
+                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+            results.append("Created testapp_complaint table")
+            
         except Exception as e:
             results.append(f"Manual table creation error: {str(e)}")
         
@@ -1594,42 +1607,50 @@ def complaint_view(request):
 
     if request.method == "POST":
         form = ComplaintForm(request.POST)
-        # Uncomment for quick debugging in dev server logs:
-        # logger.debug("Complaint POST received: %s", request.POST)
-        # print("DEBUG complaint_post:", request.POST)
-
+        
         if form.is_valid():
             try:
-                form.save()
+                complaint = form.save()
+                # Successful save
+                messages.success(request, "✅ Thank you — your complaint/suggestion was submitted successfully!")
+
+                # If explicit next provided, redirect there (template should provide a safe path/name)
+                if default_next:
+                    # If default_next is a URL name, redirect will attempt to resolve it; if it's a path it'll also work.
+                    try:
+                        return redirect(default_next)
+                    except Exception:
+                        # If redirect by name failed, redirect to path directly
+                        return redirect(default_next)
+
+                # If came from index/home page (explicit ref or referer contains 'index') -> index
+                referer = request.META.get('HTTP_REFERER', '')
+                if ref == 'index' or 'index' in referer:
+                    return redirect('index')
+
+                # otherwise go to standalone success page
+                return redirect('complaint_success')
+                
             except Exception as exc:
                 # Save failed unexpectedly: log and return a server error view
                 logger.exception("Failed to save ComplaintForm: %s", exc)
-                messages.error(request, "There was an internal error saving your complaint. Please try again later.")
+                
+                # Provide more specific error message
+                error_msg = "There was an internal error saving your complaint. Please try again later."
+                if "UNIQUE constraint failed" in str(exc):
+                    error_msg = "A complaint with this information already exists. Please modify your submission."
+                elif "NOT NULL constraint failed" in str(exc):
+                    error_msg = "Please fill in all required fields."
+                else:
+                    error_msg = f"Database error: {str(exc)}. Please contact support if this persists."
+                
+                messages.error(request, error_msg)
+                
                 # If it's an AJAX request, return JSON
                 if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                    return JsonResponse({"ok": False, "error": "internal_server_error"}, status=500)
+                    return JsonResponse({"ok": False, "error": str(exc)}, status=500)
                 # Render the standalone form with the current form (it will show no-form-level errors)
                 return render(request, 'testapp/complaint_form.html', {'form': form})
-
-            # Successful save
-            messages.success(request, "✅ Thank you — your complaint/suggestion was submitted successfully!")
-
-            # If explicit next provided, redirect there (template should provide a safe path/name)
-            if default_next:
-                # If default_next is a URL name, redirect will attempt to resolve it; if it's a path it'll also work.
-                try:
-                    return redirect(default_next)
-                except Exception:
-                    # If redirect by name failed, redirect to path directly
-                    return redirect(default_next)
-
-            # If came from index/home page (explicit ref or referer contains 'index') -> index
-            referer = request.META.get('HTTP_REFERER', '')
-            if ref == 'index' or 'index' in referer:
-                return redirect('index')
-
-            # otherwise go to standalone success page
-            return redirect('complaint_success')
 
         else:
             # form invalid -> prepare error response

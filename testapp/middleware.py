@@ -56,6 +56,18 @@ class DatabaseTableMiddleware:
                     );
                 """)
                 
+                # Check and create Complaint table
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS testapp_complaint (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        student_name VARCHAR(100) NOT NULL,
+                        email VARCHAR(254) NOT NULL,
+                        mess_name VARCHAR(100),
+                        message TEXT NOT NULL,
+                        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
+                """)
+                
                 # Ensure period tracking fields exist in weekly_suggestion table
                 try:
                     cursor.execute("""
