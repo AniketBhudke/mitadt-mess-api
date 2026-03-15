@@ -29,6 +29,7 @@ urlpatterns = [
     path('check-users/', views.check_users_view, name='check_users'),
     path('populate-data/', views.populate_sample_data, name='populate_data'),
     path('fix-sessions/', views.fix_sessions, name='fix_sessions'),
+    path('test-day-fields/', views.test_day_fields_debug, name='test_day_fields'),
     
     # Frontend URLs
     path('', views.index_view, name='index'),

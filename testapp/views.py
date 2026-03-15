@@ -14,6 +14,64 @@ from django.urls import reverse
 import secrets
 import string
 
+def test_day_fields_debug(request):
+    """Debug endpoint to test day fields generation"""
+    try:
+        from .forms import WeeklysuggestionForm
+        from .models import SuggestionPeriod
+        
+        # Test form creation
+        form = WeeklysuggestionForm()
+        
+        # Test day fields building (same logic as weekly_suggestion view)
+        days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        day_fields = []
+        
+        for day in days:
+            key_base = day.lower()
+            bf_name = f"{key_base}_breakfast"
+            lf_name = f"{key_base}_lunch"
+            df_name = f"{key_base}_dinner"
+
+            day_fields.append({
+                "day": day,
+                "bf_name": bf_name,
+                "lf_name": lf_name,
+                "df_name": df_name,
+                "bf": form[bf_name] if bf_name in form.fields else None,
+                "lf": form[lf_name] if lf_name in form.fields else None,
+                "df": form[df_name] if df_name in form.fields else None,
+                "bf_exists": bf_name in form.fields,
+                "lf_exists": lf_name in form.fields,
+                "df_exists": df_name in form.fields,
+            })
+        
+        # Test suggestion period
+        current_period = SuggestionPeriod.get_current_period()
+        
+        debug_info = {
+            'form_fields_count': len(form.fields),
+            'form_fields': list(form.fields.keys()),
+            'day_fields_count': len(day_fields),
+            'day_fields_structure': day_fields,
+            'current_period': str(current_period) if current_period else None,
+            'period_active': current_period.is_submission_allowed() if current_period else False,
+        }
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Day fields test completed successfully',
+            'debug_info': debug_info
+        })
+        
+    except Exception as e:
+        import traceback
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Day fields test failed: {str(e)}',
+            'traceback': traceback.format_exc()
+        })
+
 def health_check(request):
     """Health check endpoint to verify system status"""
     try:
