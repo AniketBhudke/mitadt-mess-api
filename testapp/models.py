@@ -170,9 +170,17 @@ class Weekly_suggestion(models.Model):
     sunday_dinner = models.CharField(max_length=100)
 
     submitted_at = models.DateTimeField(auto_now_add=True)
+    
+    # Add suggestion period tracking (similar to feedback system)
+    suggestion_period_start = models.DateField(null=True, blank=True)
+    suggestion_period_end = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.mess_name} - Weekly Feedback"
+
+    class Meta:
+        # Prevent duplicate suggestions from same email in same period
+        unique_together = ['email', 'suggestion_period_start', 'suggestion_period_end']
 
 
 class MessSelection(models.Model):
@@ -254,6 +262,49 @@ class MessFeedback(models.Model):
     class Meta:
         # Prevent duplicate feedback from same email in same period
         unique_together = ['email', 'feedback_period_start', 'feedback_period_end']
+
+
+class SuggestionPeriod(models.Model):
+    """Model to define weekly suggestion collection periods"""
+    name = models.CharField(max_length=100, help_text="e.g., 'Week 1 - March 2026'")
+    start_date = models.DateField()
+    end_date = models.DateField()
+    submission_deadline = models.DateField(help_text="Last date to submit suggestions")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.name} ({self.start_date} to {self.end_date})"
+    
+    @classmethod
+    def get_current_period(cls):
+        """Get the currently active suggestion period"""
+        from django.utils import timezone
+        today = timezone.now().date()
+        return cls.objects.filter(
+            is_active=True,
+            start_date__lte=today,
+            submission_deadline__gte=today
+        ).first()
+    
+    def is_submission_allowed(self):
+        """Check if submissions are still allowed for this period"""
+        from django.utils import timezone
+        today = timezone.now().date()
+        return self.is_active and today <= self.submission_deadline
+    
+    def clean(self):
+        """Validate model data"""
+        from django.core.exceptions import ValidationError
+        if self.start_date and self.end_date and self.start_date > self.end_date:
+            raise ValidationError("Start date cannot be after end date.")
+        if self.submission_deadline and self.end_date and self.submission_deadline > self.end_date:
+            raise ValidationError("Submission deadline cannot be after end date.")
+    
+    class Meta:
+        ordering = ['-start_date']
+        verbose_name = "Suggestion Period"
+        verbose_name_plural = "Suggestion Periods"
 
 
 class FeedbackPeriod(models.Model):

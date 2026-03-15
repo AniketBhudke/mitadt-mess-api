@@ -186,6 +186,42 @@ button:active { transform: scale(0.98); }
     <h2 class="text-center mb-1">🍽 Weekly Dish Suggestion</h2>
     <p class="text-center subtitle">Select dish for each day & meal 👇</p>
 
+    <!-- Period Closed Message -->
+    {% if period_closed %}
+        <div class="alert alert-warning text-center">
+            <h4>⏰ Suggestion Period Closed</h4>
+            <p>Weekly suggestion submission is currently not available.</p>
+            {% if current_period %}
+                <p><strong>Last Period:</strong> {{ current_period.name }}</p>
+                <p><strong>Submission Deadline:</strong> {{ current_period.submission_deadline|date:"M d, Y" }}</p>
+            {% endif %}
+            <p>Please check back during the next active suggestion period.</p>
+        </div>
+        </div>
+        </body>
+        </html>
+        {% endblock %}
+        <!-- Stop rendering here if period is closed -->
+    {% endif %}
+
+    <!-- Already Submitted Message -->
+    {% if already_submitted %}
+        <div class="alert alert-info text-center">
+            <h4>✅ Already Submitted</h4>
+            <p>You have already submitted your weekly suggestion for this period.</p>
+            {% if current_period %}
+                <p><strong>Period:</strong> {{ current_period.name }}</p>
+                <p><strong>Submission Deadline:</strong> {{ current_period.submission_deadline|date:"M d, Y" }}</p>
+            {% endif %}
+            <p>Thank you for your participation! One submission per email per period is allowed.</p>
+        </div>
+        </div>
+        </body>
+        </html>
+        {% endblock %}
+        <!-- Stop rendering here if already submitted -->
+    {% endif %}
+
     <!-- Week Duration + Deadline -->
     <div class="week-info-container">
       <div class="week-card">
@@ -196,6 +232,12 @@ button:active { transform: scale(0.98); }
         <h5>⏰ Suggestion Deadline</h5>
         <p>Submit Before: <strong>{{ deadline }} (11:59 PM)</strong></p>
       </div>
+      {% if current_period %}
+      <div class="week-card">
+        <h5>📋 Period Info</h5>
+        <p><strong>{{ current_period.name }}</strong></p>
+      </div>
+      {% endif %}
     </div>
 
     <form method="post" action="{% url 'weekly_suggestion' %}{% if mess_name %}?mess={{ mess_name }}{% endif %}">

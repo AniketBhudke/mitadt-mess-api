@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     DesignRating, Dish, DishRating, ManetRating, Weekly_suggestion, 
     design_menu, manet_menu, MessSelection, MessFeedback, FeedbackPeriod,
-    Notice, Complaint
+    SuggestionPeriod, Notice, Complaint
 )
 
 @admin.register(Dish)
@@ -49,11 +49,12 @@ class WeeklySuggestionAdmin(admin.ModelAdmin):
         'friday_breakfast', 'friday_lunch', 'friday_dinner',
         'saturday_breakfast', 'saturday_lunch', 'saturday_dinner',
         'sunday_breakfast', 'sunday_lunch', 'sunday_dinner',
-        'submitted_at',
+        'submitted_at', 'suggestion_period_start', 'suggestion_period_end'
     )
-    list_filter = ('mess_name', 'submitted_at')
+    list_filter = ('mess_name', 'submitted_at', 'suggestion_period_start')
     search_fields = ('mess_name', 'student_name', 'email')
     list_per_page = 20
+    readonly_fields = ('submitted_at', 'suggestion_period_start', 'suggestion_period_end')
 
 @admin.register(MessFeedback)
 class MessFeedbackAdmin(admin.ModelAdmin):
@@ -65,6 +66,33 @@ class MessFeedbackAdmin(admin.ModelAdmin):
     list_filter = ("year", "mess_name", "visit_date", "overall_rating", "feedback_period_start")
     ordering = ("-submitted_at",)
     readonly_fields = ("submitted_at", "feedback_period_start", "feedback_period_end")
+
+@admin.register(SuggestionPeriod)
+class SuggestionPeriodAdmin(admin.ModelAdmin):
+    list_display = (
+        "name", "start_date", "end_date", "submission_deadline", 
+        "is_active", "created_at"
+    )
+    search_fields = ("name",)
+    list_filter = ("is_active", "start_date", "end_date", "submission_deadline")
+    ordering = ("-start_date",)
+    readonly_fields = ("created_at",)
+    
+    fieldsets = (
+        ("Period Information", {
+            "fields": ("name", "start_date", "end_date", "submission_deadline")
+        }),
+        ("Status", {
+            "fields": ("is_active",)
+        }),
+        ("Metadata", {
+            "fields": ("created_at",),
+            "classes": ("collapse",)
+        })
+    )
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).order_by('-start_date')
 
 @admin.register(FeedbackPeriod)
 class FeedbackPeriodAdmin(admin.ModelAdmin):

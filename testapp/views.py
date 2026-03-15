@@ -1173,30 +1173,58 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
 from .forms import WeeklysuggestionForm
+from .models import SuggestionPeriod, Weekly_suggestion
+from django.db import IntegrityError
 
 def weekly_suggestion(request):
     """
-    Handles GET and POST for weekly suggestions.
+    Handles GET and POST for weekly suggestions with duplicate prevention.
     - Accepts ?mess=<mess_key> in querystring (or hidden input 'mess_name' in POST)
     - Builds day_fields for template (so template stays generic)
     - Validates mess_name and prevents NOT NULL insertion
+    - Prevents duplicate submissions per email per period
     - Shows success message and redirects to 'suggestion_success'
     """
     try:
+        # Get current suggestion period
+        current_period = SuggestionPeriod.get_current_period()
+        
+        # Check if suggestion collection is currently active
+        if not current_period or not current_period.is_submission_allowed():
+            messages.error(request, "Weekly suggestion submission is currently not available. Please check back during the active suggestion period.")
+            return render(request, "testapp/weekly_suggestion.html", {
+                "form": None,
+                "period_closed": True,
+                "current_period": current_period,
+                "mess_name": None,
+                "day_fields": [],
+                "week_start": date.today().strftime("%b %d, %Y"),
+                "week_end": date.today().strftime("%b %d, %Y"),
+                "deadline": date.today().strftime("%b %d, %Y"),
+            })
+        
         # Prefer querystring mess, but accept hidden input in POST too
         mess_name_from_query = request.GET.get('mess')
         mess_name_from_post = request.POST.get('mess_name') if request.method == "POST" else None
         mess_name_query_or_post = mess_name_from_query or mess_name_from_post
 
-        # Prepare week info: start and end of current week + deadline (previous day)
-        today = date.today()
-        start_of_week = today - timedelta(days=today.weekday())  # Monday
-        end_of_week = start_of_week + timedelta(days=6)          # Sunday
-        # Set submission deadline to previous Sunday 23:59 (you can change)
-        deadline = start_of_week - timedelta(days=1)
+        # Use current period dates instead of calculating week
+        start_of_week = current_period.start_date
+        end_of_week = current_period.end_date
+        deadline = current_period.submission_deadline
 
         # Days to render
         days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+        # Check if user already submitted (for authenticated users)
+        already_submitted = False
+        if request.user.is_authenticated and hasattr(request.user, 'email') and request.user.email:
+            existing_suggestion = Weekly_suggestion.objects.filter(
+                email=request.user.email,
+                suggestion_period_start=current_period.start_date,
+                suggestion_period_end=current_period.end_date
+            ).exists()
+            already_submitted = existing_suggestion
 
         if request.method == "POST":
             try:
@@ -1221,6 +1249,28 @@ def weekly_suggestion(request):
                     })
 
                 if form.is_valid():
+                    # Check for duplicate submission by email
+                    email = form.cleaned_data['email']
+                    existing_suggestion = Weekly_suggestion.objects.filter(
+                        email=email,
+                        suggestion_period_start=current_period.start_date,
+                        suggestion_period_end=current_period.end_date
+                    ).exists()
+                    
+                    if existing_suggestion:
+                        messages.error(request, f"You have already submitted a weekly suggestion for the period {current_period.name}. Duplicate submissions are not allowed.")
+                        context = {
+                            "form": form,
+                            "mess_name": mess_name_query_or_post,
+                            "day_fields": day_fields,
+                            "week_start": start_of_week.strftime("%b %d, %Y"),
+                            "week_end": end_of_week.strftime("%b %d, %Y"),
+                            "deadline": deadline.strftime("%b %d, %Y"),
+                            "current_period": current_period,
+                            "already_submitted": True
+                        }
+                        return render(request, "testapp/weekly_suggestion.html", context)
+
                     feedback = form.save(commit=False)
 
                     # Determine final mess_name (querystring > posted hidden > form field)
@@ -1231,9 +1281,27 @@ def weekly_suggestion(request):
                         form.add_error('mess_name', "Please select a mess.")
                     else:
                         feedback.mess_name = mess_name
-                        feedback.save()
-                        messages.success(request, "Thank you — your weekly feedback was submitted.")
-                        return redirect(reverse('suggestion_success'))
+                        # Add period information
+                        feedback.suggestion_period_start = current_period.start_date
+                        feedback.suggestion_period_end = current_period.end_date
+                        
+                        try:
+                            feedback.save()
+                            messages.success(request, "Thank you — your weekly suggestion was submitted successfully.")
+                            return redirect(reverse('suggestion_success'))
+                        except IntegrityError:
+                            messages.error(request, f"You have already submitted a weekly suggestion for the period {current_period.name}. Duplicate submissions are not allowed.")
+                            context = {
+                                "form": form,
+                                "mess_name": mess_name_query_or_post,
+                                "day_fields": day_fields,
+                                "week_start": start_of_week.strftime("%b %d, %Y"),
+                                "week_end": end_of_week.strftime("%b %d, %Y"),
+                                "deadline": deadline.strftime("%b %d, %Y"),
+                                "current_period": current_period,
+                                "already_submitted": True
+                            }
+                            return render(request, "testapp/weekly_suggestion.html", context)
 
                 # If invalid or mess_name missing, render with errors
                 context = {
@@ -1243,6 +1311,8 @@ def weekly_suggestion(request):
                     "week_start": start_of_week.strftime("%b %d, %Y"),
                     "week_end": end_of_week.strftime("%b %d, %Y"),
                     "deadline": deadline.strftime("%b %d, %Y"),
+                    "current_period": current_period,
+                    "already_submitted": already_submitted
                 }
                 return render(request, "testapp/weekly_suggestion.html", context)
                 
@@ -1281,6 +1351,8 @@ def weekly_suggestion(request):
             "week_start": start_of_week.strftime("%b %d, %Y"),
             "week_end": end_of_week.strftime("%b %d, %Y"),
             "deadline": deadline.strftime("%b %d, %Y"),
+            "current_period": current_period,
+            "already_submitted": already_submitted
         }
         return render(request, "testapp/weekly_suggestion.html", context)
         
@@ -1295,7 +1367,9 @@ def weekly_suggestion(request):
             "week_start": date.today().strftime("%b %d, %Y"),
             "week_end": date.today().strftime("%b %d, %Y"),
             "deadline": date.today().strftime("%b %d, %Y"),
-            "error": True
+            "error": True,
+            "current_period": None,
+            "already_submitted": False
         }
         return render(request, "testapp/weekly_suggestion.html", context)
 
