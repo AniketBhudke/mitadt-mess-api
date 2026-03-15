@@ -280,8 +280,9 @@ class SuggestionPeriod(models.Model):
     def get_current_period(cls):
         """Get the currently active suggestion period"""
         try:
-            from django.utils import timezone
-            today = timezone.now().date()
+            # Use date.today() instead of timezone.now().date() to avoid timezone issues
+            from datetime import date
+            today = date.today()
             return cls.objects.filter(
                 is_active=True,
                 start_date__lte=today,
@@ -293,8 +294,8 @@ class SuggestionPeriod(models.Model):
     
     def is_submission_allowed(self):
         """Check if submissions are still allowed for this period"""
-        from django.utils import timezone
-        today = timezone.now().date()
+        from datetime import date
+        today = date.today()
         return self.is_active and today <= self.submission_deadline
     
     def clean(self):
@@ -327,8 +328,9 @@ class FeedbackPeriod(models.Model):
     def get_current_period(cls):
         """Get the currently active feedback period"""
         try:
-            from django.utils import timezone
-            today = timezone.now().date()
+            # Use date.today() instead of timezone.now().date() to avoid timezone issues
+            from datetime import date
+            today = date.today()
             return cls.objects.filter(
                 is_active=True,
                 start_date__lte=today,
@@ -340,8 +342,8 @@ class FeedbackPeriod(models.Model):
     
     def is_submission_allowed(self):
         """Check if submissions are still allowed for this period"""
-        from django.utils import timezone
-        today = timezone.now().date()
+        from datetime import date
+        today = date.today()
         return self.is_active and today <= self.submission_deadline
     
     def clean(self):
