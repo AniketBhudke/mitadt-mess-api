@@ -197,15 +197,8 @@ button:active { transform: scale(0.98); }
             {% endif %}
             <p>Please check back during the next active suggestion period.</p>
         </div>
-        </div>
-        </body>
-        </html>
-        {% endblock %}
-        <!-- Stop rendering here if period is closed -->
-    {% endif %}
-
-    <!-- Already Submitted Message -->
-    {% if already_submitted %}
+    {% elif already_submitted %}
+        <!-- Already Submitted Message -->
         <div class="alert alert-info text-center">
             <h4>✅ Already Submitted</h4>
             <p>You have already submitted your weekly suggestion for this period.</p>
@@ -215,12 +208,7 @@ button:active { transform: scale(0.98); }
             {% endif %}
             <p>Thank you for your participation! One submission per email per period is allowed.</p>
         </div>
-        </div>
-        </body>
-        </html>
-        {% endblock %}
-        <!-- Stop rendering here if already submitted -->
-    {% endif %}
+    {% else %}
 
     <!-- Week Duration + Deadline -->
     <div class="week-info-container">
@@ -305,6 +293,8 @@ button:active { transform: scale(0.98); }
             <button type="submit">✅ Submit Weekly Feedback</button>
         </div>
     </form>
+    
+    {% endif %}
 </div>
 </body>
 </html>
