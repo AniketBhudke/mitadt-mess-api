@@ -4,156 +4,707 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MANET Mess Menu</title>
+<title>MANET Mess - MIT ADT University</title>
 
 <style>
-body { font-family: "Poppins", sans-serif; background: #fffaf3; margin:0; }
-.container{max-width:1000px;margin:auto;padding:20px}
-.mess-header{text-align:center;font-weight:700;color:#b3541e;margin-bottom:20px;font-size:28px}
-.form-controls{display:flex;gap:15px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:25px}
-.select-box{padding:8px 12px;border-radius:6px;border:1px solid #d68642;background:#fff7e6;min-width:120px}
-.view-btn{background:#d68642;border:none;padding:8px 18px;border-radius:8px;color:white;font-weight:bold;cursor:pointer;transition:0.3s}
-.view-btn:hover{background:#b8541a;transform:translateY(-2px)}
-.section-title{font-size:26px;font-weight:700;color:#d26a24;border-bottom:2px dotted #ffae6d;margin-bottom:20px;text-align:center}
-.menu-container{display:flex;flex-wrap:wrap;gap:25px;justify-content:center}
-.menu-card{background:#fffdf8;border-radius:16px;padding:15px;box-shadow:0 4px 10px rgba(255,160,60,0.25);text-align:center;width:280px;transition:0.3s}
-.menu-card:hover{transform:translateY(-5px)}
-.menu-card img{width:100%;height:160px;object-fit:cover;border-radius:14px;border:2px solid #ffdbb5}
-.dish-name{font-weight:600;margin-top:8px;font-size:18px;color:#383838}
-.rating-text{font-size:14px;font-weight:600;margin-top:6px;color:#4f4f4f}
-.star{font-size:28px;cursor:pointer;margin:0 4px;transition:0.15s;user-select:none;}
-.star.active { color:#ffb703; }
-.star.inactive { color:#bdbdbd; }
+:root {
+  --primary: #d68642;
+  --primary-dark: #b8541a;
+  --secondary: #ff6b35;
+  --bg: #fffaf3;
+  --card: #ffffff;
+  --text: #2c3e50;
+  --text-light: #6c757d;
+  --border: #e1e8f0;
+  --shadow: 0 4px 20px rgba(214, 134, 66, 0.15);
+  --shadow-hover: 0 8px 30px rgba(214, 134, 66, 0.25);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  background: linear-gradient(135deg, #fff7e6 0%, #ffe8cc 100%);
+  min-height: 100vh;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Header Section */
+.mess-header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 40px 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.mess-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.mess-subtitle {
+  font-size: 18px;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+.mess-stats {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.stat-item {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 15px 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  text-align: center;
+  min-width: 120px;
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: 700;
+  display: block;
+}
+
+.stat-label {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+/* Info Cards Section */
+.info-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.info-card {
+  background: var(--card);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--primary);
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+.info-card h3 {
+  color: var(--primary);
+  font-size: 20px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.info-card p, .info-card ul {
+  color: var(--text-light);
+  margin-bottom: 10px;
+}
+
+.info-card ul {
+  padding-left: 20px;
+}
+
+.info-card li {
+  margin-bottom: 5px;
+}
+
+/* Menu Selection Section */
+.menu-selection {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.form-controls {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.select-box {
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  min-width: 180px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.select-box:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(214, 134, 66, 0.1);
+}
+
+.view-btn {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border: none;
+  padding: 12px 30px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(214, 134, 66, 0.3);
+}
+
+.view-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(214, 134, 66, 0.4);
+}
+
+/* Menu Display Section */
+.menu-display {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+  margin-bottom: 30px;
+}
+
+.menu-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.menu-card {
+  background: var(--bg);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(214, 134, 66, 0.1);
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.menu-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-hover);
+}
+
+.menu-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  border: 3px solid #ffdbb5;
+}
+
+.dish-name {
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.rating-section {
+  margin: 15px 0;
+}
+
+.rating-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.rating-stars {
+  margin: 8px 0;
+}
+
+.star {
+  font-size: 24px;
+  cursor: pointer;
+  margin: 0 2px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.star.active {
+  color: #ffb703;
+  transform: scale(1.1);
+}
+
+.star.inactive {
+  color: #bdbdbd;
+}
+
+.star:hover {
+  transform: scale(1.2);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-light);
+}
+
+.empty-state h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: var(--primary);
+}
+
+.empty-state p {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* Quick Actions */
+.quick-actions {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.action-btn {
+  background: var(--secondary);
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+  background: #e55a2b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .container{padding:15px}
-  .mess-header{font-size:24px;margin-bottom:15px}
-  .form-controls{flex-direction:column;gap:10px;align-items:stretch}
-  .select-box{width:100%;max-width:300px;margin:0 auto}
-  .view-btn{width:100%;max-width:300px;margin:0 auto}
-  .section-title{font-size:22px}
-  .menu-card{width:100%;max-width:350px;margin:0 auto}
-  .menu-container{gap:20px}
+  .mess-title {
+    font-size: 28px;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .mess-stats {
+    gap: 15px;
+  }
+  
+  .stat-item {
+    min-width: 100px;
+    padding: 12px 15px;
+  }
+  
+  .container {
+    padding: 20px 15px;
+  }
+  
+  .info-section {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .form-controls {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .select-box {
+    min-width: 250px;
+  }
+  
+  .menu-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .action-btn {
+    width: 100%;
+    max-width: 250px;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 480px) {
-  .container{padding:10px}
-  .mess-header{font-size:20px}
-  .section-title{font-size:18px}
-  .menu-card{padding:12px}
-  .menu-card img{height:140px}
-  .dish-name{font-size:16px}
-  .star{font-size:24px;margin:0 2px}
-  .rating-text{font-size:13px}
+  .mess-header {
+    padding: 30px 15px;
+  }
+  
+  .mess-title {
+    font-size: 24px;
+  }
+  
+  .mess-subtitle {
+    font-size: 16px;
+  }
+  
+  .section-title {
+    font-size: 24px;
+  }
+  
+  .menu-selection,
+  .menu-display,
+  .quick-actions {
+    padding: 20px 15px;
+  }
+  
+  .select-box {
+    min-width: 200px;
+  }
+  
+  .menu-card img {
+    height: 160px;
+  }
+  
+  .star {
+    font-size: 20px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-  <h2 class="mess-header">🥗 MANET Mess Weekly Menu 🍽️</h2>
-
-  <!-- ✅ Selection Form -->
-  <form method="get" class="form-controls">
-
-      <label><b>Day:</b></label>
-      <select name="day" class="select-box">
-          <option value="">-- Select Day --</option>   <!-- ✅ No auto selection -->
-          {% for day in days %}
-          <option value="{{ day }}" {% if selected_day == day %}selected{% endif %}>{{ day|title }}</option>
-          {% endfor %}
-      </select>
-
-      <label><b>Meal:</b></label>
-      <select name="meal" class="select-box">
-          <option value="">-- Select Meal --</option>   <!-- ✅ No auto selection -->
-          {% for meal in meals %}
-          <option value="{{ meal }}" {% if selected_meal == meal %}selected{% endif %}>{{ meal|title }}</option>
-          {% endfor %}
-      </select>
-
-      <button type="submit" class="view-btn">🍴 View Menu</button>
-  </form>
-
-  {% if selected_day and selected_meal %}
-  <h3 class="section-title">{{ selected_day|title }} - {{ selected_meal|title }}</h3>
-  {% endif %}
-
-  {% if dishes %}
-  <div class="menu-container">
-  {% for dish in dishes %}
-    <div class="menu-card" id="dish-{{ dish.id }}">
-      <img src="{{ dish.image.url }}" alt="{{ dish.name }}">
-      <div class="dish-name">{{ dish.name }}</div>
-
-      <div class="rating-text">Your Rating:</div>
-      <div id="rating-{{ dish.id }}" class="rating-stars" data-dish="{{ dish.id }}">
-        {% for i in rating_range %}
-          <span class="star {% if dish.user_rating_val >= i %}active{% else %}inactive{% endif %}"
-                data-dish="{{ dish.id }}"
-                data-value="{{ i }}">
-            {% if dish.user_rating_val >= i %}⭐{% else %}☆{% endif %}
-          </span>
-        {% endfor %}
-      </div>
-
-      <div class="rating-text">Overall Rating:
-        <strong id="avg-{{ dish.id }}">{{ dish.average_rating_val|floatformat:1 }}</strong> ⭐
-      </div>
-    </div>
-  {% endfor %}
+<!-- Header Section -->
+<div class="mess-header">
+  <div class="mess-title">
+    🥗 MANET Mess
   </div>
-  {% else %}
-      {% if selected_day and selected_meal %}
-      <p style="text-align:center; font-size:18px; color:#b3541e;">No menu found for selected day & meal.</p>
-      {% endif %}
+  <div class="mess-subtitle">
+    MIT Academy of Engineering - Dining Excellence
+  </div>
+  <div class="mess-stats">
+    <div class="stat-item">
+      <span class="stat-number">500+</span>
+      <span class="stat-label">Students Served</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">50+</span>
+      <span class="stat-label">Menu Items</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">4.2</span>
+      <span class="stat-label">Average Rating</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  
+  <!-- Mess Information Section -->
+  <div class="info-section">
+    <div class="info-card">
+      <h3>🕒 Mess Timings</h3>
+      <ul>
+        <li><strong>Breakfast:</strong> 7:30 AM - 9:30 AM</li>
+        <li><strong>Lunch:</strong> 12:00 PM - 2:30 PM</li>
+        <li><strong>Evening Snacks:</strong> 4:30 PM - 6:00 PM</li>
+        <li><strong>Dinner:</strong> 7:30 PM - 10:00 PM</li>
+      </ul>
+    </div>
+    
+    <div class="info-card">
+      <h3>📍 Location & Contact</h3>
+      <p><strong>Location:</strong> MANET Building, Ground Floor</p>
+      <p><strong>Capacity:</strong> 200 Students</p>
+      <p><strong>Contact:</strong> +91 98765 43210</p>
+      <p><strong>Manager:</strong> Mr. Rajesh Kumar</p>
+    </div>
+    
+    <div class="info-card">
+      <h3>🍽️ Facilities</h3>
+      <ul>
+        <li>Air Conditioned Dining Hall</li>
+        <li>Hygienic Food Preparation</li>
+        <li>Vegetarian & Jain Options</li>
+        <li>Special Diet Accommodations</li>
+        <li>Digital Payment Accepted</li>
+      </ul>
+    </div>
+    
+    <div class="info-card">
+      <h3>⭐ Popular Dishes</h3>
+      <ul>
+        <li>Rajma Rice (4.8/5)</li>
+        <li>Paneer Butter Masala (4.7/5)</li>
+        <li>Chole Bhature (4.6/5)</li>
+        <li>South Indian Breakfast (4.5/5)</li>
+        <li>Fresh Fruit Salad (4.4/5)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Menu Selection Section -->
+  <div class="menu-selection">
+    <h2 class="section-title">🍽️ Weekly Menu</h2>
+    <p style="color: var(--text-light); margin-bottom: 25px;">
+      Select a day and meal to view our delicious menu options and rate your favorites!
+    </p>
+    
+    <form method="get" class="form-controls">
+      <div class="form-group">
+        <label>Select Day</label>
+        <select name="day" class="select-box">
+          <option value="">-- Choose Day --</option>
+          {% for day in days %}
+          <option value="{{ day }}" {% if selected_day == day %}selected{% endif %}>
+            {{ day|title }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Select Meal</label>
+        <select name="meal" class="select-box">
+          <option value="">-- Choose Meal --</option>
+          {% for meal in meals %}
+          <option value="{{ meal }}" {% if selected_meal == meal %}selected{% endif %}>
+            {{ meal|title }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="view-btn">
+        🍴 View Menu
+      </button>
+    </form>
+  </div>
+
+  <!-- Menu Display Section -->
+  {% if selected_day and selected_meal %}
+  <div class="menu-display">
+    <h3 class="section-title">
+      📅 {{ selected_day|title }} - {{ selected_meal|title }} Menu
+    </h3>
+    
+    {% if dishes %}
+    <div class="menu-container">
+      {% for dish in dishes %}
+      <div class="menu-card" id="dish-{{ dish.id }}">
+        {% if dish.image %}
+        <img src="{{ dish.image.url }}" alt="{{ dish.name }}" loading="lazy">
+        {% else %}
+        <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #ffdbb5, #ffcc99); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 48px; margin-bottom: 15px;">
+          🍽️
+        </div>
+        {% endif %}
+        
+        <div class="dish-name">{{ dish.name }}</div>
+        
+        <div class="rating-section">
+          <div class="rating-text">Your Rating:</div>
+          <div id="rating-{{ dish.id }}" class="rating-stars" data-dish="{{ dish.id }}">
+            {% for i in rating_range %}
+            <span class="star {% if dish.user_rating_val >= i %}active{% else %}inactive{% endif %}"
+                  data-dish="{{ dish.id }}"
+                  data-value="{{ i }}">
+              {% if dish.user_rating_val >= i %}⭐{% else %}☆{% endif %}
+            </span>
+            {% endfor %}
+          </div>
+          
+          <div class="rating-text">
+            Overall Rating: <strong id="avg-{{ dish.id }}">{{ dish.average_rating_val|floatformat:1 }}</strong> ⭐
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <h3>🍽️ No Menu Available</h3>
+      <p>Sorry, no dishes are available for {{ selected_day|title }} {{ selected_meal|title }}.</p>
+      <p>Please try selecting a different day or meal, or check back later!</p>
+    </div>
+    {% endif %}
+  </div>
   {% endif %}
+
+  <!-- Quick Actions Section -->
+  <div class="quick-actions">
+    <h3 class="section-title">🚀 Quick Actions</h3>
+    <div class="action-buttons">
+      <a href="/feedback/" class="action-btn">
+        📝 Give Feedback
+      </a>
+      <a href="/weekly_suggestion/" class="action-btn">
+        💡 Suggest Menu
+      </a>
+      <a href="/complaint/" class="action-btn">
+        📢 Lodge Complaint
+      </a>
+      <a href="/" class="action-btn">
+        🏠 Back to Home
+      </a>
+    </div>
+  </div>
+
 </div>
 
 <script>
-// CSRF
+// CSRF Token
 function getCookie(name) {
-  return document.cookie.split('; ').find(row => row.startsWith(name +'='))?.split('=')[1];
+  return document.cookie.split('; ').find(row => row.startsWith(name + '='))?.split('=')[1];
 }
 const csrftoken = getCookie('csrftoken');
 
+// Rating System
 function updateStars(dishId, rating) {
   const stars = document.querySelectorAll(`#rating-${dishId} .star`);
   stars.forEach((star, idx) => {
-    if (idx < rating) { star.textContent = "⭐"; star.classList.add("active"); star.classList.remove("inactive"); }
-    else { star.textContent = "☆"; star.classList.add("inactive"); star.classList.remove("active"); }
+    if (idx < rating) {
+      star.textContent = "⭐";
+      star.classList.add("active");
+      star.classList.remove("inactive");
+    } else {
+      star.textContent = "☆";
+      star.classList.add("inactive");
+      star.classList.remove("active");
+    }
   });
 }
 
-let userRatings={};
+let userRatings = {};
 
-document.addEventListener("click",(e)=>{
-  if(!e.target.classList.contains("star")) return;
+// Star Click Handler
+document.addEventListener("click", (e) => {
+  if (!e.target.classList.contains("star")) return;
+  
   let dishId = e.target.dataset.dish;
   let rating = parseInt(e.target.dataset.value);
-  userRatings[dishId]=rating; updateStars(dishId,rating);
+  userRatings[dishId] = rating;
+  updateStars(dishId, rating);
 
   const fd = new FormData();
   fd.append("dish_id", dishId);
   fd.append("rating", rating);
   fd.append("csrfmiddlewaretoken", csrftoken);
 
-  fetch("{% url 'rate_manet_dish' %}", { method:"POST", body:fd })
-  .then(r=>r.json()).then(data=>{
-      document.getElementById("avg-"+dishId).textContent=data.average_rating;
+  fetch("{% url 'rate_manet_dish' %}", { 
+    method: "POST", 
+    body: fd 
+  })
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById("avg-" + dishId).textContent = data.average_rating;
+  })
+  .catch(error => {
+    console.error('Rating error:', error);
   });
 });
 
-document.addEventListener("mouseover",(e)=>{
-  if(!e.target.classList.contains("star")) return;
+// Star Hover Effects
+document.addEventListener("mouseover", (e) => {
+  if (!e.target.classList.contains("star")) return;
   updateStars(e.target.dataset.dish, parseInt(e.target.dataset.value));
 });
-document.addEventListener("mouseout",(e)=>{
-  if(!e.target.classList.contains("star")) return;
+
+document.addEventListener("mouseout", (e) => {
+  if (!e.target.classList.contains("star")) return;
   const dishId = e.target.dataset.dish;
-  updateStars(dishId, userRatings[dishId]||0);
+  updateStars(dishId, userRatings[dishId] || 0);
+});
+
+// Form Enhancement
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('form');
+  const daySelect = document.querySelector('select[name="day"]');
+  const mealSelect = document.querySelector('select[name="meal"]');
+  
+  // Auto-submit when both selections are made
+  function checkAutoSubmit() {
+    if (daySelect.value && mealSelect.value) {
+      form.submit();
+    }
+  }
+  
+  daySelect.addEventListener('change', checkAutoSubmit);
+  mealSelect.addEventListener('change', checkAutoSubmit);
 });
 </script>
 
