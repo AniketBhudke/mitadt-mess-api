@@ -5,19 +5,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MANET Mess - MIT ADT University</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
 <style>
 :root {
-  --primary: #d68642;
-  --primary-dark: #b8541a;
-  --secondary: #ff6b35;
-  --bg: #fffaf3;
+  --primary: #ff6b35;
+  --primary-dark: #e55a2b;
+  --secondary: #ffa726;
+  --accent: #4caf50;
+  --bg-primary: #fff8f3;
+  --bg-secondary: #fef7f0;
   --card: #ffffff;
-  --text: #2c3e50;
-  --text-light: #6c757d;
-  --border: #e1e8f0;
-  --shadow: 0 4px 20px rgba(214, 134, 66, 0.15);
-  --shadow-hover: 0 8px 30px rgba(214, 134, 66, 0.25);
+  --text: #2d3436;
+  --text-light: #636e72;
+  --text-muted: #b2bec3;
+  --border: #ddd6fe;
+  --shadow: 0 10px 40px rgba(255, 107, 53, 0.15);
+  --shadow-hover: 0 20px 60px rgba(255, 107, 53, 0.25);
+  --gradient-primary: linear-gradient(135deg, #ff6b35 0%, #ffa726 100%);
+  --gradient-secondary: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  --gradient-bg: linear-gradient(135deg, #fff8f3 0%, #fef7f0 50%, #fff3e0 100%);
 }
 
 * {
@@ -27,347 +35,318 @@
 }
 
 body {
-  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
-  background: linear-gradient(135deg, #fff7e6 0%, #ffe8cc 100%);
+  font-family: 'Poppins', sans-serif;
+  background: var(--gradient-bg);
   min-height: 100vh;
   color: var(--text);
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
+/* Animated Background Elements */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 167, 38, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(76, 175, 80, 0.05) 0%, transparent 50%);
+  animation: float 20s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(30px, -30px) rotate(120deg); }
+  66% { transform: translate(-20px, 20px) rotate(240deg); }
+}
 /* Header Section */
 .mess-header {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: var(--gradient-primary);
   color: white;
-  padding: 40px 20px;
+  padding: 60px 20px;
   text-align: center;
-  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.mess-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="food" patternUnits="userSpaceOnUse" width="20" height="20"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23food)"/></svg>');
+  animation: slide 30s linear infinite;
+}
+
+@keyframes slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-20px); }
 }
 
 .mess-title {
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 10px;
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
+  gap: 20px;
+  position: relative;
+  z-index: 2;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .mess-subtitle {
-  font-size: 18px;
-  opacity: 0.9;
-  margin-bottom: 20px;
+  font-size: 20px;
+  opacity: 0.95;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 2;
+  font-weight: 400;
 }
 
 .mess-stats {
   display: flex;
   justify-content: center;
-  gap: 30px;
+  gap: 40px;
   flex-wrap: wrap;
-  margin-top: 20px;
+  margin-top: 30px;
+  position: relative;
+  z-index: 2;
 }
 
 .stat-item {
-  background: rgba(255, 255, 255, 0.15);
-  padding: 15px 20px;
-  border-radius: 10px;
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.2);
+  padding: 20px 25px;
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
   text-align: center;
-  min-width: 120px;
+  min-width: 140px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .stat-number {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 32px;
+  font-weight: 800;
   display: block;
+  margin-bottom: 5px;
 }
 
 .stat-label {
   font-size: 14px;
-  opacity: 0.8;
+  opacity: 0.9;
+  font-weight: 500;
 }
-
 /* Container */
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 30px 20px;
+  padding: 40px 20px;
 }
 
 /* Info Cards Section */
 .info-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 25px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  margin-bottom: 50px;
 }
 
 .info-card {
   background: var(--card);
-  border-radius: 15px;
-  padding: 25px;
+  border-radius: 25px;
+  padding: 30px;
   box-shadow: var(--shadow);
-  transition: all 0.3s ease;
-  border-left: 4px solid var(--primary);
+  transition: all 0.4s ease;
+  border: 1px solid rgba(255, 107, 53, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--gradient-primary);
 }
 
 .info-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-10px);
   box-shadow: var(--shadow-hover);
 }
 
 .info-card h3 {
   color: var(--primary);
-  font-size: 20px;
-  margin-bottom: 15px;
+  font-size: 22px;
+  margin-bottom: 20px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  font-weight: 700;
+}
+
+.info-card h3 i {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 12px;
 }
 
 .info-card p, .info-card ul {
   color: var(--text-light);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  font-weight: 400;
 }
 
 .info-card ul {
-  padding-left: 20px;
+  padding-left: 0;
+  list-style: none;
 }
 
 .info-card li {
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  padding-left: 25px;
+  position: relative;
 }
 
+.info-card li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
 /* Menu Selection Section */
 .menu-selection {
   background: var(--card);
-  border-radius: 20px;
-  padding: 30px;
+  border-radius: 30px;
+  padding: 40px;
   box-shadow: var(--shadow);
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-selection::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 107, 53, 0.05) 0%, transparent 70%);
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .section-title {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 36px;
+  font-weight: 800;
   color: var(--primary);
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 15px;
+  position: relative;
+  z-index: 2;
+}
+
+.section-subtitle {
+  color: var(--text-light);
+  font-size: 18px;
+  margin-bottom: 35px;
+  position: relative;
+  z-index: 2;
+  font-weight: 400;
 }
 
 .form-controls {
   display: flex;
-  gap: 20px;
+  gap: 25px;
   justify-content: center;
-  align-items: center;
+  align-items: end;
   flex-wrap: wrap;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 2;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .form-group label {
   font-weight: 600;
   color: var(--text);
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .select-box {
-  padding: 12px 16px;
+  padding: 16px 20px;
   border: 2px solid var(--border);
-  border-radius: 10px;
-  background: var(--bg);
+  border-radius: 15px;
+  background: var(--bg-primary);
   color: var(--text);
-  font-size: 15px;
-  min-width: 180px;
+  font-size: 16px;
+  min-width: 200px;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
 }
 
 .select-box:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(214, 134, 66, 0.1);
+  box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+  transform: translateY(-2px);
 }
-
 .view-btn {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: var(--gradient-primary);
   border: none;
-  padding: 12px 30px;
-  border-radius: 10px;
-  color: white;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(214, 134, 66, 0.3);
-}
-
-.view-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(214, 134, 66, 0.4);
-}
-
-/* Menu Display Section */
-.menu-display {
-  background: var(--card);
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: var(--shadow);
-  margin-bottom: 30px;
-}
-
-.menu-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 25px;
-  margin-top: 20px;
-}
-
-.menu-card {
-  background: var(--bg);
+  padding: 16px 35px;
   border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 4px 15px rgba(214, 134, 66, 0.1);
-  text-align: center;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-}
-
-.menu-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--primary);
-  box-shadow: var(--shadow-hover);
-}
-
-.menu-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 15px;
-  border: 3px solid #ffdbb5;
-}
-
-.dish-name {
-  font-weight: 600;
-  font-size: 18px;
-  color: var(--text);
-  margin-bottom: 10px;
-}
-
-.rating-section {
-  margin: 15px 0;
-}
-
-.rating-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-light);
-  margin-bottom: 8px;
-}
-
-.rating-stars {
-  margin: 8px 0;
-}
-
-.star {
-  font-size: 24px;
-  cursor: pointer;
-  margin: 0 2px;
-  transition: all 0.2s ease;
-  user-select: none;
-}
-
-.star.active {
-  color: #ffb703;
-  transform: scale(1.1);
-}
-
-.star.inactive {
-  color: #bdbdbd;
-}
-
-.star:hover {
-  transform: scale(1.2);
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text-light);
-}
-
-.empty-state h3 {
-  font-size: 24px;
-  margin-bottom: 10px;
-  color: var(--primary);
-}
-
-.empty-state p {
-  font-size: 16px;
-  margin-bottom: 20px;
-}
-
-/* Quick Actions */
-.quick-actions {
-  background: var(--card);
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: var(--shadow);
-  text-align: center;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 20px;
-}
-
-.action-btn {
-  background: var(--secondary);
   color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 600;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
   transition: all 0.3s ease;
-}
-
-.action-btn:hover {
-  background: #e55a2b;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-}
-
-.payment-btn {
-  background: linear-gradient(135deg, #28a745, #20c997) !important;
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+  font-family: 'Poppins', sans-serif;
   position: relative;
   overflow: hidden;
 }
 
-.payment-btn:hover {
-  background: linear-gradient(135deg, #218838, #1ea080) !important;
-  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4) !important;
-}
-
-.payment-btn::before {
+.view-btn::before {
   content: '';
   position: absolute;
   top: 0;
@@ -378,69 +357,401 @@ body {
   transition: left 0.5s;
 }
 
-.payment-btn:hover::before {
+.view-btn:hover::before {
   left: 100%;
 }
 
+.view-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(255, 107, 53, 0.4);
+}
+
+/* Menu Display Section */
+.menu-display {
+  background: var(--card);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: var(--shadow);
+  margin-bottom: 40px;
+}
+
+.menu-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.menu-card {
+  background: var(--bg-secondary);
+  border-radius: 25px;
+  padding: 25px;
+  box-shadow: 0 8px 30px rgba(255, 107, 53, 0.1);
+  text-align: center;
+  transition: all 0.4s ease;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.menu-card:hover::before {
+  opacity: 0.05;
+}
+
+.menu-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-hover);
+}
+
+.menu-card > * {
+  position: relative;
+  z-index: 2;
+}
+.menu-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  border: 3px solid rgba(255, 107, 53, 0.2);
+  transition: all 0.3s ease;
+}
+
+.menu-card:hover img {
+  transform: scale(1.05);
+  border-color: var(--primary);
+}
+
+.dish-placeholder {
+  width: 100%;
+  height: 220px;
+  background: var(--gradient-primary);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 60px;
+  margin-bottom: 20px;
+  border: 3px solid rgba(255, 107, 53, 0.2);
+}
+
+.dish-name {
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--text);
+  margin-bottom: 15px;
+}
+
+.rating-section {
+  margin: 20px 0;
+  padding: 20px;
+  background: rgba(255, 107, 53, 0.05);
+  border-radius: 15px;
+}
+
+.rating-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 10px;
+}
+
+.rating-stars {
+  margin: 10px 0;
+}
+
+.star {
+  font-size: 28px;
+  cursor: pointer;
+  margin: 0 3px;
+  transition: all 0.3s ease;
+  user-select: none;
+  display: inline-block;
+}
+
+.star.active {
+  color: #ffd700;
+  transform: scale(1.2);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.star.inactive {
+  color: #ddd;
+}
+
+.star:hover {
+  transform: scale(1.3);
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.7));
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 80px 30px;
+  color: var(--text-light);
+}
+
+.empty-state h3 {
+  font-size: 28px;
+  margin-bottom: 15px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.empty-state p {
+  font-size: 18px;
+  margin-bottom: 25px;
+  font-weight: 400;
+}
+/* Quick Actions */
+.quick-actions {
+  background: var(--card);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.action-btn {
+  background: var(--gradient-secondary);
+  color: white;
+  padding: 18px 30px;
+  border: none;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.action-btn:hover::before {
+  left: 100%;
+}
+
+.action-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+}
+
+.payment-btn {
+  background: linear-gradient(135deg, #ff6b35, #ffa726) !important;
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3) !important;
+}
+
+.payment-btn:hover {
+  box-shadow: 0 12px 35px rgba(255, 107, 53, 0.4) !important;
+}
+
+/* Payment Information */
+.payment-info {
+  background: var(--card);
+  border-radius: 25px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+  margin-top: 30px;
+}
+
+.payment-info h3 {
+  color: var(--primary);
+  font-size: 24px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+}
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin: 25px 0;
+}
+
+.price-item {
+  text-align: center;
+  padding: 20px;
+  background: var(--bg-primary);
+  border-radius: 20px;
+  border: 2px solid rgba(255, 107, 53, 0.1);
+  transition: all 0.3s ease;
+}
+
+.price-item:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary);
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.15);
+}
+
+.price-emoji {
+  font-size: 32px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.price-meal {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.price-amount {
+  font-size: 24px;
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.payment-methods {
+  margin-top: 25px;
+  padding: 25px;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 20px;
+  border-left: 5px solid var(--accent);
+}
+
+.payment-methods h4 {
+  color: var(--accent);
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.payment-methods ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.payment-methods li {
+  padding: 8px 0;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+}
+
 /* Responsive Design */
-@media (max-width: 768px) {
-  .mess-title {
-    font-size: 28px;
-    flex-direction: column;
-    gap: 10px;
+@media (max-width: 1200px) {
+  .container {
+    padding: 30px 15px;
   }
   
-  .mess-stats {
+  .menu-container {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+  }
+}
+@media (max-width: 768px) {
+  .mess-title {
+    font-size: 36px;
+    flex-direction: column;
     gap: 15px;
   }
   
+  .mess-subtitle {
+    font-size: 18px;
+  }
+  
+  .mess-stats {
+    gap: 20px;
+  }
+  
   .stat-item {
-    min-width: 100px;
-    padding: 12px 15px;
+    min-width: 120px;
+    padding: 15px 20px;
+  }
+  
+  .stat-number {
+    font-size: 28px;
   }
   
   .container {
-    padding: 20px 15px;
+    padding: 25px 15px;
   }
   
   .info-section {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 25px;
+  }
+  
+  .section-title {
+    font-size: 28px;
   }
   
   .form-controls {
     flex-direction: column;
-    gap: 15px;
+    gap: 20px;
   }
   
   .select-box {
-    min-width: 250px;
+    min-width: 280px;
   }
   
   .menu-container {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 25px;
   }
   
   .action-buttons {
-    flex-direction: column;
-    align-items: center;
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
   
-  .action-btn {
-    width: 100%;
-    max-width: 250px;
-    justify-content: center;
+  .price-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
 }
 
 @media (max-width: 480px) {
   .mess-header {
-    padding: 30px 15px;
+    padding: 40px 15px;
   }
   
   .mess-title {
-    font-size: 24px;
+    font-size: 28px;
   }
   
   .mess-subtitle {
@@ -451,110 +762,186 @@ body {
     font-size: 24px;
   }
   
+  .section-subtitle {
+    font-size: 16px;
+  }
+  
   .menu-selection,
   .menu-display,
-  .quick-actions {
-    padding: 20px 15px;
+  .quick-actions,
+  .payment-info {
+    padding: 25px 20px;
   }
   
   .select-box {
-    min-width: 200px;
+    min-width: 250px;
+    padding: 14px 16px;
   }
   
-  .menu-card img {
-    height: 160px;
+  .menu-card {
+    padding: 20px;
+  }
+  
+  .menu-card img,
+  .dish-placeholder {
+    height: 180px;
   }
   
   .star {
+    font-size: 24px;
+    margin: 0 2px;
+  }
+  
+  .action-btn {
+    padding: 16px 25px;
+    font-size: 15px;
+  }
+  
+  .price-item {
+    padding: 15px;
+  }
+  
+  .price-emoji {
+    font-size: 28px;
+  }
+  
+  .price-amount {
     font-size: 20px;
   }
 }
+
+/* Loading Animation */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Scroll Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}
 </style>
 </head>
-
 <body>
 
 <!-- Header Section -->
 <div class="mess-header">
   <div class="mess-title">
-    🥗 MANET Mess
+    <i class="fas fa-utensils"></i>
+    MANET Canteen
   </div>
   <div class="mess-subtitle">
-    MIT Academy of Engineering - Dining Excellence
+    🍽️ Delicious Food • Fresh Ingredients • Student Favorites
   </div>
   <div class="mess-stats">
     <div class="stat-item">
       <span class="stat-number">500+</span>
-      <span class="stat-label">Students Served</span>
+      <span class="stat-label">Happy Students</span>
     </div>
     <div class="stat-item">
       <span class="stat-number">50+</span>
       <span class="stat-label">Menu Items</span>
     </div>
     <div class="stat-item">
-      <span class="stat-number">4.2</span>
-      <span class="stat-label">Average Rating</span>
+      <span class="stat-number">4.8</span>
+      <span class="stat-label">⭐ Rating</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">24/7</span>
+      <span class="stat-label">Service</span>
     </div>
   </div>
 </div>
 
 <div class="container">
   
-  <!-- Mess Information Section -->
-  <div class="info-section">
+  <!-- Canteen Information Section -->
+  <div class="info-section fade-in-up">
     <div class="info-card">
-      <h3>🕒 Mess Timings</h3>
+      <h3><i class="fas fa-clock"></i> Operating Hours</h3>
       <ul>
         <li><strong>Breakfast:</strong> 7:30 AM - 9:30 AM</li>
         <li><strong>Lunch:</strong> 12:00 PM - 2:30 PM</li>
-        <li><strong>Evening Snacks:</strong> 4:30 PM - 6:00 PM</li>
+        <li><strong>Snacks:</strong> 4:30 PM - 6:00 PM</li>
         <li><strong>Dinner:</strong> 7:30 PM - 10:00 PM</li>
       </ul>
     </div>
     
     <div class="info-card">
-      <h3>📍 Location & Contact</h3>
-      <p><strong>Location:</strong> MANET Building, Ground Floor</p>
-      <p><strong>Capacity:</strong> 200 Students</p>
-      <p><strong>Contact:</strong> +91 98765 43210</p>
-      <p><strong>Manager:</strong> Mr. Rajesh Kumar</p>
+      <h3><i class="fas fa-map-marker-alt"></i> Location & Contact</h3>
+      <p><strong>📍 Location:</strong> MANET Building, Ground Floor</p>
+      <p><strong>👥 Capacity:</strong> 200 Students</p>
+      <p><strong>📞 Contact:</strong> +91 98765 43210</p>
+      <p><strong>👨‍🍳 Chef:</strong> Mr. Rajesh Kumar</p>
     </div>
     
     <div class="info-card">
-      <h3>🍽️ Facilities</h3>
+      <h3><i class="fas fa-star"></i> Why Choose Us?</h3>
       <ul>
-        <li>Air Conditioned Dining Hall</li>
+        <li>Fresh Ingredients Daily</li>
         <li>Hygienic Food Preparation</li>
         <li>Vegetarian & Jain Options</li>
-        <li>Special Diet Accommodations</li>
-        <li>Digital Payment Accepted</li>
+        <li>Special Diet Plans</li>
+        <li>Student-Friendly Prices</li>
       </ul>
     </div>
     
     <div class="info-card">
-      <h3>⭐ Popular Dishes</h3>
+      <h3><i class="fas fa-fire"></i> Today's Specials</h3>
       <ul>
-        <li>Rajma Rice (4.8/5)</li>
-        <li>Paneer Butter Masala (4.7/5)</li>
-        <li>Chole Bhature (4.6/5)</li>
-        <li>South Indian Breakfast (4.5/5)</li>
-        <li>Fresh Fruit Salad (4.4/5)</li>
+        <li>🍛 Rajma Rice (4.9/5)</li>
+        <li>🧈 Paneer Butter Masala (4.8/5)</li>
+        <li>🥘 Chole Bhature (4.7/5)</li>
+        <li>🥗 Fresh Garden Salad (4.6/5)</li>
+        <li>🍰 Homemade Desserts (4.5/5)</li>
       </ul>
     </div>
   </div>
 
   <!-- Menu Selection Section -->
-  <div class="menu-selection">
-    <h2 class="section-title">🍽️ Weekly Menu</h2>
-    <p style="color: var(--text-light); margin-bottom: 25px;">
-      Select a day and meal to view our delicious menu options and rate your favorites!
+  <div class="menu-selection fade-in-up">
+    <h2 class="section-title">
+      <i class="fas fa-calendar-week"></i>
+      Weekly Menu Explorer
+    </h2>
+    <p class="section-subtitle">
+      🔍 Discover our delicious menu options and rate your favorites!
     </p>
     
     <form method="get" class="form-controls">
       <div class="form-group">
-        <label>Select Day</label>
+        <label><i class="fas fa-calendar-day"></i> Select Day</label>
         <select name="day" class="select-box">
-          <option value="">-- Choose Day --</option>
+          <option value="">🗓️ Choose Day</option>
           {% for day in days %}
           <option value="{{ day }}" {% if selected_day == day %}selected{% endif %}>
             {{ day|title }}
@@ -564,9 +951,9 @@ body {
       </div>
 
       <div class="form-group">
-        <label>Select Meal</label>
+        <label><i class="fas fa-utensils"></i> Select Meal</label>
         <select name="meal" class="select-box">
-          <option value="">-- Choose Meal --</option>
+          <option value="">🍽️ Choose Meal</option>
           {% for meal in meals %}
           <option value="{{ meal }}" {% if selected_meal == meal %}selected{% endif %}>
             {{ meal|title }}
@@ -576,16 +963,17 @@ body {
       </div>
 
       <button type="submit" class="view-btn">
-        🍴 View Menu
+        <i class="fas fa-search"></i>
+        Explore Menu
       </button>
     </form>
   </div>
-
   <!-- Menu Display Section -->
   {% if selected_day and selected_meal %}
-  <div class="menu-display">
+  <div class="menu-display fade-in-up">
     <h3 class="section-title">
-      📅 {{ selected_day|title }} - {{ selected_meal|title }} Menu
+      <i class="fas fa-plate-wheat"></i>
+      {{ selected_day|title }} - {{ selected_meal|title }} Menu
     </h3>
     
     {% if dishes %}
@@ -595,7 +983,7 @@ body {
         {% if dish.image %}
         <img src="{{ dish.image.url }}" alt="{{ dish.name }}" loading="lazy">
         {% else %}
-        <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #ffdbb5, #ffcc99); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 48px; margin-bottom: 15px;">
+        <div class="dish-placeholder">
           🍽️
         </div>
         {% endif %}
@@ -603,7 +991,7 @@ body {
         <div class="dish-name">{{ dish.name }}</div>
         
         <div class="rating-section">
-          <div class="rating-text">Your Rating:</div>
+          <div class="rating-text">⭐ Your Rating:</div>
           <div id="rating-{{ dish.id }}" class="rating-stars" data-dish="{{ dish.id }}">
             {% for i in rating_range %}
             <span class="star {% if dish.user_rating_val >= i %}active{% else %}inactive{% endif %}"
@@ -615,7 +1003,7 @@ body {
           </div>
           
           <div class="rating-text">
-            Overall Rating: <strong id="avg-{{ dish.id }}">{{ dish.average_rating_val|floatformat:1 }}</strong> ⭐
+            🏆 Overall: <strong id="avg-{{ dish.id }}">{{ dish.average_rating_val|floatformat:1 }}</strong>/5
           </div>
         </div>
       </div>
@@ -624,68 +1012,75 @@ body {
     {% else %}
     <div class="empty-state">
       <h3>🍽️ No Menu Available</h3>
-      <p>Sorry, no dishes are available for {{ selected_day|title }} {{ selected_meal|title }}.</p>
-      <p>Please try selecting a different day or meal, or check back later!</p>
+      <p>Sorry, no delicious dishes are available for {{ selected_day|title }} {{ selected_meal|title }}.</p>
+      <p>🔄 Try selecting a different day or meal, or check back later for updates!</p>
     </div>
     {% endif %}
   </div>
   {% endif %}
 
   <!-- Quick Actions Section -->
-  <div class="quick-actions">
-    <h3 class="section-title">🚀 Quick Actions</h3>
+  <div class="quick-actions fade-in-up">
+    <h3 class="section-title">
+      <i class="fas fa-rocket"></i>
+      Quick Actions
+    </h3>
     <div class="action-buttons">
       <a href="/payment_selection/?mess=MANET Mess" class="action-btn payment-btn">
-        💳 Make Payment
+        <i class="fas fa-credit-card"></i>
+        Make Payment
       </a>
       <a href="/feedback/" class="action-btn">
-        📝 Give Feedback
+        <i class="fas fa-comment-dots"></i>
+        Give Feedback
       </a>
       <a href="/weekly_suggestion/" class="action-btn">
-        💡 Suggest Menu
+        <i class="fas fa-lightbulb"></i>
+        Suggest Menu
       </a>
       <a href="/complaint/" class="action-btn">
-        📢 Lodge Complaint
+        <i class="fas fa-exclamation-triangle"></i>
+        Lodge Complaint
       </a>
       <a href="/" class="action-btn">
-        🏠 Back to Home
+        <i class="fas fa-home"></i>
+        Back to Home
       </a>
     </div>
   </div>
 
   <!-- Payment Information Section -->
-  <div class="info-card" style="margin-top: 30px;">
-    <h3>💳 Payment Information</h3>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 15px;">
-      <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 10px;">
-        <div style="font-size: 24px; color: var(--primary); margin-bottom: 5px;">🌅</div>
-        <div style="font-weight: 600; color: var(--text);">Breakfast</div>
-        <div style="font-size: 18px; color: var(--primary); font-weight: 700;">₹40</div>
+  <div class="payment-info fade-in-up">
+    <h3><i class="fas fa-money-bill-wave"></i> Payment Information</h3>
+    <div class="price-grid">
+      <div class="price-item">
+        <span class="price-emoji">🌅</span>
+        <div class="price-meal">Breakfast</div>
+        <div class="price-amount">₹40</div>
       </div>
-      <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 10px;">
-        <div style="font-size: 24px; color: var(--primary); margin-bottom: 5px;">🌞</div>
-        <div style="font-weight: 600; color: var(--text);">Lunch</div>
-        <div style="font-size: 18px; color: var(--primary); font-weight: 700;">₹60</div>
+      <div class="price-item">
+        <span class="price-emoji">🌞</span>
+        <div class="price-meal">Lunch</div>
+        <div class="price-amount">₹60</div>
       </div>
-      <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 10px;">
-        <div style="font-size: 24px; color: var(--primary); margin-bottom: 5px;">🌙</div>
-        <div style="font-weight: 600; color: var(--text);">Dinner</div>
-        <div style="font-size: 18px; color: var(--primary); font-weight: 700;">₹80</div>
+      <div class="price-item">
+        <span class="price-emoji">🌙</span>
+        <div class="price-meal">Dinner</div>
+        <div class="price-amount">₹80</div>
       </div>
     </div>
-    <div style="margin-top: 15px; padding: 15px; background: #e8f5e8; border-radius: 10px; border-left: 4px solid #28a745;">
-      <p style="margin: 0; color: #155724; font-weight: 600;">💡 Payment Methods Accepted:</p>
-      <ul style="margin: 10px 0 0 20px; color: #155724;">
-        <li>UPI (Google Pay, PhonePe, Paytm)</li>
-        <li>Credit/Debit Cards</li>
-        <li>Net Banking</li>
-        <li>Digital Wallets</li>
+    <div class="payment-methods">
+      <h4><i class="fas fa-credit-card"></i> Accepted Payment Methods</h4>
+      <ul>
+        <li><i class="fab fa-google-pay"></i> UPI (Google Pay, PhonePe, Paytm)</li>
+        <li><i class="fas fa-credit-card"></i> Credit/Debit Cards</li>
+        <li><i class="fas fa-university"></i> Net Banking</li>
+        <li><i class="fas fa-wallet"></i> Digital Wallets</li>
       </ul>
     </div>
   </div>
 
 </div>
-
 <script>
 // CSRF Token
 function getCookie(name) {
@@ -732,6 +1127,15 @@ document.addEventListener("click", (e) => {
   .then(r => r.json())
   .then(data => {
     document.getElementById("avg-" + dishId).textContent = data.average_rating;
+    
+    // Add success animation
+    const avgElement = document.getElementById("avg-" + dishId);
+    avgElement.style.transform = "scale(1.2)";
+    avgElement.style.color = "var(--accent)";
+    setTimeout(() => {
+      avgElement.style.transform = "scale(1)";
+      avgElement.style.color = "var(--primary)";
+    }, 300);
   })
   .catch(error => {
     console.error('Rating error:', error);
@@ -765,6 +1169,36 @@ document.addEventListener('DOMContentLoaded', function() {
   
   daySelect.addEventListener('change', checkAutoSubmit);
   mealSelect.addEventListener('change', checkAutoSubmit);
+  
+  // Scroll animations
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('fade-in-up');
+      }
+    });
+  }, observerOptions);
+  
+  document.querySelectorAll('.info-section, .menu-selection, .menu-display, .quick-actions, .payment-info').forEach(el => {
+    observer.observe(el);
+  });
+});
+
+// Add loading state to buttons
+document.querySelectorAll('.action-btn, .view-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    if (!this.classList.contains('loading')) {
+      this.classList.add('loading');
+      setTimeout(() => {
+        this.classList.remove('loading');
+      }, 2000);
+    }
+  });
 });
 </script>
 
