@@ -179,8 +179,9 @@ class Weekly_suggestion(models.Model):
         return f"{self.mess_name} - Weekly Feedback"
 
     class Meta:
-        # Prevent duplicate suggestions from same email in same period
-        unique_together = ['email', 'suggestion_period_start', 'suggestion_period_end']
+        # Prevent duplicate suggestions from same email for same mess in same period
+        # This allows one user to submit suggestions for different messes in the same week
+        unique_together = ['email', 'mess_name', 'suggestion_period_start', 'suggestion_period_end']
 
 
 class MessSelection(models.Model):

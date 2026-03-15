@@ -85,6 +85,16 @@ class DatabaseTableMiddleware:
                 except:
                     pass  # Column might already exist
                 
+                # Ensure unique constraint for email + mess_name + period
+                try:
+                    cursor.execute("""
+                        CREATE UNIQUE INDEX IF NOT EXISTS 
+                        testapp_weekly_suggestion_unique_email_mess_period 
+                        ON testapp_weekly_suggestion(email, mess_name, suggestion_period_start, suggestion_period_end);
+                    """)
+                except:
+                    pass  # Index might already exist
+                
                 logger.info("Database tables ensured by middleware")
                 
         except Exception as e:

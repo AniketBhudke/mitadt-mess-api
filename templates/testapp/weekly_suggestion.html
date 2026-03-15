@@ -201,12 +201,13 @@ button:active { transform: scale(0.98); }
         <!-- Already Submitted Message -->
         <div class="alert alert-info text-center">
             <h4>✅ Already Submitted</h4>
-            <p>You have already submitted your weekly suggestion for this period.</p>
+            <p>You have already submitted your weekly suggestion for <strong>{{ mess_name }}</strong> in this period.</p>
             {% if current_period %}
                 <p><strong>Period:</strong> {{ current_period.name }}</p>
                 <p><strong>Submission Deadline:</strong> {{ current_period.submission_deadline|date:"M d, Y" }}</p>
             {% endif %}
-            <p>Thank you for your participation! One submission per email per period is allowed.</p>
+            <p>Thank you for your participation! One submission per mess per week is allowed.</p>
+            <p><em>Note: You can submit suggestions for other messes if needed.</em></p>
         </div>
     {% else %}
 

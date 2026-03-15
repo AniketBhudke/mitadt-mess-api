@@ -1274,8 +1274,11 @@ def weekly_suggestion(request):
         # Check if user already submitted (for authenticated users)
         already_submitted = False
         if request.user.is_authenticated and hasattr(request.user, 'email') and request.user.email:
+            # Check if user already submitted for this specific mess in this period
+            mess_to_check = mess_name_query_or_post or 'MANET Mess'  # Default to MANET if no mess specified
             existing_suggestion = Weekly_suggestion.objects.filter(
                 email=request.user.email,
+                mess_name=mess_to_check,
                 suggestion_period_start=current_period.start_date,
                 suggestion_period_end=current_period.end_date
             ).exists()
@@ -1304,16 +1307,35 @@ def weekly_suggestion(request):
                     })
 
                 if form.is_valid():
-                    # Check for duplicate submission by email
+                    # Determine final mess_name first (needed for duplicate check)
+                    mess_name = mess_name_from_query or mess_name_from_post or form.cleaned_data.get('mess_name')
+                    
+                    if not mess_name:
+                        # safe handling: add form error and fall through to render again
+                        form.add_error('mess_name', "Please select a mess.")
+                        context = {
+                            "form": form,
+                            "mess_name": mess_name_query_or_post,
+                            "day_fields": day_fields,
+                            "week_start": start_of_week.strftime("%b %d, %Y"),
+                            "week_end": end_of_week.strftime("%b %d, %Y"),
+                            "deadline": deadline.strftime("%b %d, %Y"),
+                            "current_period": current_period,
+                            "already_submitted": already_submitted
+                        }
+                        return render(request, "testapp/weekly_suggestion.html", context)
+                    
+                    # Check for duplicate submission by email + mess_name + period
                     email = form.cleaned_data['email']
                     existing_suggestion = Weekly_suggestion.objects.filter(
                         email=email,
+                        mess_name=mess_name,
                         suggestion_period_start=current_period.start_date,
                         suggestion_period_end=current_period.end_date
                     ).exists()
                     
                     if existing_suggestion:
-                        messages.error(request, f"You have already submitted a weekly suggestion for the period {current_period.name}. Duplicate submissions are not allowed.")
+                        messages.error(request, f"You have already submitted a weekly suggestion for {mess_name} in the period {current_period.name}. Only one suggestion per mess per week is allowed.")
                         context = {
                             "form": form,
                             "mess_name": mess_name_query_or_post,
@@ -1327,36 +1349,28 @@ def weekly_suggestion(request):
                         return render(request, "testapp/weekly_suggestion.html", context)
 
                     feedback = form.save(commit=False)
-
-                    # Determine final mess_name (querystring > posted hidden > form field)
-                    mess_name = mess_name_from_query or mess_name_from_post or form.cleaned_data.get('mess_name')
-
-                    if not mess_name:
-                        # safe handling: add form error and fall through to render again
-                        form.add_error('mess_name', "Please select a mess.")
-                    else:
-                        feedback.mess_name = mess_name
-                        # Add period information
-                        feedback.suggestion_period_start = current_period.start_date
-                        feedback.suggestion_period_end = current_period.end_date
-                        
-                        try:
-                            feedback.save()
-                            messages.success(request, "Thank you — your weekly suggestion was submitted successfully.")
-                            return redirect(reverse('suggestion_success'))
-                        except IntegrityError:
-                            messages.error(request, f"You have already submitted a weekly suggestion for the period {current_period.name}. Duplicate submissions are not allowed.")
-                            context = {
-                                "form": form,
-                                "mess_name": mess_name_query_or_post,
-                                "day_fields": day_fields,
-                                "week_start": start_of_week.strftime("%b %d, %Y"),
-                                "week_end": end_of_week.strftime("%b %d, %Y"),
-                                "deadline": deadline.strftime("%b %d, %Y"),
-                                "current_period": current_period,
-                                "already_submitted": True
-                            }
-                            return render(request, "testapp/weekly_suggestion.html", context)
+                    feedback.mess_name = mess_name
+                    # Add period information
+                    feedback.suggestion_period_start = current_period.start_date
+                    feedback.suggestion_period_end = current_period.end_date
+                    
+                    try:
+                        feedback.save()
+                        messages.success(request, f"Thank you — your weekly suggestion for {mess_name} was submitted successfully.")
+                        return redirect(reverse('suggestion_success'))
+                    except IntegrityError:
+                        messages.error(request, f"You have already submitted a weekly suggestion for {mess_name} in the period {current_period.name}. Only one suggestion per mess per week is allowed.")
+                        context = {
+                            "form": form,
+                            "mess_name": mess_name_query_or_post,
+                            "day_fields": day_fields,
+                            "week_start": start_of_week.strftime("%b %d, %Y"),
+                            "week_end": end_of_week.strftime("%b %d, %Y"),
+                            "deadline": deadline.strftime("%b %d, %Y"),
+                            "current_period": current_period,
+                            "already_submitted": True
+                        }
+                        return render(request, "testapp/weekly_suggestion.html", context)
 
                 # If invalid or mess_name missing, render with errors
                 context = {
