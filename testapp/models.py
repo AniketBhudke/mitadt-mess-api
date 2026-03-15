@@ -279,13 +279,17 @@ class SuggestionPeriod(models.Model):
     @classmethod
     def get_current_period(cls):
         """Get the currently active suggestion period"""
-        from django.utils import timezone
-        today = timezone.now().date()
-        return cls.objects.filter(
-            is_active=True,
-            start_date__lte=today,
-            submission_deadline__gte=today
-        ).first()
+        try:
+            from django.utils import timezone
+            today = timezone.now().date()
+            return cls.objects.filter(
+                is_active=True,
+                start_date__lte=today,
+                submission_deadline__gte=today
+            ).first()
+        except Exception:
+            # If table doesn't exist or other database error, return None
+            return None
     
     def is_submission_allowed(self):
         """Check if submissions are still allowed for this period"""
@@ -322,13 +326,17 @@ class FeedbackPeriod(models.Model):
     @classmethod
     def get_current_period(cls):
         """Get the currently active feedback period"""
-        from django.utils import timezone
-        today = timezone.now().date()
-        return cls.objects.filter(
-            is_active=True,
-            start_date__lte=today,
-            submission_deadline__gte=today
-        ).first()
+        try:
+            from django.utils import timezone
+            today = timezone.now().date()
+            return cls.objects.filter(
+                is_active=True,
+                start_date__lte=today,
+                submission_deadline__gte=today
+            ).first()
+        except Exception:
+            # If table doesn't exist or other database error, return None
+            return None
     
     def is_submission_allowed(self):
         """Check if submissions are still allowed for this period"""

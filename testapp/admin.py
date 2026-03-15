@@ -1,9 +1,15 @@
 from django.contrib import admin
 from .models import (
     DesignRating, Dish, DishRating, ManetRating, Weekly_suggestion, 
-    design_menu, manet_menu, MessSelection, MessFeedback, FeedbackPeriod,
-    SuggestionPeriod, Notice, Complaint
+    design_menu, manet_menu, MessSelection, MessFeedback, Notice, Complaint
 )
+
+# Import period models with error handling to prevent startup crashes
+try:
+    from .models import FeedbackPeriod, SuggestionPeriod
+    PERIOD_MODELS_AVAILABLE = True
+except Exception:
+    PERIOD_MODELS_AVAILABLE = False
 
 @admin.register(Dish)
 class DishAdmin(admin.ModelAdmin):
@@ -67,14 +73,16 @@ class MessFeedbackAdmin(admin.ModelAdmin):
     ordering = ("-submitted_at",)
     readonly_fields = ("submitted_at", "feedback_period_start", "feedback_period_end")
 
-@admin.register(SuggestionPeriod)
-class SuggestionPeriodAdmin(admin.ModelAdmin):
-    list_display = (
-        "name", "start_date", "end_date", "submission_deadline", 
-        "is_active", "created_at"
-    )
-    search_fields = ("name",)
-    list_filter = ("is_active", "start_date", "end_date", "submission_deadline")
+# Conditionally register period models only if they're available
+if PERIOD_MODELS_AVAILABLE:
+    @admin.register(SuggestionPeriod)
+    class SuggestionPeriodAdmin(admin.ModelAdmin):
+        list_display = (
+            "name", "start_date", "end_date", "submission_deadline", 
+            "is_active", "created_at"
+        )
+        search_fields = ("name",)
+        list_filter = ("is_active", "start_date", "end_date", "submission_deadline")
     ordering = ("-start_date",)
     readonly_fields = ("created_at",)
     
@@ -94,32 +102,32 @@ class SuggestionPeriodAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).order_by('-start_date')
 
-@admin.register(FeedbackPeriod)
-class FeedbackPeriodAdmin(admin.ModelAdmin):
-    list_display = (
-        "name", "start_date", "end_date", "submission_deadline", 
-        "is_active", "created_at"
-    )
-    search_fields = ("name",)
-    list_filter = ("is_active", "start_date", "end_date", "submission_deadline")
-    ordering = ("-start_date",)
-    readonly_fields = ("created_at",)
-    
-    fieldsets = (
-        ("Period Information", {
-            "fields": ("name", "start_date", "end_date", "submission_deadline")
-        }),
-        ("Status", {
-            "fields": ("is_active",)
-        }),
-        ("Metadata", {
-            "fields": ("created_at",),
-            "classes": ("collapse",)
-        })
-    )
-    
-    def get_queryset(self, request):
-        return super().get_queryset(request).order_by('-start_date')
+    @admin.register(FeedbackPeriod)
+    class FeedbackPeriodAdmin(admin.ModelAdmin):
+        list_display = (
+            "name", "start_date", "end_date", "submission_deadline", 
+            "is_active", "created_at"
+        )
+        search_fields = ("name",)
+        list_filter = ("is_active", "start_date", "end_date", "submission_deadline")
+        ordering = ("-start_date",)
+        readonly_fields = ("created_at",)
+        
+        fieldsets = (
+            ("Period Information", {
+                "fields": ("name", "start_date", "end_date", "submission_deadline")
+            }),
+            ("Status", {
+                "fields": ("is_active",)
+            }),
+            ("Metadata", {
+                "fields": ("created_at",),
+                "classes": ("collapse",)
+            })
+        )
+        
+        def get_queryset(self, request):
+            return super().get_queryset(request).order_by('-start_date')
 
 @admin.register(Notice)
 class NoticeAdmin(admin.ModelAdmin):

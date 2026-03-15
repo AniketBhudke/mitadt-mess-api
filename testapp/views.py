@@ -1449,12 +1449,14 @@ def mess_payment_select(request):
 
 from django.shortcuts import render, redirect
 from .forms import MessFeedbackForm
-from .models import FeedbackPeriod, MessFeedback
 from django.utils import timezone
 from django.db import IntegrityError
 from django.contrib import messages
 
 def feedback_form(request):
+    # Import models inside function to avoid import-time errors
+    from .models import FeedbackPeriod, MessFeedback
+    
     # Get current feedback period
     current_period = FeedbackPeriod.get_current_period()
     
