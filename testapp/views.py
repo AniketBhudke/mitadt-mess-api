@@ -38,12 +38,12 @@ def test_day_fields_debug(request):
                 "bf_name": bf_name,
                 "lf_name": lf_name,
                 "df_name": df_name,
-                "bf": form[bf_name] if bf_name in form.fields else None,
-                "lf": form[lf_name] if lf_name in form.fields else None,
-                "df": form[df_name] if df_name in form.fields else None,
                 "bf_exists": bf_name in form.fields,
                 "lf_exists": lf_name in form.fields,
                 "df_exists": df_name in form.fields,
+                "bf_field_type": str(type(form.fields.get(bf_name, None))),
+                "lf_field_type": str(type(form.fields.get(lf_name, None))),
+                "df_field_type": str(type(form.fields.get(df_name, None))),
             })
         
         # Test suggestion period
@@ -56,6 +56,10 @@ def test_day_fields_debug(request):
             'day_fields_structure': day_fields,
             'current_period': str(current_period) if current_period else None,
             'period_active': current_period.is_submission_allowed() if current_period else False,
+            'all_day_fields_exist': all(
+                day['bf_exists'] and day['lf_exists'] and day['df_exists'] 
+                for day in day_fields
+            )
         }
         
         return JsonResponse({
