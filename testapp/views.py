@@ -225,10 +225,40 @@ def initialize_database(request):
                     sunday_breakfast VARCHAR(100) NOT NULL,
                     sunday_lunch VARCHAR(100) NOT NULL,
                     sunday_dinner VARCHAR(100) NOT NULL,
-                    submitted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    submitted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    suggestion_period_start DATE,
+                    suggestion_period_end DATE
                 );
             """)
             results.append("Created testapp_weekly_suggestion table")
+            
+            # Create testapp_suggestionperiod table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS testapp_suggestionperiod (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name VARCHAR(100) NOT NULL,
+                    start_date DATE NOT NULL,
+                    end_date DATE NOT NULL,
+                    submission_deadline DATE NOT NULL,
+                    is_active BOOLEAN NOT NULL DEFAULT 1,
+                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+            results.append("Created testapp_suggestionperiod table")
+            
+            # Create testapp_feedbackperiod table
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS testapp_feedbackperiod (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name VARCHAR(100) NOT NULL,
+                    start_date DATE NOT NULL,
+                    end_date DATE NOT NULL,
+                    submission_deadline DATE NOT NULL,
+                    is_active BOOLEAN NOT NULL DEFAULT 1,
+                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+            results.append("Created testapp_feedbackperiod table")
             
         except Exception as e:
             results.append(f"Manual table creation error: {str(e)}")
@@ -947,6 +977,16 @@ def sign_up_views(request):
     return render(request, 'testapp/signup.html')
 
 def login_view(request):
+    # Handle any database initialization issues first
+    try:
+        # Test database connectivity
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+    except Exception as db_error:
+        messages.error(request, f"Database not ready. Please visit /init-db/ first. Error: {str(db_error)}")
+        return render(request, 'testapp/working_login.html')
+    
     if request.method == 'POST':
         email_or_username = request.POST.get('email', '').strip()
         password = request.POST.get('password', '')
@@ -1173,7 +1213,6 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
 from .forms import WeeklysuggestionForm
-from .models import SuggestionPeriod, Weekly_suggestion
 from django.db import IntegrityError
 
 def weekly_suggestion(request):
@@ -1186,6 +1225,9 @@ def weekly_suggestion(request):
     - Shows success message and redirects to 'suggestion_success'
     """
     try:
+        # Import models inside function to avoid import-time errors
+        from .models import SuggestionPeriod, Weekly_suggestion
+        
         # Get current suggestion period
         current_period = SuggestionPeriod.get_current_period()
         
