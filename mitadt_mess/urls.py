@@ -24,6 +24,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 urlpatterns = [
     # Database initialization (for debugging)
     path('init-db/', views.initialize_database, name='init_db'),
+    path('fix-periods/', views.fix_periods, name='fix_periods'),
+    path('health/', views.health_check, name='health_check'),
     path('check-users/', views.check_users_view, name='check_users'),
     path('populate-data/', views.populate_sample_data, name='populate_data'),
     path('fix-sessions/', views.fix_sessions, name='fix_sessions'),

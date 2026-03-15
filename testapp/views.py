@@ -14,6 +14,104 @@ from django.urls import reverse
 import secrets
 import string
 
+def health_check(request):
+    """Health check endpoint to verify system status"""
+    try:
+        from .models import SuggestionPeriod, FeedbackPeriod
+        from datetime import date
+        
+        status = {
+            'status': 'healthy',
+            'date': str(date.today()),
+            'suggestion_system': {},
+            'feedback_system': {},
+            'database': {}
+        }
+        
+        # Check suggestion system
+        try:
+            current_suggestion = SuggestionPeriod.get_current_period()
+            if current_suggestion and current_suggestion.is_submission_allowed():
+                status['suggestion_system'] = {
+                    'status': 'active',
+                    'current_period': current_suggestion.name,
+                    'deadline': str(current_suggestion.submission_deadline),
+                    'submissions_allowed': True
+                }
+            else:
+                status['suggestion_system'] = {
+                    'status': 'inactive',
+                    'submissions_allowed': False,
+                    'current_period': str(current_suggestion) if current_suggestion else None
+                }
+        except Exception as e:
+            status['suggestion_system'] = {'status': 'error', 'error': str(e)}
+        
+        # Check feedback system
+        try:
+            current_feedback = FeedbackPeriod.get_current_period()
+            if current_feedback and current_feedback.is_submission_allowed():
+                status['feedback_system'] = {
+                    'status': 'active',
+                    'current_period': current_feedback.name,
+                    'deadline': str(current_feedback.submission_deadline),
+                    'submissions_allowed': True
+                }
+            else:
+                status['feedback_system'] = {
+                    'status': 'inactive',
+                    'submissions_allowed': False,
+                    'current_period': str(current_feedback) if current_feedback else None
+                }
+        except Exception as e:
+            status['feedback_system'] = {'status': 'error', 'error': str(e)}
+        
+        # Check database
+        try:
+            from django.db import connection
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 1")
+                status['database'] = {'status': 'connected'}
+        except Exception as e:
+            status['database'] = {'status': 'error', 'error': str(e)}
+        
+        return JsonResponse(status)
+        
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'error': str(e)
+        }, status=500)
+
+def fix_periods(request):
+    """Simple endpoint to fix suggestion periods - can be called via URL"""
+    try:
+        from django.core.management import call_command
+        from io import StringIO
+        import sys
+        
+        # Capture command output
+        old_stdout = sys.stdout
+        sys.stdout = captured_output = StringIO()
+        
+        try:
+            call_command('fix_suggestion_periods')
+            output = captured_output.getvalue()
+        finally:
+            sys.stdout = old_stdout
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Suggestion periods fixed successfully',
+            'output': output
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Failed to fix periods: {str(e)}'
+        })
+
 def initialize_database(request):
     """Initialize database tables - for deployment debugging"""
     try:

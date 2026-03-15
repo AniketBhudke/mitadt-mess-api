@@ -27,7 +27,7 @@ class DatabaseTableMiddleware:
         return response
     
     def ensure_tables_exist(self):
-        """Ensure critical tables exist"""
+        """Ensure critical tables exist and periods are properly set up"""
         try:
             with connection.cursor() as cursor:
                 # Check and create SuggestionPeriod table
@@ -97,6 +97,67 @@ class DatabaseTableMiddleware:
                 
                 logger.info("Database tables ensured by middleware")
                 
+                # Auto-fix suggestion periods
+                self.ensure_active_suggestion_period()
+                
         except Exception as e:
             logger.error(f"Database table middleware error: {str(e)}")
             # Don't crash the application, just log the error
+    
+    def ensure_active_suggestion_period(self):
+        """Ensure there's always an active suggestion period"""
+        try:
+            from datetime import date, timedelta
+            
+            # Import inside method to avoid import-time errors
+            try:
+                from testapp.models import SuggestionPeriod
+            except:
+                return  # Models not ready yet
+            
+            today = date.today()
+            
+            # Check if there's a current active period
+            current_period = SuggestionPeriod.objects.filter(
+                is_active=True,
+                start_date__lte=today,
+                submission_deadline__gte=today
+            ).first()
+            
+            if current_period:
+                return  # Already have active period
+            
+            # Find period that should be active for today
+            should_be_active = SuggestionPeriod.objects.filter(
+                start_date__lte=today,
+                end_date__gte=today
+            ).first()
+            
+            if should_be_active:
+                # Deactivate all others and activate this one
+                SuggestionPeriod.objects.all().update(is_active=False)
+                should_be_active.is_active = True
+                should_be_active.save()
+                logger.info(f"Auto-activated period: {should_be_active.name}")
+            else:
+                # Create new period for current week
+                start_of_week = today - timedelta(days=today.weekday())
+                end_of_week = start_of_week + timedelta(days=6)
+                
+                # Deactivate all existing periods
+                SuggestionPeriod.objects.all().update(is_active=False)
+                
+                # Create new active period
+                period_name = f"Week {start_of_week.strftime('%b %d')} - {end_of_week.strftime('%b %d, %Y')}"
+                new_period = SuggestionPeriod.objects.create(
+                    name=period_name,
+                    start_date=start_of_week,
+                    end_date=end_of_week,
+                    submission_deadline=end_of_week + timedelta(days=1),
+                    is_active=True
+                )
+                logger.info(f"Auto-created period: {new_period.name}")
+                
+        except Exception as e:
+            logger.error(f"Auto-period creation error: {str(e)}")
+            # Don't crash the application

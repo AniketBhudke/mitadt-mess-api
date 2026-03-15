@@ -1,147 +1,83 @@
 from django.core.management.base import BaseCommand
-from django.db import transaction
-from testapp.models import Weekly_suggestion, SuggestionPeriod
-from datetime import timedelta
+from django.utils import timezone
+from datetime import date, timedelta
+from testapp.models import SuggestionPeriod
 
 class Command(BaseCommand):
-    help = 'Fix existing weekly suggestions by adding period information'
-
-    def add_arguments(self, parser):
-        parser.add_argument(
-            '--remove-duplicates',
-            action='store_true',
-            help='Remove duplicate suggestions (keep the first one)',
-        )
+    help = 'Fix and ensure suggestion periods are always available'
 
     def handle(self, *args, **options):
-        # Get all suggestions without period information
-        suggestions_without_period = Weekly_suggestion.objects.filter(
-            suggestion_period_start__isnull=True,
-            suggestion_period_end__isnull=True
-        )
+        self.stdout.write("🔧 Fixing suggestion periods...")
         
-        total_suggestions = suggestions_without_period.count()
+        # Get today's date
+        today = date.today()
+        self.stdout.write(f"Today's date: {today}")
         
-        if total_suggestions == 0:
-            self.stdout.write(
-                self.style.SUCCESS('All weekly suggestions already have period information.')
-            )
-            return
+        # Deactivate all periods first
+        SuggestionPeriod.objects.all().update(is_active=False)
+        self.stdout.write("Deactivated all existing periods")
         
-        self.stdout.write(f'Found {total_suggestions} suggestions without period information.')
+        # Find or create current week period
+        start_of_week = today - timedelta(days=today.weekday())  # Monday
+        end_of_week = start_of_week + timedelta(days=6)  # Sunday
         
-        fixed_count = 0
-        duplicate_count = 0
+        # Try to find existing period for this week
+        current_period = SuggestionPeriod.objects.filter(
+            start_date=start_of_week,
+            end_date=end_of_week
+        ).first()
         
-        # Group suggestions by email and submission week to handle duplicates
-        processed_combinations = set()
-        
-        with transaction.atomic():
-            for suggestion in suggestions_without_period.order_by('submitted_at'):
-                # Use the submission date to determine the period
-                submission_date = suggestion.submitted_at.date()
-                
-                # Calculate the week start (Monday) and end (Sunday) for this submission
-                week_start = submission_date - timedelta(days=submission_date.weekday())
-                week_end = week_start + timedelta(days=6)
-                
-                # Create a unique key for this email + period combination
-                combination_key = (suggestion.email, week_start, week_end)
-                
-                if combination_key in processed_combinations:
-                    # This is a duplicate
-                    if options['remove_duplicates']:
-                        self.stdout.write(
-                            self.style.WARNING(
-                                f'Removing duplicate suggestion {suggestion.id}: {suggestion.student_name} '
-                                f'({suggestion.email}) for period {week_start} to {week_end}'
-                            )
-                        )
-                        suggestion.delete()
-                        duplicate_count += 1
-                    else:
-                        self.stdout.write(
-                            self.style.WARNING(
-                                f'Skipping duplicate suggestion {suggestion.id}: {suggestion.student_name} '
-                                f'({suggestion.email}) for period {week_start} to {week_end}. '
-                                f'Use --remove-duplicates to remove it.'
-                            )
-                        )
-                    continue
-                
-                # Mark this combination as processed
-                processed_combinations.add(combination_key)
-                
-                # Try to find an existing period that matches
-                matching_period = SuggestionPeriod.objects.filter(
-                    start_date=week_start,
-                    end_date=week_end
-                ).first()
-                
-                if matching_period:
-                    # Use existing period
-                    suggestion.suggestion_period_start = matching_period.start_date
-                    suggestion.suggestion_period_end = matching_period.end_date
-                else:
-                    # Create period information based on submission date
-                    suggestion.suggestion_period_start = week_start
-                    suggestion.suggestion_period_end = week_end
-                
-                try:
-                    suggestion.save()
-                    fixed_count += 1
-                    
-                    self.stdout.write(
-                        f'Fixed suggestion {suggestion.id}: {suggestion.student_name} '
-                        f'({suggestion.suggestion_period_start} to {suggestion.suggestion_period_end})'
-                    )
-                except Exception as e:
-                    self.stdout.write(
-                        self.style.ERROR(
-                            f'Error fixing suggestion {suggestion.id}: {str(e)}'
-                        )
-                    )
-        
-        self.stdout.write(
-            self.style.SUCCESS(
-                f'\nSuccessfully fixed {fixed_count} weekly suggestions with period information.'
-            )
-        )
-        
-        if duplicate_count > 0:
-            self.stdout.write(
-                self.style.SUCCESS(
-                    f'Removed {duplicate_count} duplicate suggestions.'
-                )
-            )
-        
-        # Check for remaining potential duplicates
-        self.stdout.write('\nChecking for remaining potential duplicate submissions...')
-        
-        # Group by email and period to find duplicates
-        from django.db.models import Count
-        duplicates = Weekly_suggestion.objects.values(
-            'email', 'suggestion_period_start', 'suggestion_period_end'
-        ).annotate(
-            count=Count('id')
-        ).filter(count__gt=1)
-        
-        if duplicates:
-            self.stdout.write(
-                self.style.WARNING(
-                    f'Found {len(duplicates)} remaining duplicate groups:'
-                )
-            )
-            for dup in duplicates:
-                self.stdout.write(
-                    f"  Email: {dup['email']}, Period: {dup['suggestion_period_start']} to {dup['suggestion_period_end']}, Count: {dup['count']}"
-                )
-            self.stdout.write(
-                self.style.WARNING(
-                    'Run this command with --remove-duplicates to clean them up.'
-                )
-            )
+        if current_period:
+            # Activate existing period
+            current_period.is_active = True
+            current_period.save()
+            self.stdout.write(f"✅ Activated existing period: {current_period.name}")
         else:
-            self.stdout.write(
-                self.style.SUCCESS('No duplicate submissions found.')
+            # Create new period for current week
+            period_name = f"Week {start_of_week.strftime('%b %d')} - {end_of_week.strftime('%b %d, %Y')}"
+            current_period = SuggestionPeriod.objects.create(
+                name=period_name,
+                start_date=start_of_week,
+                end_date=end_of_week,
+                submission_deadline=end_of_week + timedelta(days=1),  # Next Monday
+                is_active=True
             )
+            self.stdout.write(f"✅ Created new period: {current_period.name}")
+        
+        # Create next 4 weeks if they don't exist
+        for i in range(1, 5):
+            future_start = start_of_week + timedelta(weeks=i)
+            future_end = future_start + timedelta(days=6)
+            
+            existing = SuggestionPeriod.objects.filter(
+                start_date=future_start,
+                end_date=future_end
+            ).exists()
+            
+            if not existing:
+                future_name = f"Week {future_start.strftime('%b %d')} - {future_end.strftime('%b %d, %Y')}"
+                SuggestionPeriod.objects.create(
+                    name=future_name,
+                    start_date=future_start,
+                    end_date=future_end,
+                    submission_deadline=future_end + timedelta(days=1),
+                    is_active=False
+                )
+                self.stdout.write(f"Created future period: {future_name}")
+        
+        # Verify current period
+        active_period = SuggestionPeriod.get_current_period()
+        if active_period and active_period.is_submission_allowed():
+            self.stdout.write(self.style.SUCCESS(f"✅ SUCCESS: Current period is active and accepting submissions"))
+            self.stdout.write(f"   Period: {active_period.name}")
+            self.stdout.write(f"   Dates: {active_period.start_date} to {active_period.end_date}")
+            self.stdout.write(f"   Deadline: {active_period.submission_deadline}")
+        else:
+            self.stdout.write(self.style.ERROR("❌ ERROR: No active period found or submissions not allowed"))
+            
+        # Show all periods
+        all_periods = SuggestionPeriod.objects.all().order_by('start_date')
+        self.stdout.write(f"\n📋 All periods ({all_periods.count()} total):")
+        for period in all_periods:
+            status = "🟢 ACTIVE" if period.is_active else "⚪ INACTIVE"
+            self.stdout.write(f"   {status} {period.name} ({period.start_date} to {period.end_date})")
