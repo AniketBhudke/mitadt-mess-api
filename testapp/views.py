@@ -1357,9 +1357,6 @@ def weekly_suggestion(request):
         return render(request, "testapp/weekly_suggestion.html", context)
         
     except Exception as e:
-        import traceback
-        print(f"DEBUG: Exception in weekly_suggestion view: {str(e)}")
-        print(f"DEBUG: Traceback: {traceback.format_exc()}")
         messages.error(request, f"An error occurred: {str(e)}. Please try again or contact support.")
         # Return a simple form as fallback
         form = WeeklysuggestionForm()

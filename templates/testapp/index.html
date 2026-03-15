@@ -4,285 +4,753 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'testapp/css/styles.css' %}">
-
-    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>MIT-ADT Mess Hub - Your Campus Food Destination</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+        
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: #e74c3c;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+            color: white;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 120px 0 80px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Mess Cards Section */
+        .mess-section {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title p {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .mess-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .mess-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+        
+        .mess-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .mess-card-image {
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .mess-card-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.3));
+        }
+        
+        .mess-card-content {
+            padding: 2rem;
+        }
+        
+        .mess-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .mess-card p {
+            color: #7f8c8d;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .mess-features {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-tag {
+            background: #ecf0f1;
+            color: #2c3e50;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .mess-card-btn {
+            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+        
+        .mess-card-btn:hover {
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        /* Features Section */
+        .features-section {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-item {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .feature-item h4 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-item p {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            padding: 60px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+        }
+        
+        .quick-actions h2 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+            color: white;
+        }
+        
+        .action-btn i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 3rem 0 1rem;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-section p, .footer-section a {
+            color: #bdc3c7;
+            text-decoration: none;
+            line-height: 1.8;
+        }
+        
+        .footer-section a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #34495e;
+            padding-top: 1rem;
+            margin-top: 2rem;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .navbar-container {
+                padding: 0 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .mess-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu {
+                display: block;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: #2c3e50;
+            }
+        }
+    </style>
 </head>
 <body>
-<!-- ====== navbar.html ====== -->
-<!-- ====== navbar.html (updated: hamburger moved AFTER Sign Up) ====== -->
-<nav class="navbar" role="navigation" aria-label="Main navigation">
-  <div class="navbar-inner container-fluid">
-
-    <!-- LOGO (left) -->
-    <a class="navbar-brand" href="{% url 'index' %}" aria-label="MIT-ADT home">
-      <img src="{% static 'testapp/image/mit-adt-logo.png' %}" alt="MIT-ADT logo" class="brand-logo">
-    </a>
-
-    <!-- TITLE -->
-    <div class="brand-title">
-      <h4>MIT-ADT Mess Hub</h4>
-    </div>
-
-    <!-- AUTH LINKS (pushed to right by margin-left:auto) -->
-    <div class="auth-links">
-      {% if safe_user_authenticated %}
-        <a href="{% url 'logout' %}" class="auth-link">Logout</a>
-      {% else %}
-        <a href="{% url 'login' %}" class="auth-link">Login</a>
-        <a href="{% url 'signup' %}" class="auth-link auth-signup">Sign Up</a>
-      {% endif %}
-      {% if auth_error %}
-        <a href="/init-db/" class="auth-link" style="background: #dc3545; color: white;">Fix Database</a>
-      {% endif %}
-    </div>
-
-    <!-- HAMBURGER (NOW placed AFTER the Sign Up button, on the right) -->
-    <button id="hamburger" class="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="site-drawer">
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-    </button>
-
-  </div>
-
-  <!-- OVERLAY -->
-  <div id="drawerOverlay" class="drawer-overlay" hidden></div>
-
-  <!-- LEFT SLIDING DRAWER -->
-  <aside id="site-drawer" class="side-drawer left" role="dialog" aria-hidden="true" aria-labelledby="drawerTitle">
-    <div class="drawer-header">
-      <button id="drawerClose" class="drawer-close" aria-label="Close menu">&times;</button>
-    </div>
-
-    <nav class="drawer-nav" aria-label="Site menu">
-      <h3 id="drawerTitle" class="drawer-title">Menu</h3>
-      <ul>
-        <li><a href="{% url 'weekly_suggestion' %}">Suggestion</a></li>
-        <li><a href="{% url 'complaint' %}">Submit Complaint</a></li>
-        <li><a href="{% url 'feedback' %}">Feedback</a></li>
-        <li><a href="{% url 'payment_selection' %}">Payment</a></li>
-      </ul>
-    </nav>
-  </aside>
-</nav>
-    <div class="container-fluid">
-    <h2 class="page-heading">All Mess In College Compus</h2>
-    <div class="rows">
-        <div class="column">
-            <div class="cards">
-                <img src="{% static 'testapp/image/manet-mess.webp' %}" alt="..." >
-                <div class="cards-body">
-                    <h5 class="cards-title">MANET Mess</h5>
-                    <p class="cards-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                    <a href="{% url 'manet_mess' %}"><button>View Menu</button></a>
-                </div>
-            </div>
-        </div>
-         <div class="column">
-            <div class="cards">
-                <img src="{% static 'testapp/image/design-building.webp' %}" alt="...">
-                <div class="cards-body">
-                    <h5 class="cards-title">Design Mess</h5>
-                    <p class="cards-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                    <a href="{% url 'design_mess' %}"><button>View Menu</button></a>
-                </div>
-            </div>
-        </div>
-        <div class="column">
-            <div class="cards">
-                <img src="{% static 'testapp/image/raj-building.webp' %}" alt="...">
-                <div class="cards-body">
-                    <h5 class="cards-title">Raj Mess</h5>
-                    <p class="cards-text">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
-                    <a href="{% url 'raj_mess' %}"><button>View Menu</button></a>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-    <!-- ========== 📢 Notice Section ========== -->
-<!-- Latest Notices (improved) -->
-<section class="notices-section">
-  <div class="notices-wrap container">
-    <div class="notices-content">
-      <h2 class="notices-heading">Latest Notices</h2>
-      <p class="notices-lead">
-        Important announcements from mess management — schedule changes, urgent alerts
-        and campus notices appear here. Stay tuned for updates.
-      </p>{% if notices %}
-        <ul class="notices-cards">
-          {% for notice in notices|slice:":4" %}
-            <li class="notice-card" role="listitem">
-              <div class="notice-card-left">
-                <h3 class="notice-title">{{ notice.title }}</h3>
-                {% if notice.summary %}
-                  <p class="notice-summary">{{ notice.summary|truncatechars:150 }}</p>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="{% url 'index' %}" class="navbar-brand">
+                <img src="{% static 'testapp/image/mit-adt-logo.png' %}" alt="MIT-ADT Logo">
+                MIT-ADT Mess Hub
+            </a>
+            
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'weekly_suggestion' %}" class="nav-link">
+                        <i class="fas fa-utensils"></i> Suggestions
+                    </a>
+                    <a href="{% url 'feedback' %}" class="nav-link">
+                        <i class="fas fa-comment"></i> Feedback
+                    </a>
+                    <a href="{% url 'complaint' %}" class="nav-link">
+                        <i class="fas fa-exclamation-circle"></i> Complaints
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn btn-primary">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-link">Login</a>
+                    <a href="{% url 'signup' %}" class="btn btn-primary">Sign Up</a>
                 {% endif %}
-              </div>
-              <div class="notice-card-right">
-                <time class="notice-date">{{ notice.date|date:"d M Y" }}</time>
-              </div>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p class="no-notices">No current notices available.</p>
-      {% endif %}
+            </div>
+            
+            <button class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
 
-      <div class="notices-actions">
-        <a href="{% url 'all_notices' %}" class="btn btn-notice">View All Notices</a>
-      </div>
-    </div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1><i class="fas fa-utensils"></i> MIT-ADT Mess Hub</h1>
+            <p>Your one-stop destination for delicious campus dining. Explore menus, rate dishes, and share your feedback!</p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">5</span>
+                    <span class="stat-label">Campus Mess Halls</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100+</span>
+                    <span class="stat-label">Daily Dishes</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Service Available</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <figure class="notices-graphic" aria-hidden="true">
-      <!-- Bell icon (notification) SVG — replace with your SVG file if preferred -->
-      <svg class="bell-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Notices">
-        <defs>
-          <linearGradient id="g1" x1="0" x2="1">
-            <stop offset="0" stop-color="#ff8c00"/>
-            <stop offset="1" stop-color="#ff0077"/>
-          </linearGradient>
-        </defs>
+    <!-- Mess Cards Section -->
+    <section class="mess-section">
+        <div class="container">
+            <div class="section-title">
+                <h2><i class="fas fa-building"></i> Our Campus Mess Halls</h2>
+                <p>Discover the variety of dining options available across our beautiful campus. Each mess offers unique flavors and experiences.</p>
+            </div>
+            
+            <div class="mess-grid">
+                <!-- MANET Mess -->
+                <div class="mess-card">
+                    <div class="mess-card-image" style="background-image: url('{% static 'testapp/image/manet-mess.webp' %}')"></div>
+                    <div class="mess-card-content">
+                        <h3><i class="fas fa-home"></i> MANET Mess</h3>
+                        <p>Experience authentic flavors and home-style cooking in our flagship mess hall. Known for traditional recipes and fresh ingredients.</p>
+                        <div class="mess-features">
+                            <span class="feature-tag"><i class="fas fa-leaf"></i> Vegetarian</span>
+                            <span class="feature-tag"><i class="fas fa-clock"></i> 6AM-10PM</span>
+                            <span class="feature-tag"><i class="fas fa-star"></i> Popular</span>
+                        </div>
+                        <a href="{% url 'manet_mess' %}" class="mess-card-btn">
+                            <i class="fas fa-eye"></i> View Menu
+                        </a>
+                    </div>
+                </div>
 
-        <circle cx="32" cy="32" r="30" fill="rgba(0,0,0,0.06)"/>
-        <g transform="translate(10,6)">
-          <path d="M22 2c-6 0-10 4-10 10v6c0 1-1 2-1 3l-1 2h24l-1-2c0-1-1-2-1-3V12c0-6-4-10-10-10z" fill="#fff"/>
-          <path d="M22 0c-7 0-12 5-12 12v6c0 2-1 4-2 5l-2 3h32l-2-3c-1-1-2-3-2-5V12C34 5 29 0 22 0z" fill="url(#g1)" opacity="0.95"/>
-          <circle cx="22" cy="33" r="3" fill="#6a0080"/>
-        </g>
-      </svg>
-    </figure>
-  </div>
-</section>
-<script>
-(function(){
-  const hamburger = document.getElementById('hamburger');
-  const drawer = document.getElementById('site-drawer');
-  const overlay = document.getElementById('drawerOverlay');
-  const closeBtn = document.getElementById('drawerClose');
+                <!-- Design Mess -->
+                <div class="mess-card">
+                    <div class="mess-card-image" style="background-image: url('{% static 'testapp/image/design-building.webp' %}')"></div>
+                    <div class="mess-card-content">
+                        <h3><i class="fas fa-palette"></i> Design Mess</h3>
+                        <p>Creative cuisine meets artistic presentation. Perfect for design students who appreciate both taste and visual appeal.</p>
+                        <div class="mess-features">
+                            <span class="feature-tag"><i class="fas fa-seedling"></i> Organic</span>
+                            <span class="feature-tag"><i class="fas fa-clock"></i> 7AM-9PM</span>
+                            <span class="feature-tag"><i class="fas fa-heart"></i> Healthy</span>
+                        </div>
+                        <a href="{% url 'design_mess' %}" class="mess-card-btn">
+                            <i class="fas fa-eye"></i> View Menu
+                        </a>
+                    </div>
+                </div>
 
-  if (!hamburger || !drawer || !overlay) return;
+                <!-- Raj Mess -->
+                <div class="mess-card">
+                    <div class="mess-card-image" style="background-image: url('{% static 'testapp/image/raj-building.webp' %}')"></div>
+                    <div class="mess-card-content">
+                        <h3><i class="fas fa-crown"></i> Raj Mess</h3>
+                        <p>Royal dining experience with premium ingredients and chef-special dishes. The crown jewel of campus dining.</p>
+                        <div class="mess-features">
+                            <span class="feature-tag"><i class="fas fa-gem"></i> Premium</span>
+                            <span class="feature-tag"><i class="fas fa-clock"></i> 6AM-11PM</span>
+                            <span class="feature-tag"><i class="fas fa-award"></i> Award Winner</span>
+                        </div>
+                        <a href="{% url 'raj_mess' %}" class="mess-card-btn">
+                            <i class="fas fa-eye"></i> View Menu
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  function openDrawer(){
-    drawer.classList.add('open');
-    overlay.classList.add('open');
-    drawer.setAttribute('aria-hidden','false');
-    hamburger.setAttribute('aria-expanded','true');
-    overlay.hidden = false;
-    // focus first link
-    const first = drawer.querySelector('a');
-    if(first) first.focus();
-  }
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="section-title">
+                <h2><i class="fas fa-star"></i> Why Choose Our Mess Hub?</h2>
+                <p>We're committed to providing the best dining experience for our campus community.</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h4>Fresh & Healthy</h4>
+                    <p>All meals prepared with fresh ingredients and following strict hygiene standards for your health and safety.</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h4>Rate & Review</h4>
+                    <p>Share your dining experience and help us improve by rating dishes and providing valuable feedback.</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4>Easy Ordering</h4>
+                    <p>Browse menus, check availability, and place orders seamlessly through our user-friendly platform.</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h4>24/7 Service</h4>
+                    <p>Round-the-clock dining options to accommodate your busy academic schedule and late-night study sessions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  function closeDrawer(){
-    drawer.classList.remove('open');
-    overlay.classList.remove('open');
-    drawer.setAttribute('aria-hidden','true');
-    hamburger.setAttribute('aria-expanded','false');
-    overlay.hidden = true;
-    hamburger.focus();
-  }
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+        <div class="container">
+            <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+            
+            <div class="actions-grid">
+                <a href="{% url 'weekly_suggestion' %}" class="action-btn">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Weekly Suggestions</span>
+                </a>
+                
+                <a href="{% url 'feedback' %}" class="action-btn">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>Give Feedback</span>
+                </a>
+                
+                <a href="{% url 'complaint' %}" class="action-btn">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Report Issue</span>
+                </a>
+                
+                <a href="{% url 'payment_selection' %}" class="action-btn">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Make Payment</span>
+                </a>
+            </div>
+        </div>
+    </section>
 
-  hamburger.addEventListener('click', function (e) {
-    if (drawer.classList.contains('open')) closeDrawer();
-    else openDrawer();
-  });
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-university"></i> MIT-ADT University</h4>
+                    <p>Providing quality education and exceptional campus dining experiences for our students and faculty.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4><i class="fas fa-link"></i> Quick Links</h4>
+                    <p><a href="{% url 'index' %}">Home</a></p>
+                    <p><a href="{% url 'feedback' %}">Feedback</a></p>
+                    <p><a href="{% url 'complaint' %}">Complaints</a></p>
+                    <p><a href="{% url 'all_notices' %}">Notices</a></p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4><i class="fas fa-phone"></i> Contact Info</h4>
+                    <p><i class="fas fa-envelope"></i> mess@mitadt.edu.in</p>
+                    <p><i class="fas fa-phone"></i> +91 20 1234 5678</p>
+                    <p><i class="fas fa-map-marker-alt"></i> MIT-ADT Campus, Pune</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 MIT-ADT University. All rights reserved. | Designed with <i class="fas fa-heart" style="color: #e74c3c;"></i> for our campus community</p>
+            </div>
+        </div>
+    </footer>
 
-  overlay.addEventListener('click', closeDrawer);
-  closeBtn && closeBtn.addEventListener('click', closeDrawer);
-
-  // close on Escape
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
-  });
-
-  // click outside closes
-  document.addEventListener('click', function (e) {
-    if (!drawer.classList.contains('open')) return;
-    const inside = drawer.contains(e.target) || hamburger.contains(e.target);
-    if (!inside) closeDrawer();
-  });
-})();
-
-// Handle browser password manager popups after login
-(function() {
-    // Function to dismiss browser password manager popups
-    function dismissPasswordManagerPopups() {
-        // Try to find and close Chrome password manager popups
-        const popups = document.querySelectorAll('[role="dialog"], .password-manager-popup, [data-testid="password-manager"]');
-        popups.forEach(popup => {
-            if (popup.textContent.includes('password') || popup.textContent.includes('breach')) {
-                const closeBtn = popup.querySelector('button[aria-label="Close"], .close, [data-testid="close"]');
-                if (closeBtn) closeBtn.click();
-            }
-        });
-        
-        // Also try to dismiss any overlay popups
-        const overlays = document.querySelectorAll('.overlay, [role="presentation"]');
-        overlays.forEach(overlay => {
-            if (overlay.style.zIndex > 1000) {
-                overlay.style.display = 'none';
-            }
-        });
-    }
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     
-    // Run dismissal function after page load
-    window.addEventListener('load', function() {
-        setTimeout(dismissPasswordManagerPopups, 1000);
-        setTimeout(dismissPasswordManagerPopups, 3000);
-    });
-    
-    // Also run when DOM changes (in case popup appears later)
-    if (window.MutationObserver) {
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.addedNodes.length > 0) {
-                    setTimeout(dismissPasswordManagerPopups, 500);
-                }
+    <!-- Custom JS -->
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
             });
         });
-        
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
+
+        // Add scroll effect to navbar
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+            } else {
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+            }
         });
-    }
-    
-    // Show welcome message for logged-in users
-    {% if user.is_authenticated %}
-        setTimeout(function() {
-            const welcomeMsg = document.createElement('div');
-            welcomeMsg.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #28a745;
-                color: white;
-                padding: 15px 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 10000;
-                font-family: 'Segoe UI', sans-serif;
-                font-size: 14px;
-                max-width: 300px;
-            `;
-            welcomeMsg.innerHTML = `
-                <strong>Welcome back, {{ user.username }}!</strong><br>
-                <small>You are successfully logged in.</small>
-            `;
-            document.body.appendChild(welcomeMsg);
-            
-            // Auto-remove after 4 seconds
-            setTimeout(() => {
-                welcomeMsg.style.opacity = '0';
-                welcomeMsg.style.transition = 'opacity 0.5s';
-                setTimeout(() => welcomeMsg.remove(), 500);
-            }, 4000);
-        }, 2000);
-    {% endif %}
-})();
-</script>
+
+        // Welcome message for logged-in users
+        {% if user.is_authenticated %}
+            setTimeout(function() {
+                const welcomeMsg = document.createElement('div');
+                welcomeMsg.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    background: linear-gradient(45deg, #28a745, #20c997);
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 15px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                    z-index: 10000;
+                    font-family: 'Poppins', sans-serif;
+                    font-size: 14px;
+                    max-width: 300px;
+                    animation: slideIn 0.5s ease-out;
+                `;
+                welcomeMsg.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-user-circle" style="font-size: 1.2rem;"></i>
+                        <div>
+                            <strong>Welcome back, {{ user.username }}!</strong><br>
+                            <small>Ready to explore today's menu?</small>
+                        </div>
+                    </div>
+                `;
+                
+                // Add animation keyframes
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+                document.body.appendChild(welcomeMsg);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    welcomeMsg.style.animation = 'slideIn 0.5s ease-out reverse';
+                    setTimeout(() => welcomeMsg.remove(), 500);
+                }, 5000);
+            }, 1000);
+        {% endif %}
+    </script>
 </body>
 </html>
