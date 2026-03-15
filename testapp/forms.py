@@ -85,7 +85,16 @@ from .models import Weekly_suggestion
 class WeeklysuggestionForm(forms.ModelForm):
     class Meta:
         model = Weekly_suggestion
-        fields = "__all__"
+        fields = [
+            'mess_name', 'student_name', 'email',
+            'monday_breakfast', 'monday_lunch', 'monday_dinner',
+            'tuesday_breakfast', 'tuesday_lunch', 'tuesday_dinner',
+            'wednesday_breakfast', 'wednesday_lunch', 'wednesday_dinner',
+            'thursday_breakfast', 'thursday_lunch', 'thursday_dinner',
+            'friday_breakfast', 'friday_lunch', 'friday_dinner',
+            'saturday_breakfast', 'saturday_lunch', 'saturday_dinner',
+            'sunday_breakfast', 'sunday_lunch', 'sunday_dinner',
+        ]
 
     # ✅ Mess Dropdown (Required)
     mess_name = forms.ChoiceField(
@@ -100,35 +109,6 @@ class WeeklysuggestionForm(forms.ModelForm):
         label="Select Your Mess",
         required=True
     )
-
-    # Explicitly define all meal fields as ChoiceFields
-    monday_breakfast = forms.ChoiceField(choices=[], required=True)
-    monday_lunch = forms.ChoiceField(choices=[], required=True)
-    monday_dinner = forms.ChoiceField(choices=[], required=True)
-    
-    tuesday_breakfast = forms.ChoiceField(choices=[], required=True)
-    tuesday_lunch = forms.ChoiceField(choices=[], required=True)
-    tuesday_dinner = forms.ChoiceField(choices=[], required=True)
-    
-    wednesday_breakfast = forms.ChoiceField(choices=[], required=True)
-    wednesday_lunch = forms.ChoiceField(choices=[], required=True)
-    wednesday_dinner = forms.ChoiceField(choices=[], required=True)
-    
-    thursday_breakfast = forms.ChoiceField(choices=[], required=True)
-    thursday_lunch = forms.ChoiceField(choices=[], required=True)
-    thursday_dinner = forms.ChoiceField(choices=[], required=True)
-    
-    friday_breakfast = forms.ChoiceField(choices=[], required=True)
-    friday_lunch = forms.ChoiceField(choices=[], required=True)
-    friday_dinner = forms.ChoiceField(choices=[], required=True)
-    
-    saturday_breakfast = forms.ChoiceField(choices=[], required=True)
-    saturday_lunch = forms.ChoiceField(choices=[], required=True)
-    saturday_dinner = forms.ChoiceField(choices=[], required=True)
-    
-    sunday_breakfast = forms.ChoiceField(choices=[], required=True)
-    sunday_lunch = forms.ChoiceField(choices=[], required=True)
-    sunday_dinner = forms.ChoiceField(choices=[], required=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -221,32 +201,39 @@ class WeeklysuggestionForm(forms.ModelForm):
             'thursday_dinner', 'friday_dinner', 'saturday_dinner', 'sunday_dinner'
         ]
 
-        # Set choices for breakfast fields
+        # Convert meal fields to ChoiceFields and set choices
         for field_name in breakfast_fields:
             if field_name in self.fields:
-                self.fields[field_name].choices = breakfast_choices
-                self.fields[field_name].widget.attrs.update({
-                    "class": "form-select",
-                    "required": "required"
-                })
+                self.fields[field_name] = forms.ChoiceField(
+                    choices=breakfast_choices,
+                    required=True,
+                    widget=forms.Select(attrs={
+                        "class": "form-select",
+                        "required": "required"
+                    })
+                )
 
-        # Set choices for lunch fields
         for field_name in lunch_fields:
             if field_name in self.fields:
-                self.fields[field_name].choices = lunch_choices
-                self.fields[field_name].widget.attrs.update({
-                    "class": "form-select",
-                    "required": "required"
-                })
+                self.fields[field_name] = forms.ChoiceField(
+                    choices=lunch_choices,
+                    required=True,
+                    widget=forms.Select(attrs={
+                        "class": "form-select",
+                        "required": "required"
+                    })
+                )
 
-        # Set choices for dinner fields
         for field_name in dinner_fields:
             if field_name in self.fields:
-                self.fields[field_name].choices = dinner_choices
-                self.fields[field_name].widget.attrs.update({
-                    "class": "form-select",
-                    "required": "required"
-                })
+                self.fields[field_name] = forms.ChoiceField(
+                    choices=dinner_choices,
+                    required=True,
+                    widget=forms.Select(attrs={
+                        "class": "form-select",
+                        "required": "required"
+                    })
+                )
 
         # ✅ Student Fields Mandatory with placeholders
         if 'student_name' in self.fields:

@@ -1354,6 +1354,7 @@ def weekly_suggestion(request):
             "current_period": current_period,
             "already_submitted": already_submitted
         }
+        
         return render(request, "testapp/weekly_suggestion.html", context)
         
     except Exception as e:
