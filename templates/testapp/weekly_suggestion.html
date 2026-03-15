@@ -287,6 +287,10 @@ button:active { transform: scale(0.98); }
                 {{ item.df }}
             </div>
         </div>
+        {% empty %}
+        <div class="alert alert-warning">
+            <strong>Day fields not available.</strong> Please refresh the page or contact support.
+        </div>
         {% endfor %}
 
         <div class="text-center mt-4 mb-2">
