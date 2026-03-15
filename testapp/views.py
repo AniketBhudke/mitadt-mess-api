@@ -1627,11 +1627,11 @@ def suggestion_success(request):
 
 
 def mess_payment_select(request):
-    mess = request.GET.get("mess")
-    meal = request.GET.get("meal")
+    mess = request.GET.get("mess", "")
+    meal = request.GET.get("meal", "")
     qty = int(request.GET.get("qty", 1))
 
-    # Price logic (you can change)
+    # Updated price logic to match MANET mess pricing
     price = 0
     if meal == "Breakfast":
         price = 40
@@ -1646,6 +1646,7 @@ def mess_payment_select(request):
         "mess": mess,
         "meal": meal,
         "qty": qty,
+        "price": price,
         "total": total
     }
 
