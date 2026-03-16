@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - MIT ADT Mess Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --purple: rgb(96, 2, 96);
+            --accent-1: #ff8c00;
+            --accent-2: #ff0077;
+            --accent-3: #00c853;
+            --gold: #ffd700;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--purple), #8e0a8e);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .admin-login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .admin-icon {
+            font-size: 60px;
+            color: var(--purple);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .admin-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--purple);
+            margin-bottom: 10px;
+        }
+
+        .admin-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .admin-info {
+            background: rgba(96, 2, 96, 0.1);
+            border: 1px solid rgba(96, 2, 96, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            color: var(--purple);
+        }
+
+        .admin-info strong {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .admin-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .admin-info li {
+            margin-bottom: 5px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .admin-info li::before {
+            content: "•";
+            color: var(--accent-1);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--purple);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(96, 2, 96, 0.2);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--purple);
+            box-shadow: 0 0 0 3px rgba(96, 2, 96, 0.1);
+            background: white;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        .password-toggle:hover {
+            color: var(--purple);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--purple), #8e0a8e);
+            color: white;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(96, 2, 96, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            color: var(--purple);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link a:hover {
+            color: var(--accent-1);
+            transform: translateX(-5px);
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            color: #dc3545;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .success-message {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            color: #28a745;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .admin-login-container {
+                margin: 20px;
+                padding: 40px 30px;
+            }
+
+            .admin-title {
+                font-size: 28px;
+            }
+
+            .admin-icon {
+                font-size: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-login-container">
+        <div class="admin-header">
+            <i class="fas fa-user-shield admin-icon"></i>
+            <h1 class="admin-title">Admin Login</h1>
+            <p class="admin-subtitle">Access Mess Administration Panel</p>
+        </div>
+
+        <div class="admin-info">
+            <strong>Admin Access Levels:</strong>
+            <ul>
+                <li><strong>admin</strong> / <strong>admin123</strong> - Full access to all mess panels</li>
+                <li><strong>raj_admin</strong> / <strong>raj123</strong> - RAJ Mess administration</li>
+                <li><strong>manet_admin</strong> / <strong>manet123</strong> - MANET Mess administration</li>
+                <li><strong>design_admin</strong> / <strong>design123</strong> - Design Mess administration</li>
+            </ul>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                    <i class="fas fa-{% if message.tags == 'error' %}exclamation-triangle{% else %}check-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username" class="form-label">
+                    <i class="fas fa-user"></i> Admin Username
+                </label>
+                <input type="text" id="username" name="username" class="form-input" 
+                       placeholder="Enter admin username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">
+                    <i class="fas fa-lock"></i> Password
+                </label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" class="form-input" 
+                           placeholder="Enter password" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                        <i class="fas fa-eye" id="passwordIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i>
+                Login to Admin Panel
+            </button>
+        </form>
+
+        <div class="back-link">
+            <a href="{% url 'index' %}">
+                <i class="fas fa-arrow-left"></i>
+                Back to Home
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.className = 'fas fa-eye';
+            }
+        }
+
+        // Auto-focus username field
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('username').focus();
+        });
+    </script>
+</body>
+</html>

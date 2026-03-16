@@ -1,350 +1,1513 @@
-<!-- {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>🍽 Add Dish - Mess Menu</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<style>
-body {
-    background: #fff8e6;
-    font-family: "Segoe UI", sans-serif;
-}
-.card-custom {
-    background: #fff7d6;
-    border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border-radius: 14px;
-}
-.title { font-weight: 700; color: #b35400; margin-top: 20px; }
-.dish-img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; }
-.table thead { background: #d9811e; color: white; }
-.table tbody tr:hover { background: #fff2c7; }
-.btn-save { background: #ffa41b; border: none; font-weight: 600; }
-.btn-save:hover { background: #e68e00; }
-#imagePreview {
-    width: 110px; height: 110px; border: 2px dashed #ffa41b;
-    border-radius: 10px; object-fit: cover; display:none; margin-top:10px;
-}
-</style>
-</head>
-
-<body>
-<div class="container py-4">
-
-<h2 class="text-center title">🍽 Add Dish - Mess Menu</h2>
-
-<div class="card card-custom p-4 mt-3">
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-
-    <div class="mb-3">
-        <label class="form-label">Dish Name</label>
-        <input type="text" name="name" class="form-control" required placeholder="Enter dish name">
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Dish Image</label>
-        <input type="file" name="image" class="form-control" id="imageInput" required>
-        <img id="imagePreview">
-    </div>
-
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Day</label>
-            <select name="day" class="form-select" required>
-                <option value="">Select Day</option>
-                {% for d in days %}
-                    <option value="{{ d }}">{{ d|title }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Meal</label>
-            <select name="meal" class="form-select" required>
-                <option value="">Select Meal</option>
-                {% for m in meals %}
-                    <option value="{{ m }}">{{ m|title }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
-
-    <button type="submit" class="btn btn-save w-100 mt-2">Save Dish</button>
-</form>
-</div>
-
-<h2 class="text-center title mt-4">📅 Weekly Menu</h2>
-
-<div class="table-responsive mt-3">
-<table class="table table-bordered text-center align-middle">
-<thead>
-<tr>
-    <th>Image</th>
-    <th>Dish Name</th>
-    <th>Day</th>
-    <th>Meal</th>
-    <th>Action</th>
-</tr>
-</thead>
-<tbody>
-{% for dish in dishes %}
-<tr>
-    <td><img src="{{ dish.image.url }}" class="dish-img"></td>
-    <td>{{ dish.name }}</td>
-    <td>{{ dish.day|title }}</td>
-    <td>{{ dish.meal|title }}</td>
-
-    <td>
-        <form action="{% url 'delete_dish' dish.id %}" method="POST"
-        onsubmit="return confirm('Are you sure you want to delete {{ dish.name }}?');">
-            {% csrf_token %}
-            <button class="btn btn-danger btn-sm">Delete</button>
-        </form>
-    </td>
-</tr>
-{% empty %}
-<tr><td colspan="5" class="text-muted">No dishes added yet</td></tr>
-{% endfor %}
-</tbody>
-</table>
-</div>
-
-</div>
-
-<script>
-document.getElementById("imageInput").addEventListener("change", function(event){
-    const file = event.target.files[0];
-    if(file){
-        const img = document.getElementById("imagePreview");
-        img.src = URL.createObjectURL(file);
-        img.style.display = "block";
-    }
-});
-</script>
-
-</body>
-</html> -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>🍽 Add Dish - Mess Menu</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAJ Canteen Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2c5530;
+            --primary-light: #4a7c59;
+            --secondary: #f39c12;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --info: #3498db;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --white: #ffffff;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-600: #6c757d;
+            --gray-800: #495057;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 25px rgba(0,0,0,0.2);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-body {
-    background: #fff8e6;
-    font-family: "Segoe UI", sans-serif;
-}
-.card-custom {
-    background: #fff7d6;
-    border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border-radius: 14px;
-}
-.title { font-weight: 700; color: #b35400; margin-top: 20px; }
-.dish-img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; }
-.table thead { background: #d9811e; color: white; }
-.table tbody tr:hover { background: #fff2c7; }
-.btn-save { background: #ffa41b; border: none; font-weight: 600; }
-.btn-save:hover { background: #e68e00; }
-#imagePreview {
-    width: 110px; height: 110px; border: 2px dashed #ffa41b;
-    border-radius: 10px; object-fit: cover; display:none; margin-top:10px;
-}
-</style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            z-index: 1000;
+            transition: var(--transition);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .sidebar-brand i {
+            font-size: 28px;
+            color: var(--secondary);
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            margin: 5px 15px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            transition: var(--transition);
+        }
+
+        /* Top Header */
+        .top-header {
+            background: var(--white);
+            padding: 20px 30px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--gray-100);
+            padding: 8px 15px;
+            border-radius: 25px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 30px;
+        }
+
+        /* Stats Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .stat-icon.primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); }
+        .stat-icon.secondary { background: linear-gradient(135deg, var(--secondary), #e67e22); }
+        .stat-icon.success { background: linear-gradient(135deg, var(--success), #2ecc71); }
+        .stat-icon.info { background: linear-gradient(135deg, var(--info), #5dade2); }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .stat-change.positive {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--accent);
+        }
+    </style>
 </head>
-
 <body>
-<div class="container py-4">
-
-<h2 class="text-center title">🍽 Add Dish - Mess Menu</h2>
-
-<div class="card card-custom p-4 mt-3">
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-
-    <div class="mb-3">
-        <label class="form-label">Dish Name</label>
-        <input type="text" name="name" class="form-control" required placeholder="Enter dish name">
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-brand">
+                <i class="fas fa-utensils"></i>
+                <div>
+                    <div>RAJ Canteen</div>
+                    <small style="font-size: 12px; opacity: 0.8;">Management System</small>
+                </div>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a href="#dashboard" class="nav-link active" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#menu" class="nav-link" onclick="showSection('menu')">
+                    <i class="fas fa-utensils"></i>
+                    Menu Management
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#orders" class="nav-link" onclick="showSection('orders')">
+                    <i class="fas fa-shopping-cart"></i>
+                    Orders & Sales
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#analytics" class="nav-link" onclick="showSection('analytics')">
+                    <i class="fas fa-chart-line"></i>
+                    Analytics
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#notices" class="nav-link" onclick="showSection('notices')">
+                    <i class="fas fa-bullhorn"></i>
+                    Notices
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#feedback" class="nav-link" onclick="showSection('feedback')">
+                    <i class="fas fa-comments"></i>
+                    Customer Feedback
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#settings" class="nav-link" onclick="showSection('settings')">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+            </div>
+            <div class="nav-item mt-4">
+                <a href="{% url 'logout' %}" class="nav-link" style="color: #e74c3c;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </nav>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Dish Image</label>
-        <input type="file" name="image" class="form-control" id="imageInput" required>
-        <img id="imagePreview">
-    </div>
-
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Day</label>
-            <select name="day" class="form-select" required>
-                <option value="">Select Day</option>
-                {% for d in days %}
-                    <option value="{{ d }}">{{ d|title }}</option>
-                {% endfor %}
-            </select>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <div class="top-header">
+            <h1 class="page-title">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                <span id="page-title-text">Dashboard Overview</span>
+            </h1>
+            <div class="header-actions">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        {{ user.username.0|upper|default:"A" }}
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 14px;">{{ user.username|default:"Admin" }}</div>
+                        <div style="font-size: 12px; color: var(--gray-600);">Canteen Manager</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Meal</label>
-            <select name="meal" class="form-select" required>
-                <option value="">Select Meal</option>
-                {% for m in meals %}
-                    <option value="{{ m }}">{{ m|title }}</option>
-                {% endfor %}
-            </select>
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="content-section">
+                <!-- Stats Cards -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-value">{{ dishes.count|default:"0" }}</div>
+                                <div class="stat-label">Menu Items</div>
+                                <div class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> +12%
+                                </div>
+                            </div>
+                            <div class="stat-icon primary">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-value">₹24,580</div>
+                                <div class="stat-label">Today's Revenue</div>
+                                <div class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> +8.5%
+                                </div>
+                            </div>
+                            <div class="stat-icon success">
+                                <i class="fas fa-rupee-sign"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-value">342</div>
+                                <div class="stat-label">Orders Today</div>
+                                <div class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> +15%
+                                </div>
+                            </div>
+                            <div class="stat-icon info">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-value">4.8</div>
+                                <div class="stat-label">Customer Rating</div>
+                                <div class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> +0.3
+                                </div>
+                            </div>
+                            <div class="stat-icon secondary">
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Analytics Charts Row -->
+                <div class="row mb-4">
+                    <div class="col-lg-8">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-line me-2"></i>Revenue Analytics</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="revenueChart" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-pie me-2"></i>Popular Items</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="popularItemsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3 mb-3">
+                                        <button class="btn btn-primary w-100" onclick="showSection('menu')">
+                                            <i class="fas fa-plus-circle me-2"></i>Add New Item
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <button class="btn btn-success w-100" onclick="showSection('orders')">
+                                            <i class="fas fa-eye me-2"></i>View Orders
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <button class="btn btn-warning w-100" onclick="showSection('notices')">
+                                            <i class="fas fa-bullhorn me-2"></i>Post Notice
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <button class="btn btn-info w-100" onclick="showSection('feedback')">
+                                            <i class="fas fa-comments me-2"></i>View Feedback
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Management Section -->
+            <div id="menu-section" class="content-section" style="display: none;">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-plus-circle me-2"></i>Add New Menu Item</h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label class="form-label">Item Name</label>
+                                        <input type="text" name="name" class="form-control" required 
+                                               placeholder="Enter item name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Item Image</label>
+                                        <input type="file" name="image" class="form-control" id="imageInput" 
+                                               accept="image/*" required>
+                                        <div class="mt-2">
+                                            <img id="imagePreview" style="width: 100%; max-width: 200px; height: 150px; 
+                                                 object-fit: cover; border-radius: 8px; display: none;">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Day</label>
+                                                <select name="day" class="form-select" required>
+                                                    <option value="">Select Day</option>
+                                                    {% for d in days %}
+                                                        <option value="{{ d }}">{{ d|title }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Meal</label>
+                                                <select name="meal" class="form-select" required>
+                                                    <option value="">Select Meal</option>
+                                                    {% for m in meals %}
+                                                        <option value="{{ m }}">{{ m|title }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-save me-2"></i>Add to Menu
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-list me-2"></i>Current Menu Items</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Image</th>
+                                                <th>Item Name</th>
+                                                <th>Day</th>
+                                                <th>Meal</th>
+                                                <th>Rating</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for dish in dishes %}
+                                            <tr>
+                                                <td>
+                                                    <img src="{{ dish.image.url }}" style="width: 50px; height: 50px; 
+                                                         object-fit: cover; border-radius: 8px;">
+                                                </td>
+                                                <td><strong>{{ dish.name }}</strong></td>
+                                                <td><span class="badge bg-primary">{{ dish.day|title }}</span></td>
+                                                <td><span class="badge bg-secondary">{{ dish.meal|title }}</span></td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-star text-warning me-1"></i>
+                                                        <span>4.2</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <form action="{% url 'delete_dish' dish.id %}" method="POST" class="d-inline"
+                                                          onsubmit="return confirm('Delete {{ dish.name }}?');">
+                                                        {% csrf_token %}
+                                                        <button class="btn btn-danger btn-sm">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="6" class="text-center text-muted py-4">
+                                                    <i class="fas fa-utensils fa-2x mb-3 d-block"></i>
+                                                    No menu items added yet
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Analytics Section -->
+            <div id="analytics-section" class="content-section" style="display: none;">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-bar me-2"></i>Weekly Performance Analytics</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="weeklyPerformanceChart" height="80"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Feedback Analytics -->
+                {% if feedback_graphs %}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-pie me-2"></i>Customer Preference Analytics</h5>
+                                <small class="text-muted">Based on weekly suggestions and feedback</small>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for g in feedback_graphs %}
+                                    <div class="col-lg-4 col-md-6 mb-4">
+                                        <div class="analytics-card">
+                                            <div class="analytics-header">
+                                                <h6 class="mb-1">{{ g.day|title }} - {{ g.meal|title }}</h6>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-users me-1"></i>{{ g.counts|length }} responses
+                                                </small>
+                                            </div>
+                                            <div class="analytics-chart">
+                                                <img src="data:image/png;base64,{{ g.image }}" 
+                                                     class="img-fluid" style="max-height: 200px;">
+                                            </div>
+                                            <div class="analytics-footer">
+                                                <div class="row text-center">
+                                                    <div class="col-4">
+                                                        <div class="metric-value">85%</div>
+                                                        <div class="metric-label">Satisfaction</div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="metric-value">{{ g.counts|length }}</div>
+                                                        <div class="metric-label">Votes</div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="metric-value">4.2</div>
+                                                        <div class="metric-label">Rating</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Performance Metrics -->
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-trophy me-2"></i>Top Performing Items</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="performance-list">
+                                    <div class="performance-item">
+                                        <div class="item-info">
+                                            <div class="item-name">Dal Tadka</div>
+                                            <div class="item-stats">4.8 rating • 156 orders</div>
+                                        </div>
+                                        <div class="item-score">
+                                            <div class="score-bar">
+                                                <div class="score-fill" style="width: 96%"></div>
+                                            </div>
+                                            <span class="score-text">96%</span>
+                                        </div>
+                                    </div>
+                                    <div class="performance-item">
+                                        <div class="item-info">
+                                            <div class="item-name">Rajma Rice</div>
+                                            <div class="item-stats">4.6 rating • 142 orders</div>
+                                        </div>
+                                        <div class="item-score">
+                                            <div class="score-bar">
+                                                <div class="score-fill" style="width: 89%"></div>
+                                            </div>
+                                            <span class="score-text">89%</span>
+                                        </div>
+                                    </div>
+                                    <div class="performance-item">
+                                        <div class="item-info">
+                                            <div class="item-name">Aloo Paratha</div>
+                                            <div class="item-stats">4.4 rating • 128 orders</div>
+                                        </div>
+                                        <div class="item-score">
+                                            <div class="score-bar">
+                                                <div class="score-fill" style="width: 82%"></div>
+                                            </div>
+                                            <span class="score-text">82%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-clock me-2"></i>Peak Hours Analysis</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="peakHoursChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notices Section -->
+            <div id="notices-section" class="content-section" style="display: none;">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-bullhorn me-2"></i>Create New Notice</h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" enctype="multipart/form-data" action="{% url 'admin_raj_mess' mess_id=mess_id %}">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label class="form-label">Notice Title</label>
+                                        <input type="text" name="title" class="form-control" required 
+                                               placeholder="Enter notice title">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Notice Description</label>
+                                        <textarea name="body" rows="4" class="form-control" required 
+                                                  placeholder="Write notice details..."></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Attachment (Optional)</label>
+                                        <input type="file" name="attachment" class="form-control">
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input type="checkbox" name="is_published" class="form-check-input" 
+                                               id="publishCheck" checked>
+                                        <label for="publishCheck" class="form-check-label">
+                                            Publish immediately
+                                        </label>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-paper-plane me-2"></i>Publish Notice
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-list me-2"></i>Published Notices</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Date</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for n in notices %}
+                                            <tr>
+                                                <td><strong>{{ n.title }}</strong></td>
+                                                <td>{{ n.created_at|date:"d M Y, H:i" }}</td>
+                                                <td>
+                                                    {% if n.is_published %}
+                                                        <span class="badge bg-success">Published</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">Draft</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <form method="POST" action="{% url 'delete_notice' n.id mess_id %}" class="d-inline">
+                                                        {% csrf_token %}
+                                                        <button class="btn btn-danger btn-sm" 
+                                                                onclick="return confirm('Delete {{ n.title }}?')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted py-4">
+                                                    <i class="fas fa-bullhorn fa-2x mb-3 d-block"></i>
+                                                    No notices published yet
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Feedback Section -->
+            <div id="feedback-section" class="content-section" style="display: none;">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-comments me-2"></i>Customer Feedback Overview</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="feedback-stat">
+                                            <div class="feedback-value">4.8</div>
+                                            <div class="feedback-label">Overall Rating</div>
+                                            <div class="rating-stars">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="feedback-stat">
+                                            <div class="feedback-value">342</div>
+                                            <div class="feedback-label">Total Reviews</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="feedback-stat">
+                                            <div class="feedback-value">89%</div>
+                                            <div class="feedback-label">Satisfaction Rate</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="feedback-stat">
+                                            <div class="feedback-value">24</div>
+                                            <div class="feedback-label">This Week</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-bar me-2"></i>Feedback Trends</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="feedbackTrendsChart" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-list-alt me-2"></i>Recent Feedback</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="feedback-list">
+                                    <div class="feedback-item">
+                                        <div class="feedback-header">
+                                            <strong>Excellent Dal Tadka!</strong>
+                                            <div class="rating-small">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <div class="feedback-text">Perfect taste and quality. Keep it up!</div>
+                                        <div class="feedback-meta">Student • 2 hours ago</div>
+                                    </div>
+                                    <div class="feedback-item">
+                                        <div class="feedback-header">
+                                            <strong>Good variety</strong>
+                                            <div class="rating-small">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="far fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <div class="feedback-text">Love the variety in menu options.</div>
+                                        <div class="feedback-meta">Faculty • 5 hours ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Section -->
+            <div id="orders-section" class="content-section" style="display: none;">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5><i class="fas fa-shopping-cart me-2"></i>Today's Orders</h5>
+                                <div class="order-filters">
+                                    <button class="btn btn-sm btn-outline-primary active">All</button>
+                                    <button class="btn btn-sm btn-outline-success">Completed</button>
+                                    <button class="btn btn-sm btn-outline-warning">Pending</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Order ID</th>
+                                                <th>Customer</th>
+                                                <th>Items</th>
+                                                <th>Amount</th>
+                                                <th>Time</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>#ORD-001</strong></td>
+                                                <td>Rahul Sharma</td>
+                                                <td>Dal Tadka, Rice, Roti (2)</td>
+                                                <td>₹85</td>
+                                                <td>12:30 PM</td>
+                                                <td><span class="badge bg-success">Completed</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>#ORD-002</strong></td>
+                                                <td>Priya Patel</td>
+                                                <td>Rajma Rice, Salad</td>
+                                                <td>₹75</td>
+                                                <td>12:45 PM</td>
+                                                <td><span class="badge bg-warning">Preparing</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>#ORD-003</strong></td>
+                                                <td>Amit Kumar</td>
+                                                <td>Aloo Paratha (2), Curd</td>
+                                                <td>₹60</td>
+                                                <td>1:00 PM</td>
+                                                <td><span class="badge bg-info">Ready</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings-section" class="content-section" style="display: none;">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-cog me-2"></i>Canteen Settings</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="setting-item">
+                                    <div class="setting-label">Operating Hours</div>
+                                    <div class="setting-control">
+                                        <input type="time" class="form-control" value="07:00"> - 
+                                        <input type="time" class="form-control" value="22:00">
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-label">Maximum Orders per Hour</div>
+                                    <div class="setting-control">
+                                        <input type="number" class="form-control" value="50">
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-label">Enable Online Ordering</div>
+                                    <div class="setting-control">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" checked>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary">Save Settings</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-users me-2"></i>Staff Management</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="staff-list">
+                                    <div class="staff-item">
+                                        <div class="staff-info">
+                                            <div class="staff-name">{{ user.username|default:"Admin" }}</div>
+                                            <div class="staff-role">Canteen Manager</div>
+                                        </div>
+                                        <div class="staff-status">
+                                            <span class="badge bg-success">Active</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    <!-- Additional Styles -->
+    <style>
+        /* Card Styles */
+        .card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: none;
+            transition: var(--transition);
+        }
 
-    <button type="submit" class="btn btn-save w-100 mt-2">Save Dish</button>
-</form>
-</div>
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
 
-<h2 class="text-center title mt-4">📅 Weekly Menu</h2>
+        .card-header {
+            background: var(--gray-100);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 20px 25px;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
 
-<div class="table-responsive mt-3">
-<table class="table table-bordered text-center align-middle">
-<thead>
-<tr>
-    <th>Image</th>
-    <th>Dish Name</th>
-    <th>Day</th>
-    <th>Meal</th>
-    <th>Action</th>
-</tr>
-</thead>
-<tbody>
-{% for dish in dishes %}
-<tr>
-    <td><img src="{{ dish.image.url }}" class="dish-img"></td>
-    <td>{{ dish.name }}</td>
-    <td>{{ dish.day|title }}</td>
-    <td>{{ dish.meal|title }}</td>
+        .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+            color: var(--dark);
+        }
 
-    <td>
-        <form action="{% url 'delete_dish' dish.id %}" method="POST"
-        onsubmit="return confirm('Are you sure you want to delete {{ dish.name }}?');">
-            {% csrf_token %}
-            <button class="btn btn-danger btn-sm">Delete</button>
-        </form>
-    </td>
-</tr>
-{% empty %}
-<tr><td colspan="5" class="text-muted">No dishes added yet</td></tr>
-{% endfor %}
-</tbody>
-</table>
-</div>
+        .card-body {
+            padding: 25px;
+        }
 
-<!-- ✅ Weekly Feedback Graphs Section -->
-<h2 class="text-center title mt-5">📊 Weekly Suggestion Analysis</h2>
+        /* Analytics Cards */
+        .analytics-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
 
-<div class="row mt-3">
-{% for g in feedback_graphs %}
-<div class="col-md-4 mb-3">
-    <div class="card p-3 text-center shadow-sm">
-        <h6 class="fw-bold">{{ g.day }} - {{ g.meal }}</h6>
-        <img src="data:image/png;base64,{{ g.image }}" class="img-fluid" />
-        <small class="text-muted">Votes: {{ g.counts|length }}</small>
-    </div>
-</div>
-{% endfor %}
-</div>
+        .analytics-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
 
-</div>
-<!-- 📢 Manage Notices (paste inside add_dish.html) -->
-<h2 class="text-center title mt-5">📢 Manage Notices</h2>
+        .analytics-header {
+            margin-bottom: 15px;
+        }
 
-<div class="card card-custom p-4 mt-3 notice-section">
-  <form method="POST" enctype="multipart/form-data" action="{% url 'admin_raj_mess' mess_id=mess_id %}">
-    {% csrf_token %}
+        .analytics-chart {
+            text-align: center;
+            margin: 15px 0;
+        }
 
-    <div class="mb-3">
-      <label class="form-label">Notice Title</label>
-      <input type="text" name="title" class="form-control" required placeholder="Enter notice title">
-    </div>
+        .analytics-footer {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--gray-200);
+        }
 
-    <div class="mb-3">
-      <label class="form-label">Notice Description</label>
-      <textarea name="body" rows="4" class="form-control" required placeholder="Write notice details..."></textarea>
-    </div>
+        .metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+        }
 
-    <div class="mb-3">
-      <label class="form-label">Attachment (Optional)</label>
-      <input type="file" name="attachment" class="form-control">
-    </div>
+        .metric-label {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
 
-    <div class="form-check mb-3">
-      <input type="checkbox" name="is_published" class="form-check-input" id="publishCheck" checked>
-      <label for="publishCheck" class="form-check-label">Publish immediately</label>
-    </div>
+        /* Performance Items */
+        .performance-list {
+            space-y: 15px;
+        }
 
-    <button type="submit" class="btn btn-save w-100">Save Notice</button>
-  </form>
-</div>
+        .performance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
 
-<h3 class="text-center title mt-4">🗂 Existing Notices</h3>
-<div class="table-responsive mt-3">
-  <table class="table table-bordered text-center align-middle">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Date</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for n in notices %}
-      <tr>
-        <td>{{ n.title }}</td>
-        <td>{{ n.created_at|date:"d M Y, H:i" }}</td>
-        <td>
-          {% if n.is_published %}
-            <span class="badge bg-success">Published</span>
-          {% else %}
-            <span class="badge bg-secondary">Draft</span>
-          {% endif %}
-        </td>
-        <td>
-          <form method="POST" action="{% url 'delete_notice' n.id mess_id %}">
-            {% csrf_token %}
-            <button class="btn btn-danger btn-sm" onclick="return confirm('Delete {{ n.title }}?')">Delete</button>
-          </form>
-        </td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="4" class="text-muted">No notices yet</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+        .performance-item:last-child {
+            border-bottom: none;
+        }
 
-  
-    <!-- --- existing add_dish page content goes here: forms for adding dish & notices etc. --- -->
-    <!-- You can keep your original dish/notice form HTML below this block -->
+        .item-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
 
-  </div>
+        .item-stats {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
 
-<script>
-document.getElementById("imageInput").addEventListener("change", function(event){
-    const file = event.target.files[0];
-    if(file){
-        const img = document.getElementById("imagePreview");
-        img.src = URL.createObjectURL(file);
-        img.style.display = "block";
-    }
-});
-</script>
+        .item-score {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
+        .score-bar {
+            width: 80px;
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--primary));
+            border-radius: 3px;
+        }
+
+        .score-text {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Feedback Styles */
+        .feedback-stat {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .feedback-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .feedback-label {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: 10px;
+        }
+
+        .rating-stars {
+            color: var(--secondary);
+        }
+
+        .feedback-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .feedback-item {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .feedback-item:last-child {
+            border-bottom: none;
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .rating-small {
+            color: var(--secondary);
+            font-size: 12px;
+        }
+
+        .feedback-text {
+            font-size: 14px;
+            color: var(--gray-800);
+            margin-bottom: 5px;
+        }
+
+        .feedback-meta {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        /* Settings Styles */
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .setting-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .setting-control .form-control {
+            width: auto;
+            min-width: 100px;
+        }
+
+        .staff-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .staff-item:last-child {
+            border-bottom: none;
+        }
+
+        .staff-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .staff-role {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .top-header {
+                padding: 15px 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .dashboard-content {
+                padding: 20px;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .top-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .dashboard-content {
+                padding: 15px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+        }
+    </style>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navigation Functions
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').style.display = 'block';
+            
+            // Add active class to clicked nav link
+            event.target.classList.add('active');
+            
+            // Update page title
+            const titles = {
+                'dashboard': 'Dashboard Overview',
+                'menu': 'Menu Management',
+                'orders': 'Orders & Sales',
+                'analytics': 'Analytics & Reports',
+                'notices': 'Notice Management',
+                'feedback': 'Customer Feedback',
+                'settings': 'System Settings'
+            };
+            document.getElementById('page-title-text').textContent = titles[sectionName];
+        }
+
+        // Image Preview
+        document.getElementById("imageInput").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const img = document.getElementById("imagePreview");
+                img.src = URL.createObjectURL(file);
+                img.style.display = "block";
+            }
+        });
+
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Revenue (₹)',
+                        data: [12000, 15000, 18000, 14000, 22000, 25000, 20000],
+                        borderColor: '#2c5530',
+                        backgroundColor: 'rgba(44, 85, 48, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Popular Items Chart
+            const popularCtx = document.getElementById('popularItemsChart').getContext('2d');
+            new Chart(popularCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Dal Tadka', 'Rajma Rice', 'Aloo Paratha', 'Others'],
+                    datasets: [{
+                        data: [30, 25, 20, 25],
+                        backgroundColor: ['#2c5530', '#f39c12', '#e74c3c', '#3498db']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Weekly Performance Chart
+            const weeklyCtx = document.getElementById('weeklyPerformanceChart').getContext('2d');
+            new Chart(weeklyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Orders',
+                        data: [1200, 1500, 1800, 1600],
+                        backgroundColor: '#2c5530'
+                    }, {
+                        label: 'Revenue (₹000)',
+                        data: [85, 105, 125, 110],
+                        backgroundColor: '#f39c12'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Peak Hours Chart
+            const peakCtx = document.getElementById('peakHoursChart').getContext('2d');
+            new Chart(peakCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['8AM', '10AM', '12PM', '2PM', '4PM', '6PM', '8PM'],
+                    datasets: [{
+                        label: 'Orders',
+                        data: [20, 35, 80, 65, 45, 75, 40],
+                        borderColor: '#2c5530',
+                        backgroundColor: 'rgba(44, 85, 48, 0.2)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Feedback Trends Chart
+            const feedbackCtx = document.getElementById('feedbackTrendsChart').getContext('2d');
+            new Chart(feedbackCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Average Rating',
+                        data: [4.2, 4.3, 4.5, 4.4, 4.6, 4.8],
+                        borderColor: '#f39c12',
+                        backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: 3.5,
+                            max: 5
+                        }
+                    }
+                }
+            });
+        });
+
+        // Auto-hide alerts
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                alert.style.transition = 'opacity 0.5s';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
+
+        // Loading states for forms
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+                    submitBtn.disabled = true;
+                }
+            });
+        });
+    </script>
 </body>
 </html>

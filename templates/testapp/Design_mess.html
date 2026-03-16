@@ -4,143 +4,1967 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Design Mess Menu</title>
+<title>Design Mess - MIT ADT University</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
 <style>
-body { font-family: "Poppins", sans-serif; background:#fff8ef; margin:0; }
-.container{max-width:1000px;margin:auto;padding:20px}
-.mess-header{text-align:center;font-weight:700;color:#b3541e;margin-bottom:20px;font-size:28px}
-.form-controls{display:flex;gap:15px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:25px}
-.select-box{padding:8px 12px;border-radius:6px;border:1px solid #d68642;background:#fff7e6;min-width:120px}
-.view-btn{background:#d68642;border:none;padding:8px 18px;border-radius:8px;color:white;font-weight:bold;cursor:pointer;transition:0.3s}
-.view-btn:hover{background:#b8541a;transform:translateY(-2px)}
-.section-title{font-size:26px;font-weight:700;color:#d26a24;border-bottom:2px dotted #ffae6d;margin-bottom:20px;text-align:center}
-.menu-container{display:flex;flex-wrap:wrap;gap:25px;justify-content:center}
-.menu-card{background:#fffdf8;border-radius:16px;padding:15px;box-shadow:0 4px 10px rgba(255,160,60,0.25);text-align:center;width:280px;transition:0.3s}
-.menu-card:hover{transform:translateY(-5px)}
-.menu-card img{width:100%;height:160px;object-fit:cover;border-radius:14px;border:2px solid #ffdbb5}
-.dish-name{font-weight:600;margin-top:8px;font-size:18px;color:#383838}
-.rating-text{font-size:14px;font-weight:600;margin-top:6px;color:#4f4f4f}
-
-.star{
-  font-size:28px;
-  cursor:pointer;
-  margin:0 4px;
-  transition:0.15s;
-  user-select:none;
+:root {
+  --primary: #ff6b35;
+  --primary-dark: #e55a2b;
+  --secondary: #ffa726;
+  --accent: #4caf50;
+  --bg-primary: #fff8f3;
+  --bg-secondary: #fef7f0;
+  --card: #ffffff;
+  --text: #2d3436;
+  --text-light: #636e72;
+  --text-muted: #b2bec3;
+  --border: #ddd6fe;
+  --shadow: 0 10px 40px rgba(255, 107, 53, 0.15);
+  --shadow-hover: 0 20px 60px rgba(255, 107, 53, 0.25);
+  --gradient-primary: linear-gradient(135deg, #ff6b35 0%, #ffa726 100%);
+  --gradient-secondary: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  --gradient-bg: linear-gradient(135deg, #fff8f3 0%, #fef7f0 50%, #fff3e0 100%);
 }
-.star.active { color:#ffb703; } 
-.star.inactive { color:#bdbdbd; }
-.small-note{font-size:13px;color:#666;margin-top:6px}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--gradient-bg);
+  min-height: 100vh;
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Animated Background Elements */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 167, 38, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(76, 175, 80, 0.05) 0%, transparent 50%);
+  animation: float 20s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(30px, -30px) rotate(120deg); }
+  66% { transform: translate(-20px, 20px) rotate(240deg); }
+}
+/* Header Section */
+.mess-header {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 60px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.mess-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="food" patternUnits="userSpaceOnUse" width="20" height="20"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23food)"/></svg>');
+  animation: slide 30s linear infinite;
+}
+
+@keyframes slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-20px); }
+}
+
+.mess-title {
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  position: relative;
+  z-index: 2;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.mess-subtitle {
+  font-size: 20px;
+  opacity: 0.95;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 2;
+  font-weight: 400;
+}
+
+.mess-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+  position: relative;
+  z-index: 2;
+}
+
+.stat-item {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 20px 25px;
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  text-align: center;
+  min-width: 140px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.stat-number {
+  font-size: 32px;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 14px;
+  opacity: 0.9;
+  font-weight: 500;
+}
+/* Container */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Info Cards Section */
+.info-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+.info-card {
+  background: var(--card);
+  border-radius: 25px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+  transition: all 0.4s ease;
+  border: 1px solid rgba(255, 107, 53, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--gradient-primary);
+}
+
+.info-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-hover);
+}
+
+.info-card h3 {
+  color: var(--primary);
+  font-size: 22px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+}
+
+.info-card h3 i {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 12px;
+}
+
+.info-card p, .info-card ul {
+  color: var(--text-light);
+  margin-bottom: 12px;
+  font-weight: 400;
+}
+
+.info-card ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+.info-card li {
+  margin-bottom: 8px;
+  padding-left: 25px;
+  position: relative;
+}
+
+.info-card li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+/* Menu Selection Section - Modern App Theme */
+.menu-selection {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 24px;
+  padding: 0;
+  box-shadow: 0 25px 50px rgba(102, 126, 234, 0.25);
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+  color: white;
+  border: none;
+}
+
+.menu-selection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  z-index: 1;
+}
+
+.menu-selection > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Header Section */
+.menu-header {
+  padding: 40px 30px 30px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+}
+
+.section-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  letter-spacing: -0.5px;
+}
+
+.section-title i {
+  font-size: 28px;
+  background: linear-gradient(45deg, #ff6b6b, #feca57);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.section-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 0;
+  opacity: 0.95;
+}
+
+/* Middle Form Section */
+.form-middle-section {
+  padding: 25px 30px;
+  background: rgba(255, 255, 255, 0.98);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 20px;
+  border-radius: 0 0 24px 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group label {
+  font-weight: 700;
+  color: #2d3436;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1px;
+}
+
+.form-group label i {
+  font-size: 12px;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 3px;
+  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.select-box {
+  padding: 8px 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  background: white;
+  color: #2d3436;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 10px center;
+  background-repeat: no-repeat;
+  background-size: 10px;
+  padding-right: 30px;
+  width: 100%;
+  height: 36px;
+}
+
+.select-box:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+.select-box:hover {
+  border-color: #667eea;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+/* Button Container within Middle Section */
+.button-container {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.view-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  padding: 12px 28px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  min-width: 160px;
+  justify-content: center;
+  height: 38px;
+}
+
+.view-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.view-btn:hover::before {
+  left: 100%;
+}
+
+.view-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.view-btn:active {
+  transform: translateY(-1px);
+}
+
+.view-btn i {
+  font-size: 14px;
+}
+
+/* Information Cards Section - Standalone */
+.info-cards-section {
+  padding: 0;
+  background: transparent;
+  margin-bottom: 40px;
+}
+
+.info-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.info-card {
+  background: var(--card);
+  border-radius: 25px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+  transition: all 0.4s ease;
+  border: 1px solid rgba(255, 107, 53, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--gradient-primary);
+}
+
+.info-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-hover);
+}
+
+.info-card h3 {
+  color: var(--primary);
+  font-size: 22px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+}
+
+.info-card h3 i {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 12px;
+}
+
+.info-card p, .info-card ul {
+  color: var(--text-light);
+  margin-bottom: 12px;
+  font-weight: 400;
+}
+
+.info-card ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+.info-card li {
+  margin-bottom: 8px;
+  padding-left: 25px;
+  position: relative;
+}
+
+.info-card li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+
+
+.view-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.view-btn:hover::before {
+  left: 100%;
+}
+
+.view-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+  background: white;
+  color: #5a67d8;
+}
+
+.view-btn:active {
+  transform: translateY(-1px);
+}
+
+.view-btn i {
+  font-size: 16px;
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .container{padding:15px}
-  .mess-header{font-size:24px;margin-bottom:15px}
-  .form-controls{flex-direction:column;gap:10px;align-items:stretch}
-  .select-box{width:100%;max-width:300px;margin:0 auto}
-  .view-btn{width:100%;max-width:300px;margin:0 auto}
-  .section-title{font-size:22px}
-  .menu-card{width:100%;max-width:350px;margin:0 auto}
-  .menu-container{gap:20px}
+  .menu-selection {
+    border-radius: 20px;
+    margin: 0 10px 30px;
+  }
+  
+  .menu-header {
+    padding: 30px 20px 25px;
+  }
+  
+  .section-title {
+    font-size: 28px;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .section-subtitle {
+    font-size: 15px;
+  }
+  
+  .form-middle-section {
+    padding: 20px;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .button-container {
+    margin-top: 15px;
+    padding-top: 15px;
+  }
+  
+  .info-cards-section {
+    margin-bottom: 30px;
+  }
+  
+  .info-card-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    padding: 0 15px;
+  }
+  
+  .info-card {
+    padding: 25px;
+  }
+  
+  .select-box {
+    padding: 7px 10px;
+    font-size: 13px;
+    padding-right: 28px;
+    height: 34px;
+  }
+  
+  .view-btn {
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 13px;
+    min-width: auto;
+    height: 36px;
+  }
 }
 
 @media (max-width: 480px) {
-  .container{padding:10px}
-  .mess-header{font-size:20px}
-  .section-title{font-size:18px}
-  .menu-card{padding:12px}
-  .menu-card img{height:140px}
-  .dish-name{font-size:16px}
-  .star{font-size:24px;margin:0 2px}
-  .rating-text{font-size:13px}
+  .menu-selection {
+    margin: 0 5px 25px;
+    border-radius: 16px;
+  }
+  
+  .menu-header {
+    padding: 25px 15px 20px;
+  }
+  
+  .section-title {
+    font-size: 24px;
+  }
+  
+  .section-subtitle {
+    font-size: 14px;
+  }
+  
+  .form-middle-section {
+    padding: 18px 15px;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .button-container {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+  
+  .info-cards-section {
+    margin-bottom: 25px;
+  }
+  
+  .info-card-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 10px;
+  }
+  
+  .info-card {
+    padding: 20px;
+    border-radius: 20px;
+  }
+  
+  .info-card h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+  
+  .info-card h3 i {
+    font-size: 20px;
+    width: 35px;
+    height: 35px;
+  }
+  
+  .form-group label {
+    font-size: 10px;
+  }
+  
+  .form-group label i {
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    padding: 3px;
+  }
+  
+  .select-box {
+    padding: 6px 8px;
+    padding-right: 24px;
+    border-radius: 6px;
+    font-size: 12px;
+    height: 30px;
+  }
+  
+  .view-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    height: 32px;
+  }
+}
+
+/* Desktop Grid Layout - 2x2 */
+@media (min-width: 769px) {
+  .form-middle-section {
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 20px;
+  }
+  
+  .info-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .info-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    padding: 0 40px;
+  }
+}
+
+/* Loading State */
+.form-middle-section.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.form-middle-section.loading .select-box {
+  background-image: 
+    url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e"),
+    linear-gradient(45deg, transparent 30%, rgba(102, 126, 234, 0.1) 50%, transparent 70%);
+  background-size: 16px, 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: right 20px center, -200% 0; }
+  100% { background-position: right 20px center, 200% 0; }
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+.form-controls {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+  align-items: end;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 2;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+
+
+
+
+
+/* Menu Display Section */
+.menu-display {
+  background: var(--card);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: var(--shadow);
+  margin-bottom: 40px;
+}
+
+.menu-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.menu-card {
+  background: var(--bg-secondary);
+  border-radius: 25px;
+  padding: 25px;
+  box-shadow: 0 8px 30px rgba(255, 107, 53, 0.1);
+  text-align: center;
+  transition: all 0.4s ease;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.menu-card:hover::before {
+  opacity: 0.05;
+}
+
+.menu-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-hover);
+}
+
+.menu-card > * {
+  position: relative;
+  z-index: 2;
+}
+.menu-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  border: 3px solid rgba(255, 107, 53, 0.2);
+  transition: all 0.3s ease;
+}
+
+.menu-card:hover img {
+  transform: scale(1.05);
+  border-color: var(--primary);
+}
+
+.dish-placeholder {
+  width: 100%;
+  height: 220px;
+  background: var(--gradient-primary);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 60px;
+  margin-bottom: 20px;
+  border: 3px solid rgba(255, 107, 53, 0.2);
+}
+
+.dish-name {
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--text);
+  margin-bottom: 15px;
+}
+
+.rating-section {
+  margin: 20px 0;
+  padding: 20px;
+  background: rgba(255, 107, 53, 0.05);
+  border-radius: 15px;
+}
+
+.rating-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 10px;
+}
+
+.rating-stars {
+  margin: 10px 0;
+}
+
+.star {
+  font-size: 28px;
+  cursor: pointer;
+  margin: 0 3px;
+  transition: all 0.3s ease;
+  user-select: none;
+  display: inline-block;
+}
+
+.star.active {
+  color: #ffd700;
+  transform: scale(1.2);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.star.inactive {
+  color: #ddd;
+}
+
+.star:hover {
+  transform: scale(1.3);
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.7));
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 80px 30px;
+  color: var(--text-light);
+}
+
+.empty-state h3 {
+  font-size: 28px;
+  margin-bottom: 15px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.empty-state p {
+  font-size: 18px;
+  margin-bottom: 25px;
+  font-weight: 400;
+}
+/* Quick Actions */
+.quick-actions {
+  background: var(--card);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.action-btn {
+  background: var(--gradient-secondary);
+  color: white;
+  padding: 18px 30px;
+  border: none;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.action-btn:hover::before {
+  left: 100%;
+}
+
+.action-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+}
+
+.payment-btn {
+  background: linear-gradient(135deg, #ff6b35, #ffa726) !important;
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3) !important;
+}
+
+.payment-btn:hover {
+  box-shadow: 0 12px 35px rgba(255, 107, 53, 0.4) !important;
+}
+
+/* Payment Information */
+.payment-info {
+  background: var(--card);
+  border-radius: 25px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+  margin-top: 30px;
+}
+
+.payment-info h3 {
+  color: var(--primary);
+  font-size: 24px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+}
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin: 25px 0;
+}
+
+.price-item {
+  text-align: center;
+  padding: 20px;
+  background: var(--bg-primary);
+  border-radius: 20px;
+  border: 2px solid rgba(255, 107, 53, 0.1);
+  transition: all 0.3s ease;
+}
+
+.price-item:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary);
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.15);
+}
+
+.price-emoji {
+  font-size: 32px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.price-meal {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.price-amount {
+  font-size: 24px;
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.payment-methods {
+  margin-top: 25px;
+  padding: 25px;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 20px;
+  border-left: 5px solid var(--accent);
+}
+
+.payment-methods h4 {
+  color: var(--accent);
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.payment-methods ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.payment-methods li {
+  padding: 8px 0;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .container {
+    padding: 30px 15px;
+  }
+  
+  .menu-container {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+  }
+}
+@media (max-width: 768px) {
+  .mess-title {
+    font-size: 36px;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .mess-subtitle {
+    font-size: 18px;
+  }
+  
+  .mess-stats {
+    gap: 20px;
+  }
+  
+  .stat-item {
+    min-width: 120px;
+    padding: 15px 20px;
+  }
+  
+  .stat-number {
+    font-size: 28px;
+  }
+  
+  .container {
+    padding: 25px 15px;
+  }
+  
+  .info-section {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  
+  .section-title {
+    font-size: 28px;
+  }
+  
+  .form-controls {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .select-box {
+    min-width: 280px;
+  }
+  
+  .menu-container {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  
+  .action-buttons {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .price-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mess-header {
+    padding: 40px 15px;
+  }
+  
+  .mess-title {
+    font-size: 28px;
+  }
+  
+  .mess-subtitle {
+    font-size: 16px;
+  }
+  
+  .section-title {
+    font-size: 24px;
+  }
+  
+  .section-subtitle {
+    font-size: 16px;
+  }
+  
+  .menu-selection,
+  .menu-display,
+  .quick-actions,
+  .payment-info {
+    padding: 25px 20px;
+  }
+  
+  .select-box {
+    min-width: 250px;
+    padding: 14px 16px;
+  }
+  
+  .menu-card {
+    padding: 20px;
+  }
+  
+  .menu-card img,
+  .dish-placeholder {
+    height: 180px;
+  }
+  
+  .star {
+    font-size: 24px;
+    margin: 0 2px;
+  }
+  
+  .action-btn {
+    padding: 16px 25px;
+    font-size: 15px;
+  }
+  
+  .price-item {
+    padding: 15px;
+  }
+  
+  .price-emoji {
+    font-size: 28px;
+  }
+  
+  .price-amount {
+    font-size: 20px;
+  }
+}
+
+/* Loading Animation */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Scroll Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Weekly Menu Section */
+.weekly-menu-section {
+  background: var(--card);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: var(--shadow);
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.weekly-menu-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(76, 175, 80, 0.05) 0%, transparent 70%);
+  animation: rotate 25s linear infinite;
+}
+
+.weekly-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+  position: relative;
+  z-index: 2;
+}
+
+.day-menu-card {
+  background: var(--bg-secondary);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s ease;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-menu-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--gradient-secondary);
+}
+
+.day-menu-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--accent);
+  box-shadow: 0 15px 40px rgba(76, 175, 80, 0.2);
+}
+
+.day-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba(76, 175, 80, 0.1);
+}
+
+.day-header i {
+  font-size: 24px;
+  color: var(--accent);
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 10px;
+}
+
+.day-header h4 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.meals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.meal-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.meal-item:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-left-color: var(--primary);
+  transform: translateX(5px);
+}
+
+.meal-icon {
+  font-size: 24px;
+  min-width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.meal-details {
+  flex: 1;
+}
+
+.meal-details strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.meal-details p {
+  font-size: 14px;
+  color: var(--text-light);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.menu-note {
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(255, 167, 38, 0.1);
+  border-radius: 15px;
+  border-left: 5px solid var(--secondary);
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  position: relative;
+  z-index: 2;
+}
+
+.menu-note i {
+  color: var(--secondary);
+  font-size: 20px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.menu-note p {
+  margin: 0;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.menu-note strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Responsive Design for Weekly Menu */
+@media (max-width: 768px) {
+  .weekly-menu-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .day-menu-card {
+    padding: 20px;
+  }
+  
+  .meal-item {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .meal-icon {
+    font-size: 20px;
+    min-width: 30px;
+    height: 30px;
+  }
+  
+  .day-header h4 {
+    font-size: 18px;
+  }
+  
+  .meal-details strong {
+    font-size: 15px;
+  }
+  
+  .meal-details p {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .weekly-menu-section {
+    padding: 25px 20px;
+  }
+  
+  .weekly-menu-grid {
+    gap: 15px;
+  }
+  
+  .day-menu-card {
+    padding: 18px;
+  }
+  
+  .day-header {
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .day-header i {
+    font-size: 20px;
+    width: 30px;
+    height: 30px;
+  }
+  
+  .meals-list {
+    gap: 12px;
+  }
+  
+  .meal-item {
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .menu-note {
+    padding: 15px;
+    gap: 12px;
+  }
+  
+  .menu-note i {
+    font-size: 18px;
+  }
+  
+  .menu-note p {
+    font-size: 14px;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
+}
+
+/* Notices Section Styles */
+.notices-section {
+  background: var(--card);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: var(--shadow);
+  margin-bottom: 40px;
+}
+
+.notices-wrap {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.notices-heading {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notices-lead {
+  color: var(--text-light);
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.notices-cards {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+}
+
+.notice-card {
+  background: var(--bg-secondary);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--primary);
+}
+
+.notice-card:hover {
+  transform: translateX(5px);
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.15);
+}
+
+.notice-card:last-child {
+  margin-bottom: 0;
+}
+
+.notice-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.notice-summary {
+  font-size: 14px;
+  color: var(--text-light);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.notice-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.no-notices {
+  text-align: center;
+  color: var(--text-light);
+  font-style: italic;
+  padding: 40px 20px;
+}
+
+.notices-actions {
+  text-align: center;
+}
+
+.btn-notice {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 12px 25px;
+  border-radius: 15px;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+}
+
+.btn-notice:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(255, 107, 53, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.notices-graphic {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notice-icon {
+  width: 120px;
+  height: 120px;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: white;
+  box-shadow: 0 15px 40px rgba(255, 107, 53, 0.3);
+}
+
+/* Responsive Design for Notices */
+@media (max-width: 768px) {
+  .notices-wrap {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    text-align: center;
+  }
+  
+  .notice-card {
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+  }
+  
+  .notice-icon {
+    width: 100px;
+    height: 100px;
+    font-size: 40px;
+  }
+  
+  .notices-section {
+    padding: 30px 25px;
+  }
 }
 </style>
 </head>
-
 <body>
 
-<div class="container">
-  <h2 class="mess-header">✨ Design Mess Weekly Menu ✨</h2>
-
-  <form method="get" class="form-controls">
-      <label><b>Day:</b></label>
-      <select name="day" class="select-box">
-          {% for day in days %}
-          <option value="{{ day }}" {% if selected_day == day %}selected{% endif %}>{{ day|title }}</option>
-          {% endfor %}
-      </select>
-
-      <label><b>Meal:</b></label>
-      <select name="meal" class="select-box">
-          {% for meal in meals %}
-          <option value="{{ meal }}" {% if selected_meal == meal %}selected{% endif %}>{{ meal|title }}</option>
-          {% endfor %}
-      </select>
-
-      <button type="submit" class="view-btn">🍽 Show Menu</button>
-  </form>
-
-  <h3 class="section-title">{{ selected_day|title }} - {{ selected_meal|title }}</h3>
-
-  {% if dishes %}
-  <div class="menu-container">
-
-{% for dish in dishes %}
-  <div class="menu-card" id="dish-{{ dish.id }}">
-
-    <img src="{{ dish.image.url }}" alt="{{ dish.name }}">
-    
-    <div class="dish-name">{{ dish.name }}</div>
-
-    <!-- ⭐ User Rating -->
-    <div class="rating-text">Your Rating:</div>
-    <div id="rating-{{ dish.id }}" class="rating-stars" data-dish="{{ dish.id }}">
-      {% for i in rating_range %}
-        <span class="star {% if dish.user_rating_val >= i %}active{% else %}inactive{% endif %}" 
-              data-dish="{{ dish.id }}" 
-              data-value="{{ i }}">
-          {% if dish.user_rating_val >= i %}⭐{% else %}☆{% endif %}
-        </span>
-      {% endfor %}
-    </div>
-
-    <!-- ⭐ Overall Rating -->
-    <div class="rating-text">
-      Overall Rating: <strong id="avg-{{ dish.id }}">{{ dish.average_rating_val|floatformat:1 }}</strong> ⭐
-    </div>
-
+<!-- Header Section -->
+<div class="mess-header">
+  <div class="mess-title">
+    <i class="fas fa-utensils"></i>
+    Design Canteen
   </div>
-{% endfor %}
-
+  <div class="mess-subtitle">
+    🎨 Creative Cuisine • Artistic Presentation • Designer Flavors
   </div>
-  {% else %}
-    <p class="text-center" style="color:#7a7a7a;font-weight:600;">No menu available.</p>
-  {% endif %}
+  <div class="mess-stats">
+    <div class="stat-item">
+      <span class="stat-number">300+</span>
+      <span class="stat-label">Happy Students</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">40+</span>
+      <span class="stat-label">Menu Items</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">4.6</span>
+      <span class="stat-label">⭐ Rating</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">16/7</span>
+      <span class="stat-label">Service Hours</span>
+    </div>
+  </div>
 </div>
 
+<div class="container">
+  
+  <!-- Menu Selection Section -->
+  <div class="menu-selection fade-in-up">
+    <!-- Header Section -->
+    <div class="menu-header">
+      <h2 class="section-title">
+        <i class="fas fa-calendar-week"></i>
+        Weekly Menu Explorer
+      </h2>
+      <p class="section-subtitle">
+        🔍 Discover our delicious menu options and rate your favorites!
+      </p>
+    </div>
+    
+    <!-- Middle Form Section -->
+    <div class="form-middle-section">
+      <form method="get" id="menuForm">
+        <div class="form-group">
+          <label><i class="fas fa-calendar-day"></i> Select Day</label>
+          <select name="day" class="select-box">
+            <option value="">Choose Day</option>
+            {% for day in days %}
+            <option value="{{ day }}" {% if selected_day == day %}selected{% endif %}>
+              {{ day|title }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label><i class="fas fa-utensils"></i> Select Meal</label>
+          <select name="meal" class="select-box">
+            <option value="">Choose Meal</option>
+            {% for meal in meals %}
+            <option value="{{ meal }}" {% if selected_meal == meal %}selected{% endif %}>
+              {{ meal|title }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Button in the same form section -->
+        <div class="button-container">
+          <button type="submit" class="view-btn">
+            <i class="fas fa-search"></i>
+            Explore Menu
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Information Cards Section (Outside Weekly Menu Explorer) -->
+  <div class="info-cards-section fade-in-up">
+    <div class="info-card-grid">
+      <div class="info-card">
+        <h3><i class="fas fa-clock"></i> Operating Hours</h3>
+        <ul>
+          <li><strong>Breakfast:</strong> 8:00 AM - 10:00 AM</li>
+          <li><strong>Lunch:</strong> 1:00 PM - 3:00 PM</li>
+          <li><strong>Snacks:</strong> 5:00 PM - 6:30 PM</li>
+          <li><strong>Dinner:</strong> 8:30 PM - 10:30 PM</li>
+        </ul>
+      </div>
+      
+      <div class="info-card">
+        <h3><i class="fas fa-map-marker-alt"></i> Location & Contact</h3>
+        <p><strong>📍 Location:</strong> Design Building, Second Floor</p>
+        <p><strong>👥 Capacity:</strong> 150 Students</p>
+        <p><strong>📞 Contact:</strong> +91 98765 43212</p>
+        <p><strong>👨‍🍳 Chef:</strong> Ms. Priya Sharma</p>
+      </div>
+      
+      <div class="info-card">
+        <h3><i class="fas fa-star"></i> Why Choose Us?</h3>
+        <ul>
+          <li>Creative Food Presentation</li>
+          <li>Fusion Cuisine Specialties</li>
+          <li>Healthy & Nutritious Options</li>
+          <li>Instagram-worthy Dishes</li>
+          <li>Designer Ambiance</li>
+        </ul>
+      </div>
+      
+      <div class="info-card">
+        <h3><i class="fas fa-fire"></i> Today's Specials</h3>
+        <ul>
+          <li>🍝 Pasta Primavera (4.7/5)</li>
+          <li>🥙 Mediterranean Wrap (4.6/5)</li>
+          <li>🍲 Thai Green Curry (4.5/5)</li>
+          <li>🥗 Quinoa Power Bowl (4.4/5)</li>
+          <li>🧁 Artisan Cupcakes (4.3/5)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu Display Section -->
+  {% if selected_day and selected_meal %}
+  <div class="menu-display fade-in-up">
+    <h3 class="section-title">
+      <i class="fas fa-plate-wheat"></i>
+      {{ selected_day|title }} - {{ selected_meal|title }} Menu
+    </h3>
+    
+    {% if dishes %}
+    <div class="menu-container">
+      {% for dish in dishes %}
+      <div class="menu-card" id="dish-{{ dish.id }}">
+        {% if dish.image %}
+        <img src="{{ dish.image.url }}" alt="{{ dish.name }}" loading="lazy">
+        {% else %}
+        <div class="dish-placeholder">
+          🍽️
+        </div>
+        {% endif %}
+        
+        <div class="dish-name">{{ dish.name }}</div>
+        
+        <div class="rating-section">
+          <div class="rating-text">⭐ Your Rating:</div>
+          <div id="rating-{{ dish.id }}" class="rating-stars" data-dish="{{ dish.id }}">
+            {% for i in rating_range %}
+            <span class="star {% if dish.user_rating_val >= i %}active{% else %}inactive{% endif %}"
+                  data-dish="{{ dish.id }}"
+                  data-value="{{ i }}">
+              {% if dish.user_rating_val >= i %}⭐{% else %}☆{% endif %}
+            </span>
+            {% endfor %}
+          </div>
+          
+          <div class="rating-text">
+            🏆 Overall: <strong id="avg-{{ dish.id }}">{{ dish.average_rating_val|floatformat:1 }}</strong>/5
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <h3>🍽️ No Menu Available</h3>
+      <p>Sorry, no delicious dishes are available for {{ selected_day|title }} {{ selected_meal|title }}.</p>
+      <p>🔄 Try selecting a different day or meal, or check back later for updates!</p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Quick Actions Section -->
+  <div class="quick-actions fade-in-up">
+    <h3 class="section-title">
+      <i class="fas fa-rocket"></i>
+      Quick Actions
+    </h3>
+    <div class="action-buttons">
+      <a href="/payment_selection/?mess=Design Mess" class="action-btn payment-btn">
+        <i class="fas fa-credit-card"></i>
+        Make Payment
+      </a>
+      <a href="/feedback/" class="action-btn">
+        <i class="fas fa-comment-dots"></i>
+        Give Feedback
+      </a>
+      <a href="/weekly_suggestion/" class="action-btn">
+        <i class="fas fa-lightbulb"></i>
+        Suggest Menu
+      </a>
+      <a href="/complaint/" class="action-btn">
+        <i class="fas fa-exclamation-triangle"></i>
+        Lodge Complaint
+      </a>
+      <a href="/" class="action-btn">
+        <i class="fas fa-home"></i>
+        Back to Home
+      </a>
+    </div>
+  </div>
+
+  <!-- Payment Information Section -->
+  <div class="payment-info fade-in-up">
+    <h3><i class="fas fa-money-bill-wave"></i> Payment Information</h3>
+    <div class="price-grid">
+      <div class="price-item">
+        <span class="price-emoji">🌅</span>
+        <div class="price-meal">Breakfast</div>
+        <div class="price-amount">₹40</div>
+      </div>
+      <div class="price-item">
+        <span class="price-emoji">🌞</span>
+        <div class="price-meal">Lunch</div>
+        <div class="price-amount">₹60</div>
+      </div>
+      <div class="price-item">
+        <span class="price-emoji">🌙</span>
+        <div class="price-meal">Dinner</div>
+        <div class="price-amount">₹80</div>
+      </div>
+    </div>
+    <div class="payment-methods">
+      <h4><i class="fas fa-credit-card"></i> Accepted Payment Methods</h4>
+      <ul>
+        <li><i class="fab fa-google-pay"></i> UPI (Google Pay, PhonePe, Paytm)</li>
+        <li><i class="fas fa-credit-card"></i> Credit/Debit Cards</li>
+        <li><i class="fas fa-university"></i> Net Banking</li>
+        <li><i class="fas fa-wallet"></i> Digital Wallets</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Latest Notices Section -->
+  <section class="notices-section fade-in-up">
+    <div class="notices-wrap container">
+      <div class="notices-content">
+        <h2 class="notices-heading">
+          <i class="fas fa-bell"></i>
+          Latest Notices
+        </h2>
+        <p class="notices-lead">
+          Important announcements from Design mess management — schedule changes, urgent alerts
+          and campus notices appear here. Stay tuned for updates.
+        </p>
+        {% if notices %}
+          <ul class="notices-cards">
+            {% for notice in notices|slice:":4" %}
+              <li class="notice-card" role="listitem">
+                <div class="notice-card-left">
+                  <h3 class="notice-title">{{ notice.title }}</h3>
+                  {% if notice.summary %}
+                    <p class="notice-summary">{{ notice.summary|truncatechars:150 }}</p>
+                  {% endif %}
+                </div>
+                <div class="notice-card-right">
+                  <time class="notice-date">{{ notice.created_at|date:"d M Y" }}</time>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="no-notices">No current notices available.</p>
+        {% endif %}
+
+        <div class="notices-actions">
+          <a href="{% url 'all_notices' %}" class="btn btn-notice">View All Notices</a>
+        </div>
+      </div>
+
+      <figure class="notices-graphic" aria-hidden="true">
+        <div class="notice-icon">
+          <i class="fas fa-bullhorn"></i>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+</div>
 <script>
-let userRatings = {};
-
-// ✅ Load current user ratings from Django context
-{% for d in dishes %}
-userRatings["{{ d.id }}"] = {{ d.user_rating_val|default:0 }};
-{% endfor %}
-
-// ✅ Get CSRF token
+// CSRF Token
 function getCookie(name) {
-  let cookieValue = null;
-  document.cookie.split(';').forEach(cookie => {
-    cookie = cookie.trim();
-    if (cookie.startsWith(name + '=')) {
-      cookieValue = decodeURIComponent(cookie.split('=')[1]);
-    }
-  });
-  return cookieValue;
+  return document.cookie.split('; ').find(row => row.startsWith(name + '='))?.split('=')[1];
 }
 const csrftoken = getCookie('csrftoken');
 
-// ⭐ Update UI stars dynamically
+// Rating System
 function updateStars(dishId, rating) {
   const stars = document.querySelectorAll(`#rating-${dishId} .star`);
   stars.forEach((star, idx) => {
@@ -156,13 +1980,14 @@ function updateStars(dishId, rating) {
   });
 }
 
-// ⭐ Handle click rating
-document.addEventListener("click", function(e) {
+let userRatings = {};
+
+// Star Click Handler
+document.addEventListener("click", (e) => {
   if (!e.target.classList.contains("star")) return;
-
-  const dishId = e.target.dataset.dish;
-  const rating = parseInt(e.target.dataset.value);
-
+  
+  let dishId = e.target.dataset.dish;
+  let rating = parseInt(e.target.dataset.value);
   userRatings[dishId] = rating;
   updateStars(dishId, rating);
 
@@ -171,29 +1996,85 @@ document.addEventListener("click", function(e) {
   fd.append("rating", rating);
   fd.append("csrfmiddlewaretoken", csrftoken);
 
-  fetch("{% url 'rate_design_dish' %}", {
-    method: "POST",
-    body: fd,
-    credentials: "same-origin"
+  fetch("{% url 'rate_manet_dish' %}", { 
+    method: "POST", 
+    body: fd 
   })
   .then(r => r.json())
   .then(data => {
     document.getElementById("avg-" + dishId).textContent = data.average_rating;
+    
+    // Add success animation
+    const avgElement = document.getElementById("avg-" + dishId);
+    avgElement.style.transform = "scale(1.2)";
+    avgElement.style.color = "var(--accent)";
+    setTimeout(() => {
+      avgElement.style.transform = "scale(1)";
+      avgElement.style.color = "var(--primary)";
+    }, 300);
+  })
+  .catch(error => {
+    console.error('Rating error:', error);
   });
 });
 
-// ⭐ Hover preview stars
-document.addEventListener("mouseover", function(e) {
+// Star Hover Effects
+document.addEventListener("mouseover", (e) => {
   if (!e.target.classList.contains("star")) return;
   updateStars(e.target.dataset.dish, parseInt(e.target.dataset.value));
 });
 
-// ⭐ Mouse out restore saved rating
-document.addEventListener("mouseout", function(e) {
+document.addEventListener("mouseout", (e) => {
   if (!e.target.classList.contains("star")) return;
   const dishId = e.target.dataset.dish;
-  const saved = userRatings[dishId] || 0;
-  updateStars(dishId, saved);
+  updateStars(dishId, userRatings[dishId] || 0);
+});
+
+// Form Enhancement
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('form');
+  const daySelect = document.querySelector('select[name="day"]');
+  const mealSelect = document.querySelector('select[name="meal"]');
+  
+  // Auto-submit when both selections are made
+  function checkAutoSubmit() {
+    if (daySelect.value && mealSelect.value) {
+      form.submit();
+    }
+  }
+  
+  daySelect.addEventListener('change', checkAutoSubmit);
+  mealSelect.addEventListener('change', checkAutoSubmit);
+  
+  // Scroll animations
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('fade-in-up');
+      }
+    });
+  }, observerOptions);
+  
+  document.querySelectorAll('.info-section, .menu-selection, .menu-display, .quick-actions, .payment-info').forEach(el => {
+    observer.observe(el);
+  });
+});
+
+// Add loading state to buttons
+document.querySelectorAll('.action-btn, .view-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    if (!this.classList.contains('loading')) {
+      this.classList.add('loading');
+      setTimeout(() => {
+        this.classList.remove('loading');
+      }, 2000);
+    }
+  });
 });
 </script>
 

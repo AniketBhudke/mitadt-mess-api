@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'testapp/css/styles.css' %}">
-
     <title>MIT-ADT Mess Hub</title>
 </head>
 <body>
@@ -29,43 +29,26 @@
       {% if safe_user_authenticated %}
         <a href="{% url 'logout' %}" class="auth-link">Logout</a>
       {% else %}
-        <a href="{% url 'login' %}" class="auth-link">Login</a>
-        <a href="{% url 'signup' %}" class="auth-link auth-signup">Sign Up</a>
+        <!-- Login/Register Dropdown -->
+        <div class="login-dropdown">
+          <button class="login-dropdown-btn" id="loginDropdownBtn">
+            <i class="fas fa-user"></i> Login / Register <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu" id="dropdownMenu">
+            <a href="{% url 'signup' %}" class="dropdown-item">User</a>
+            <a href="{% url 'admin_login' %}" class="dropdown-item">Admin</a>
+          </div>
+        </div>
       {% endif %}
       {% if auth_error %}
         <a href="/init-db/" class="auth-link" style="background: #dc3545; color: white;">Fix Database</a>
       {% endif %}
     </div>
 
-    <!-- HAMBURGER (NOW placed AFTER the Sign Up button, on the right) -->
-    <button id="hamburger" class="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="site-drawer">
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-    </button>
-
   </div>
-
-  <!-- OVERLAY -->
-  <div id="drawerOverlay" class="drawer-overlay" hidden></div>
-
-  <!-- LEFT SLIDING DRAWER -->
-  <aside id="site-drawer" class="side-drawer left" role="dialog" aria-hidden="true" aria-labelledby="drawerTitle">
-    <div class="drawer-header">
-      <button id="drawerClose" class="drawer-close" aria-label="Close menu">&times;</button>
-    </div>
-
-    <nav class="drawer-nav" aria-label="Site menu">
-      <h3 id="drawerTitle" class="drawer-title">Menu</h3>
-      <ul>
-        <li><a href="{% url 'weekly_suggestion' %}">Suggestion</a></li>
-        <li><a href="{% url 'complaint' %}">Submit Complaint</a></li>
-        <li><a href="{% url 'feedback' %}">Feedback</a></li>
-        <li><a href="{% url 'payment_selection' %}">Payment</a></li>
-      </ul>
-    </nav>
-  </aside>
 </nav>
+
+
 
     <div class="container-fluid">
     <h2 class="page-heading">All Mess In College Campus</h2>
@@ -75,7 +58,7 @@
                 <img src="{% static 'testapp/image/manet-mess.webp' %}" alt="MANET Mess" >
                 <div class="cards-body">
                     <h5 class="cards-title">MANET Mess</h5>
-                    <p class="cards-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    <p class="cards-text">Explore delicious meals and daily menu options at MANET Mess with fresh ingredients and variety.</p>
                     <a href="{% url 'manet_mess' %}"><button>View Menu</button></a>
                 </div>
             </div>
@@ -85,7 +68,7 @@
                 <img src="{% static 'testapp/image/design-building.webp' %}" alt="Design Mess">
                 <div class="cards-body">
                     <h5 class="cards-title">Design Mess</h5>
-                    <p class="cards-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    <p class="cards-text">Discover creative culinary experiences at Design Mess with innovative dishes and healthy options.</p>
                     <a href="{% url 'design_mess' %}"><button>View Menu</button></a>
                 </div>
             </div>
@@ -95,7 +78,7 @@
                 <img src="{% static 'testapp/image/raj-building.webp' %}" alt="Raj Mess">
                 <div class="cards-body">
                     <h5 class="cards-title">Raj Mess</h5>
-                    <p class="cards-text">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+                    <p class="cards-text">Experience traditional flavors and authentic cuisine at Raj Mess with homestyle cooking.</p>
                     <a href="{% url 'raj_mess' %}"><button>View Menu</button></a>
                 </div>
             </div>
@@ -103,188 +86,519 @@
     </div>
     </div>
 
-    <!-- ========== 📢 Notice Section ========== -->
-<!-- Latest Notices (improved) -->
-<section class="notices-section">
-  <div class="notices-wrap container">
-    <div class="notices-content">
-      <h2 class="notices-heading">Latest Notices</h2>
-      <p class="notices-lead">
-        Important announcements from mess management — schedule changes, urgent alerts
-        and campus notices appear here. Stay tuned for updates.
-      </p>{% if notices %}
-        <ul class="notices-cards">
-          {% for notice in notices|slice:":4" %}
-            <li class="notice-card" role="listitem">
-              <div class="notice-card-left">
-                <h3 class="notice-title">{{ notice.title }}</h3>
-                {% if notice.summary %}
-                  <p class="notice-summary">{{ notice.summary|truncatechars:150 }}</p>
-                {% endif %}
-              </div>
-              <div class="notice-card-right">
-                <time class="notice-date">{{ notice.created_at|date:"d M Y" }}</time>
-              </div>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p class="no-notices">No current notices available.</p>
-      {% endif %}
-
-      <div class="notices-actions">
-        <a href="{% url 'all_notices' %}" class="btn btn-notice">View All Notices</a>
-      </div>
+    <!-- Advertisement Section -->
+    <div class="advertisement-section">
+        <div class="container-fluid">
+            <h2 class="section-heading">Advertisement Section</h2>
+            <div class="ads-container">
+                <div class="ad-card featured">
+                    <div class="ad-content">
+                        <div class="ad-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <h3>Student Discount</h3>
+                        <p>Get 15% off on all meals with your student ID card. Valid for all three mess locations!</p>
+                        <div class="ad-badge">Limited Time</div>
+                    </div>
+                </div>
+                <div class="ad-card">
+                    <div class="ad-content">
+                        <div class="ad-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h3>New Menu Items</h3>
+                        <p>Try our freshly added regional specialties and fusion dishes across all mess locations.</p>
+                        <div class="ad-badge">New</div>
+                    </div>
+                </div>
+                <div class="ad-card">
+                    <div class="ad-content">
+                        <div class="ad-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Mobile Ordering</h3>
+                        <p>Order your favorite meals online and skip the queue. Available for all mess locations.</p>
+                        <div class="ad-badge">Coming Soon</div>
+                    </div>
+                </div>
+                <div class="ad-card">
+                    <div class="ad-content">
+                        <div class="ad-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3>Rate & Review</h3>
+                        <p>Share your dining experience and help us improve our services. Your feedback matters!</p>
+                        <div class="ad-badge">Active</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <figure class="notices-graphic" aria-hidden="true">
-      <!-- Bell icon (notification) SVG — replace with your SVG file if preferred -->
-      <svg class="bell-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Notices">
-        <defs>
-          <linearGradient id="g1" x1="0" x2="1">
-            <stop offset="0" stop-color="#ff8c00"/>
-            <stop offset="1" stop-color="#ff0077"/>
-          </linearGradient>
-        </defs>
+    <!-- Footer Section -->
+    <footer class="footer-section">
+        <div class="container-fluid">
+            <div class="footer-content">
+                <div class="footer-main">
+                    <div class="footer-brand">
+                        <img src="{% static 'testapp/image/mit-adt-logo.png' %}" alt="MIT-ADT Logo" class="footer-logo">
+                        <div class="brand-info">
+                            <h3>MIT-ADT MESS HUB</h3>
+                            <p>Serving quality meals with love and care</p>
+                        </div>
+                    </div>
+                    <div class="footer-links">
+                        <div class="link-group">
+                            <h4>Mess Locations</h4>
+                            <ul>
+                                <li><a href="{% url 'raj_mess' %}">RAJ Mess</a></li>
+                                <li><a href="{% url 'manet_mess' %}">MANET Mess</a></li>
+                                <li><a href="{% url 'design_mess' %}">Design Mess</a></li>
+                            </ul>
+                        </div>
+                        <div class="link-group">
+                            <h4>Services</h4>
+                            <ul>
+                                <li><a href="{% url 'feedback' %}">Feedback</a></li>
+                                <li><a href="{% url 'weekly_suggestion' %}">Weekly Suggestions</a></li>
+                                <li><a href="{% url 'complaint' %}">Complaints</a></li>
+                                <li><a href="{% url 'all_notices' %}">Notices</a></li>
+                            </ul>
+                        </div>
+                        <div class="link-group">
+                            <h4>Quick Links</h4>
+                            <ul>
+                                <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                                <li><a href="{% url 'login' %}">Login</a></li>
+                                <li><a href="{% url 'admin_login' %}">Admin Panel</a></li>
+                                <li><a href="/api/docs/">API Documentation</a></li>
+                            </ul>
+                        </div>
+                        <div class="link-group">
+                            <h4>Contact Info</h4>
+                            <ul>
+                                <li><i class="fas fa-map-marker-alt"></i> MIT-ADT University, Pune</li>
+                                <li><i class="fas fa-phone"></i> +91 98765 43210</li>
+                                <li><i class="fas fa-envelope"></i> mess@mitadt.edu.in</li>
+                                <li><i class="fas fa-clock"></i> 7:00 AM - 10:00 PM</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <div class="footer-social">
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                    <div class="footer-copyright">
+                        <p>&copy; 2024 MIT-ADT University. All rights reserved. | Designed with ❤️ for students</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-        <circle cx="32" cy="32" r="30" fill="rgba(0,0,0,0.06)"/>
-        <g transform="translate(10,6)">
-          <path d="M22 2c-6 0-10 4-10 10v6c0 1-1 2-1 3l-1 2h24l-1-2c0-1-1-2-1-3V12c0-6-4-10-10-10z" fill="#fff"/>
-          <path d="M22 0c-7 0-12 5-12 12v6c0 2-1 4-2 5l-2 3h32l-2-3c-1-1-2-3-2-5V12C34 5 29 0 22 0z" fill="url(#g1)" opacity="0.95"/>
-          <circle cx="22" cy="33" r="3" fill="#6a0080"/>
-        </g>
-      </svg>
-    </figure>
-  </div>
-</section>
+    <style>
+        /* Advertisement Section Styles */
+        .advertisement-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 60px 0;
+            margin-top: 40px;
+        }
+
+        .section-heading {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 800;
+            color: rgb(96, 2, 96);
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .section-heading::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            border-radius: 2px;
+            background: linear-gradient(to right, #ff0077, #ff8c00, #00c853);
+        }
+
+        .ads-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 0 20px;
+        }
+
+        .ad-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ad-card.featured {
+            background: linear-gradient(135deg, rgb(96, 2, 96), #8e0a8e);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .ad-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+        }
+
+        .ad-card.featured:hover {
+            transform: translateY(-10px) scale(1.07);
+        }
+
+        .ad-content {
+            text-align: center;
+        }
+
+        .ad-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(96, 2, 96, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 28px;
+            color: rgb(96, 2, 96);
+        }
+
+        .ad-card.featured .ad-icon {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .ad-card h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: rgb(96, 2, 96);
+        }
+
+        .ad-card.featured h3 {
+            color: white;
+        }
+
+        .ad-card p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .ad-card.featured p {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .ad-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff8c00, #ff0077);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .ad-card.featured .ad-badge {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        /* Footer Section Styles */
+        .footer-section {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 50px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-main {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        .brand-info h3 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #ffd700;
+        }
+
+        .brand-info p {
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .link-group h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .link-group ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .link-group li {
+            margin-bottom: 8px;
+        }
+
+        .link-group a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .link-group a:hover {
+            color: #ffd700;
+        }
+
+        .link-group li i {
+            width: 16px;
+            margin-right: 8px;
+            color: #ffd700;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: #ffd700;
+            color: #2c3e50;
+            transform: translateY(-3px);
+        }
+
+        .footer-copyright {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .ads-container {
+                grid-template-columns: 1fr;
+                padding: 0 15px;
+            }
+
+            .ad-card.featured {
+                transform: none;
+            }
+
+            .footer-main {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .footer-brand {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-heading {
+                font-size: 24px;
+            }
+
+            .ad-card {
+                padding: 20px;
+            }
+
+            .footer-links {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 
 <script>
-(function(){
-  const hamburger = document.getElementById('hamburger');
-  const drawer = document.getElementById('site-drawer');
-  const overlay = document.getElementById('drawerOverlay');
-  const closeBtn = document.getElementById('drawerClose');
-
-  if (!hamburger || !drawer || !overlay) return;
-
-  function openDrawer(){
-    drawer.classList.add('open');
-    overlay.classList.add('open');
-    drawer.setAttribute('aria-hidden','false');
-    hamburger.setAttribute('aria-expanded','true');
-    overlay.hidden = false;
-    // focus first link
-    const first = drawer.querySelector('a');
-    if(first) first.focus();
-  }
-
-  function closeDrawer(){
-    drawer.classList.remove('open');
-    overlay.classList.remove('open');
-    drawer.setAttribute('aria-hidden','true');
-    hamburger.setAttribute('aria-expanded','false');
-    overlay.hidden = true;
-    hamburger.focus();
-  }
-
-  hamburger.addEventListener('click', function (e) {
-    if (drawer.classList.contains('open')) closeDrawer();
-    else openDrawer();
-  });
-
-  overlay.addEventListener('click', closeDrawer);
-  closeBtn && closeBtn.addEventListener('click', closeDrawer);
-
-  // close on Escape
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
-  });
-
-  // click outside closes
-  document.addEventListener('click', function (e) {
-    if (!drawer.classList.contains('open')) return;
-    const inside = drawer.contains(e.target) || hamburger.contains(e.target);
-    if (!inside) closeDrawer();
-  });
-})();
-
-// Handle browser password manager popups after login
-(function() {
-    // Function to dismiss browser password manager popups
-    function dismissPasswordManagerPopups() {
-        // Try to find and close Chrome password manager popups
-        const popups = document.querySelectorAll('[role="dialog"], .password-manager-popup, [data-testid="password-manager"]');
-        popups.forEach(popup => {
-            if (popup.textContent.includes('password') || popup.textContent.includes('breach')) {
-                const closeBtn = popup.querySelector('button[aria-label="Close"], .close, [data-testid="close"]');
-                if (closeBtn) closeBtn.click();
-            }
+// Simple Login Dropdown Functionality - Enhanced Debug Version
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing login dropdown...');
+    
+    // Wait a bit for all elements to be ready
+    setTimeout(function() {
+        const loginDropdownBtn = document.getElementById('loginDropdownBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const loginDropdown = document.querySelector('.login-dropdown');
+        
+        console.log('Found elements:', {
+            btn: !!loginDropdownBtn,
+            menu: !!dropdownMenu,
+            dropdown: !!loginDropdown
         });
         
-        // Also try to dismiss any overlay popups
-        const overlays = document.querySelectorAll('.overlay, [role="presentation"]');
-        overlays.forEach(overlay => {
-            if (overlay.style.zIndex > 1000) {
-                overlay.style.display = 'none';
-            }
-        });
-    }
-    
-    // Run dismissal function after page load
-    window.addEventListener('load', function() {
-        setTimeout(dismissPasswordManagerPopups, 1000);
-        setTimeout(dismissPasswordManagerPopups, 3000);
-    });
-    
-    // Also run when DOM changes (in case popup appears later)
-    if (window.MutationObserver) {
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.addedNodes.length > 0) {
-                    setTimeout(dismissPasswordManagerPopups, 500);
-                }
+        if (!loginDropdownBtn || !dropdownMenu || !loginDropdown) {
+            console.error('Login dropdown elements not found!');
+            console.log('Available elements:', {
+                allButtons: document.querySelectorAll('button').length,
+                allDivs: document.querySelectorAll('div').length,
+                loginDropdownBtn: document.getElementById('loginDropdownBtn'),
+                dropdownMenu: document.getElementById('dropdownMenu')
             });
+            return;
+        }
+        
+        let isOpen = false;
+        
+        // Force initial state
+        dropdownMenu.style.display = 'none';
+        dropdownMenu.style.opacity = '0';
+        dropdownMenu.style.visibility = 'hidden';
+        dropdownMenu.style.transform = 'translateY(-10px)';
+        
+        // Toggle dropdown with force styling
+        function toggleDropdown() {
+            console.log('Toggling dropdown, current state:', isOpen);
+            
+            if (isOpen) {
+                // Hide dropdown with force
+                dropdownMenu.style.display = 'none';
+                dropdownMenu.style.opacity = '0';
+                dropdownMenu.style.visibility = 'hidden';
+                dropdownMenu.style.transform = 'translateY(-10px)';
+                loginDropdown.classList.remove('active');
+                isOpen = false;
+                console.log('Dropdown hidden');
+            } else {
+                // Show dropdown with force
+                dropdownMenu.style.display = 'block';
+                dropdownMenu.style.opacity = '1';
+                dropdownMenu.style.visibility = 'visible';
+                dropdownMenu.style.transform = 'translateY(0)';
+                dropdownMenu.style.position = 'absolute';
+                dropdownMenu.style.top = '100%';
+                dropdownMenu.style.right = '0';
+                dropdownMenu.style.zIndex = '9999';
+                dropdownMenu.style.background = 'rgba(0, 0, 0, 0.95)';
+                dropdownMenu.style.borderRadius = '8px';
+                dropdownMenu.style.padding = '8px 0';
+                dropdownMenu.style.marginTop = '8px';
+                dropdownMenu.style.width = '200px';
+                dropdownMenu.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.4)';
+                dropdownMenu.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                loginDropdown.classList.add('active');
+                isOpen = true;
+                console.log('Dropdown shown');
+            }
+        }
+        
+        // Button click handler
+        loginDropdownBtn.addEventListener('click', function(e) {
+            console.log('Login dropdown button clicked!');
+            e.preventDefault();
+            e.stopPropagation();
+            toggleDropdown();
         });
         
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!loginDropdown.contains(e.target) && isOpen) {
+                console.log('Clicked outside, closing dropdown');
+                toggleDropdown();
+            }
         });
-    }
-    
-    // Show welcome message for logged-in users
-    {% if user.is_authenticated %}
+        
+        // Close dropdown on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isOpen) {
+                console.log('ESC pressed, closing dropdown');
+                toggleDropdown();
+            }
+        });
+        
+        console.log('Login dropdown initialized successfully!');
+        
+        // Test click after 2 seconds
         setTimeout(function() {
-            const welcomeMsg = document.createElement('div');
-            welcomeMsg.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #28a745;
-                color: white;
-                padding: 15px 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 10000;
-                font-family: 'Segoe UI', sans-serif;
-                font-size: 14px;
-                max-width: 300px;
-            `;
-            welcomeMsg.innerHTML = `
-                <strong>Welcome back, {{ user.username }}!</strong><br>
-                <small>You are successfully logged in.</small>
-            `;
-            document.body.appendChild(welcomeMsg);
-            
-            // Auto-remove after 4 seconds
-            setTimeout(() => {
-                welcomeMsg.style.opacity = '0';
-                welcomeMsg.style.transition = 'opacity 0.5s';
-                setTimeout(() => welcomeMsg.remove(), 500);
-            }, 4000);
+            console.log('Testing dropdown after 2 seconds...');
+            if (loginDropdownBtn) {
+                console.log('Button exists, dropdown should work');
+            }
         }, 2000);
-    {% endif %}
-})();
+        
+    }, 100); // Wait 100ms for DOM to be fully ready
+});
 </script>
 </body>
 </html>

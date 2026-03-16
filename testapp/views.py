@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render,redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.contrib.auth import  login, logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.management import call_command
 from django.contrib.auth.tokens import default_token_generator
@@ -461,8 +461,28 @@ def initialize_database(request):
                 results.append("Created admin superuser")
             else:
                 results.append("Admin superuser already exists")
+                
+            # Create mess-specific admin users
+            mess_admins = [
+                {'username': 'raj_admin', 'email': 'raj.admin@mitadt.edu.in', 'password': 'raj123'},
+                {'username': 'manet_admin', 'email': 'manet.admin@mitadt.edu.in', 'password': 'manet123'},
+                {'username': 'design_admin', 'email': 'design.admin@mitadt.edu.in', 'password': 'design123'},
+            ]
+            
+            for admin_data in mess_admins:
+                if not User.objects.filter(username=admin_data['username']).exists():
+                    User.objects.create_user(
+                        username=admin_data['username'],
+                        email=admin_data['email'],
+                        password=admin_data['password'],
+                        is_staff=True
+                    )
+                    results.append(f"Created {admin_data['username']} admin user")
+                else:
+                    results.append(f"{admin_data['username']} admin user already exists")
+                    
         except Exception as e:
-            results.append(f"Superuser creation error: {str(e)}")
+            results.append(f"Admin user creation error: {str(e)}")
         
         # Test user creation to verify everything works
         try:
@@ -600,13 +620,21 @@ def manet_mess_view(request):
                 'user_rating_val': d.user_rating(request.user)
             })
 
+    # Get notices for the page
+    try:
+        from .models import Notice
+        notices = Notice.objects.filter(is_published=True).order_by('-created_at')[:4]
+    except:
+        notices = []
+
     return render(request, 'testapp/MANET_mess.html', {
         'days': days,
         'meals': meals,
         'selected_day': selected_day,
         'selected_meal': selected_meal,
         'dishes': dishes,
-        'rating_range': range(1,6)
+        'rating_range': range(1,6),
+        'notices': notices,
     })
 
 @login_required
@@ -679,6 +707,13 @@ def raj_mess_view(request):
                 'user_rating_val': dish.user_rating(request.user)
             })
 
+    # Get notices for the page
+    try:
+        from .models import Notice
+        notices = Notice.objects.filter(is_published=True).order_by('-created_at')[:4]
+    except:
+        notices = []
+
     context = {
         'days': days,
         'meals': meals,
@@ -686,6 +721,7 @@ def raj_mess_view(request):
         'selected_meal': selected_meal,
         'dishes': dishes,
         'rating_range': range(1, 6),
+        'notices': notices,
     }
     return render(request, 'testapp/raj_mess.html', context)
 
@@ -875,14 +911,28 @@ def design_mess_admin_view(request):
         form = DesignForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Design menu item added successfully!')
             return redirect('admin_design_mess')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = DesignForm()
 
     days = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
     meals = ["breakfast", "lunch", "dinner"]
 
-    menu = {}
+    # Get all design menu items
+    dishes = design_menu.objects.all().order_by('-id')
+    
+    context = {
+        'form': form,
+        'days': days,
+        'meals': meals,
+        'dishes': dishes,
+        'user': request.user,
+    }
+    
+    return render(request, 'testapp/admin_design_mess.html', context)
 # testapp/views.py
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseBadRequest
@@ -919,13 +969,21 @@ def design_mess_view(request):
             'user_rating_val': user_rating_val,
         })
 
+    # Get notices for the page
+    try:
+        from .models import Notice
+        notices = Notice.objects.filter(is_published=True).order_by('-created_at')[:4]
+    except:
+        notices = []
+
     context = {
         'days': days,
         'meals': meals,
         'selected_day': selected_day,
         'selected_meal': selected_meal,
         'dishes': dishes,
-        'rating_range': range(1,6)
+        'rating_range': range(1,6),
+        'notices': notices,
     }
     return render(request, 'testapp/design_mess.html', context)
 
@@ -1873,17 +1931,125 @@ def complaint_success(request):
 
 def all_notices(request):
     """Page showing all notices (optionally paginate)"""
-    notices = Notice.objects.order_by('-created_at')
-    return render(request, 'testapp/complaint_form.html', {'notices': notices})
-# testapp/views.py
-
-
-# testapp/views.py
-from django.shortcuts import render
-from .models import Notice
-
-def all_notices(request):
-    # fetch all notices (newest first)
-    notices = Notice.objects.order_by('-created_at')
     notices = Notice.objects.filter(is_published=True).order_by('-created_at')
     return render(request, "testapp/all_notices.html", {"notices": notices})
+
+
+def admin_login_view(request):
+    """
+    Dedicated admin login page
+    """
+    if request.user.is_authenticated:
+        # If already logged in, redirect to admin dashboard
+        return redirect('admin_dashboard')
+    
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        if username and password:
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                # Check if user is admin/staff
+                if user.is_staff or user.is_superuser or 'admin' in user.username.lower():
+                    login(request, user)
+                    messages.success(request, f"Welcome back, {user.username}!")
+                    return redirect('admin_dashboard')
+                else:
+                    messages.error(request, "Access denied. Admin privileges required.")
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Please enter both username and password.")
+    
+    return render(request, 'testapp/admin_login.html')
+
+
+def admin_dashboard_view(request):
+    """
+    Admin dashboard that redirects to appropriate mess admin page
+    Based on username pattern: raj_admin, manet_admin, design_admin
+    """
+    if not request.user.is_authenticated:
+        messages.error(request, "Please login as admin first.")
+        return redirect('login')
+    
+    username = request.user.username.lower()
+    
+    # Check admin type based on username
+    if 'raj' in username or username == 'admin':
+        return redirect('admin_raj_mess')
+    elif 'manet' in username:
+        return redirect('admin_manet_mess')  
+    elif 'design' in username:
+        return redirect('admin_design_mess')
+    else:
+        # Default admin dashboard with options
+        context = {
+            'user': request.user,
+            'admin_options': [
+                {'name': 'RAJ Mess Admin', 'url': 'admin_raj_mess', 'icon': 'fas fa-utensils', 'color': '#4caf50'},
+                {'name': 'MANET Mess Admin', 'url': 'admin_manet_mess', 'icon': 'fas fa-utensils', 'color': '#ff6b35'},
+                {'name': 'Design Mess Admin', 'url': 'admin_design_mess', 'icon': 'fas fa-utensils', 'color': '#9c27b0'},
+            ]
+        }
+        return render(request, 'testapp/admin_dashboard.html', context)
+def admin_login_view(request):
+    """
+    Dedicated admin login page
+    """
+    if request.user.is_authenticated:
+        # If already logged in, redirect to admin dashboard
+        return redirect('admin_dashboard')
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        if username and password:
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                # Check if user is admin/staff
+                if user.is_staff or user.is_superuser or 'admin' in user.username.lower():
+                    login(request, user)
+                    messages.success(request, f"Welcome back, {user.username}!")
+                    return redirect('admin_dashboard')
+                else:
+                    messages.error(request, "Access denied. Admin privileges required.")
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Please enter both username and password.")
+
+    return render(request, 'testapp/admin_login.html')
+
+
+def admin_dashboard_view(request):
+    """
+    Admin dashboard that redirects to appropriate mess admin page
+    Based on username pattern: raj_admin, manet_admin, design_admin
+    """
+    if not request.user.is_authenticated:
+        messages.error(request, "Please login as admin first.")
+        return redirect('admin_login')
+    
+    username = request.user.username.lower()
+    
+    # Check admin type based on username
+    if 'raj' in username or username == 'admin':
+        return redirect('admin_raj_mess')
+    elif 'manet' in username:
+        return redirect('admin_manet_mess')  
+    elif 'design' in username:
+        return redirect('admin_design_mess')
+    else:
+        # Default admin dashboard with options
+        context = {
+            'user': request.user,
+            'admin_options': [
+                {'name': 'RAJ Mess Admin', 'url': 'admin_raj_mess', 'icon': 'fas fa-utensils', 'color': '#4caf50'},
+                {'name': 'MANET Mess Admin', 'url': 'admin_manet_mess', 'icon': 'fas fa-utensils', 'color': '#ff6b35'},
+                {'name': 'Design Mess Admin', 'url': 'admin_design_mess', 'icon': 'fas fa-utensils', 'color': '#9c27b0'},
+            ]
+        }
+        return render(request, 'testapp/admin_dashboard.html', context)

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MIT ADT Mess Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff6b35;
+            --secondary: #ffa726;
+            --accent: #4caf50;
+            --bg-primary: #fff8f3;
+            --card: #ffffff;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --shadow: 0 10px 40px rgba(255, 107, 53, 0.15);
+            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .admin-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .admin-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+
+        .welcome-section {
+            background: var(--card);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .welcome-text {
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .admin-card {
+            background: var(--card);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--card-color, var(--primary));
+        }
+
+        .admin-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border-color: var(--card-color, var(--primary));
+        }
+
+        .admin-icon {
+            font-size: 60px;
+            color: var(--card-color, var(--primary));
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .admin-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 15px;
+        }
+
+        .admin-card p {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .admin-btn {
+            background: var(--card-color, var(--primary));
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .raj-card {
+            --card-color: #4caf50;
+        }
+
+        .manet-card {
+            --card-color: #ff6b35;
+        }
+
+        .design-card {
+            --card-color: #9c27b0;
+        }
+
+        .logout-section {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 25px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .admin-title {
+                font-size: 28px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .container {
+                padding: 30px 15px;
+            }
+
+            .admin-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .admin-card {
+                padding: 30px 25px;
+            }
+
+            .admin-icon {
+                font-size: 50px;
+            }
+
+            .welcome-section {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <div class="admin-title">
+            <i class="fas fa-user-shield"></i>
+            Admin Dashboard
+        </div>
+        <div class="admin-subtitle">
+            Welcome, {{ user.username }}! Choose your mess administration panel.
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="welcome-section">
+            <h2 class="welcome-title">🎯 Mess Administration Hub</h2>
+            <p class="welcome-text">
+                Manage your mess operations efficiently. Add dishes, handle notices, 
+                view feedback analytics, and maintain quality service for students.
+            </p>
+        </div>
+
+        <div class="admin-grid">
+            {% for option in admin_options %}
+            <div class="admin-card {% if 'RAJ' in option.name %}raj-card{% elif 'MANET' in option.name %}manet-card{% else %}design-card{% endif %}">
+                <i class="{{ option.icon }} admin-icon"></i>
+                <h3>{{ option.name }}</h3>
+                <p>
+                    {% if 'RAJ' in option.name %}
+                        Manage traditional home-style cooking with regional specialties. 
+                        Handle Gujarati & Rajasthani cuisine operations.
+                    {% elif 'MANET' in option.name %}
+                        Oversee fresh ingredient preparation and hygienic food service. 
+                        Manage vegetarian & Jain meal options.
+                    {% else %}
+                        Control creative fusion cuisine and artistic food presentation. 
+                        Manage designer ambiance and Instagram-worthy dishes.
+                    {% endif %}
+                </p>
+                <a href="{% url option.url %}" class="admin-btn">
+                    <i class="fas fa-arrow-right"></i>
+                    Access Panel
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="logout-section">
+            <a href="{% url 'logout' %}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </a>
+        </div>
+    </div>
+</body>
+</html>

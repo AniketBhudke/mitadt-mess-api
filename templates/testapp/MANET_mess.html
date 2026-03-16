@@ -236,27 +236,513 @@ body::before {
   color: var(--accent);
   font-weight: 700;
 }
-/* Menu Selection Section */
+/* Menu Selection Section - Modern App Theme */
 .menu-selection {
-  background: var(--card);
-  border-radius: 30px;
-  padding: 40px;
-  box-shadow: var(--shadow);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 24px;
+  padding: 0;
+  box-shadow: 0 25px 50px rgba(102, 126, 234, 0.25);
   margin-bottom: 40px;
-  text-align: center;
   position: relative;
   overflow: hidden;
+  color: white;
+  border: none;
 }
 
 .menu-selection::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 107, 53, 0.05) 0%, transparent 70%);
-  animation: rotate 20s linear infinite;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  z-index: 1;
+}
+
+.menu-selection > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Header Section */
+.menu-header {
+  padding: 40px 30px 30px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+}
+
+.section-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  letter-spacing: -0.5px;
+}
+
+.section-title i {
+  font-size: 28px;
+  background: linear-gradient(45deg, #ff6b6b, #feca57);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.section-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 0;
+  opacity: 0.95;
+}
+
+/* Middle Form Section */
+.form-middle-section {
+  padding: 25px 30px;
+  background: rgba(255, 255, 255, 0.98);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 20px;
+  border-radius: 0 0 24px 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group label {
+  font-weight: 700;
+  color: #2d3436;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1px;
+}
+
+.form-group label i {
+  font-size: 12px;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 3px;
+  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.select-box {
+  padding: 8px 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  background: white;
+  color: #2d3436;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 10px center;
+  background-repeat: no-repeat;
+  background-size: 10px;
+  padding-right: 30px;
+  width: 100%;
+  height: 36px;
+}
+
+.select-box:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+.select-box:hover {
+  border-color: #667eea;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+/* Button Container within Middle Section */
+.button-container {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.view-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  padding: 12px 28px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  min-width: 160px;
+  justify-content: center;
+  height: 38px;
+}
+
+.view-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.view-btn:hover::before {
+  left: 100%;
+}
+
+.view-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.view-btn:active {
+  transform: translateY(-1px);
+}
+
+.view-btn i {
+  font-size: 14px;
+}
+
+/* Information Cards Section - Standalone */
+.info-cards-section {
+  padding: 0;
+  background: transparent;
+  margin-bottom: 40px;
+}
+
+.info-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.info-card {
+  background: var(--card);
+  border-radius: 25px;
+  padding: 30px;
+  box-shadow: var(--shadow);
+  transition: all 0.4s ease;
+  border: 1px solid rgba(255, 107, 53, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--gradient-primary);
+}
+
+.info-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-hover);
+}
+
+.info-card h3 {
+  color: var(--primary);
+  font-size: 22px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+}
+
+.info-card h3 i {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 12px;
+}
+
+.info-card p, .info-card ul {
+  color: var(--text-light);
+  margin-bottom: 12px;
+  font-weight: 400;
+}
+
+.info-card ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+.info-card li {
+  margin-bottom: 8px;
+  padding-left: 25px;
+  position: relative;
+}
+
+.info-card li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+
+
+.view-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.view-btn:hover::before {
+  left: 100%;
+}
+
+.view-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+  background: white;
+  color: #5a67d8;
+}
+
+.view-btn:active {
+  transform: translateY(-1px);
+}
+
+.view-btn i {
+  font-size: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .menu-selection {
+    border-radius: 20px;
+    margin: 0 10px 30px;
+  }
+  
+  .menu-header {
+    padding: 30px 20px 25px;
+  }
+  
+  .section-title {
+    font-size: 28px;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .section-subtitle {
+    font-size: 15px;
+  }
+  
+  .form-middle-section {
+    padding: 20px;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .button-container {
+    margin-top: 15px;
+    padding-top: 15px;
+  }
+  
+  .info-cards-section {
+    margin-bottom: 30px;
+  }
+  
+  .info-card-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    padding: 0 15px;
+  }
+  
+  .info-card {
+    padding: 25px;
+  }
+  
+  .select-box {
+    padding: 7px 10px;
+    font-size: 13px;
+    padding-right: 28px;
+    height: 34px;
+  }
+  
+  .view-btn {
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 13px;
+    min-width: auto;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-selection {
+    margin: 0 5px 25px;
+    border-radius: 16px;
+  }
+  
+  .menu-header {
+    padding: 25px 15px 20px;
+  }
+  
+  .section-title {
+    font-size: 24px;
+  }
+  
+  .section-subtitle {
+    font-size: 14px;
+  }
+  
+  .form-middle-section {
+    padding: 18px 15px;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .button-container {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+  
+  .info-cards-section {
+    margin-bottom: 25px;
+  }
+  
+  .info-card-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 10px;
+  }
+  
+  .info-card {
+    padding: 20px;
+    border-radius: 20px;
+  }
+  
+  .info-card h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+  
+  .info-card h3 i {
+    font-size: 20px;
+    width: 35px;
+    height: 35px;
+  }
+  
+  .form-group label {
+    font-size: 10px;
+  }
+  
+  .form-group label i {
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    padding: 3px;
+  }
+  
+  .select-box {
+    padding: 6px 8px;
+    padding-right: 24px;
+    border-radius: 6px;
+    font-size: 12px;
+    height: 30px;
+  }
+  
+  .view-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    height: 32px;
+  }
+}
+
+/* Desktop Grid Layout - 2x2 */
+@media (min-width: 769px) {
+  .form-middle-section {
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 20px;
+  }
+  
+  .info-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .info-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    padding: 0 40px;
+  }
+}
+
+/* Loading State */
+.form-middle-section.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.form-middle-section.loading .select-box {
+  background-image: 
+    url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e"),
+    linear-gradient(45deg, transparent 30%, rgba(102, 126, 234, 0.1) 50%, transparent 70%);
+  background-size: 16px, 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: right 20px center, -200% 0; }
+  100% { background-position: right 20px center, 200% 0; }
 }
 
 @keyframes rotate {
@@ -264,27 +750,7 @@ body::before {
   100% { transform: rotate(360deg); }
 }
 
-.section-title {
-  font-size: 36px;
-  font-weight: 800;
-  color: var(--primary);
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  position: relative;
-  z-index: 2;
-}
 
-.section-subtitle {
-  color: var(--text-light);
-  font-size: 18px;
-  margin-bottom: 35px;
-  position: relative;
-  z-index: 2;
-  font-weight: 400;
-}
 
 .form-controls {
   display: flex;
@@ -304,67 +770,10 @@ body::before {
   gap: 10px;
 }
 
-.form-group label {
-  font-weight: 600;
-  color: var(--text);
-  font-size: 16px;
-}
 
-.select-box {
-  padding: 16px 20px;
-  border: 2px solid var(--border);
-  border-radius: 15px;
-  background: var(--bg-primary);
-  color: var(--text);
-  font-size: 16px;
-  min-width: 200px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 500;
-}
 
-.select-box:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
-  transform: translateY(-2px);
-}
-.view-btn {
-  background: var(--gradient-primary);
-  border: none;
-  padding: 16px 35px;
-  border-radius: 15px;
-  color: white;
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
-  font-family: 'Poppins', sans-serif;
-  position: relative;
-  overflow: hidden;
-}
 
-.view-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s;
-}
 
-.view-btn:hover::before {
-  left: 100%;
-}
-
-.view-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 35px rgba(255, 107, 53, 0.4);
-}
 
 /* Menu Display Section */
 .menu-display {
@@ -832,6 +1241,260 @@ body::before {
   animation: fadeInUp 0.6s ease-out;
 }
 
+/* Weekly Menu Section */
+.weekly-menu-section {
+  background: var(--card);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: var(--shadow);
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.weekly-menu-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(76, 175, 80, 0.05) 0%, transparent 70%);
+  animation: rotate 25s linear infinite;
+}
+
+.weekly-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+  position: relative;
+  z-index: 2;
+}
+
+.day-menu-card {
+  background: var(--bg-secondary);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s ease;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-menu-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--gradient-secondary);
+}
+
+.day-menu-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--accent);
+  box-shadow: 0 15px 40px rgba(76, 175, 80, 0.2);
+}
+
+.day-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba(76, 175, 80, 0.1);
+}
+
+.day-header i {
+  font-size: 24px;
+  color: var(--accent);
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 10px;
+}
+
+.day-header h4 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.meals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.meal-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.meal-item:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-left-color: var(--primary);
+  transform: translateX(5px);
+}
+
+.meal-icon {
+  font-size: 24px;
+  min-width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.meal-details {
+  flex: 1;
+}
+
+.meal-details strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.meal-details p {
+  font-size: 14px;
+  color: var(--text-light);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.menu-note {
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(255, 167, 38, 0.1);
+  border-radius: 15px;
+  border-left: 5px solid var(--secondary);
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  position: relative;
+  z-index: 2;
+}
+
+.menu-note i {
+  color: var(--secondary);
+  font-size: 20px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.menu-note p {
+  margin: 0;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.menu-note strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Responsive Design for Weekly Menu */
+@media (max-width: 768px) {
+  .weekly-menu-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .day-menu-card {
+    padding: 20px;
+  }
+  
+  .meal-item {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .meal-icon {
+    font-size: 20px;
+    min-width: 30px;
+    height: 30px;
+  }
+  
+  .day-header h4 {
+    font-size: 18px;
+  }
+  
+  .meal-details strong {
+    font-size: 15px;
+  }
+  
+  .meal-details p {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .weekly-menu-section {
+    padding: 25px 20px;
+  }
+  
+  .weekly-menu-grid {
+    gap: 15px;
+  }
+  
+  .day-menu-card {
+    padding: 18px;
+  }
+  
+  .day-header {
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .day-header i {
+    font-size: 20px;
+    width: 30px;
+    height: 30px;
+  }
+  
+  .meals-list {
+    gap: 12px;
+  }
+  
+  .meal-item {
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .menu-note {
+    padding: 15px;
+    gap: 12px;
+  }
+  
+  .menu-note i {
+    font-size: 18px;
+  }
+  
+  .menu-note p {
+    font-size: 14px;
+  }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -848,6 +1511,162 @@ body::before {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary-dark);
+}
+
+/* Notices Section Styles */
+.notices-section {
+  background: var(--card);
+  border-radius: 30px;
+  padding: 40px;
+  box-shadow: var(--shadow);
+  margin-bottom: 40px;
+}
+
+.notices-wrap {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.notices-heading {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notices-lead {
+  color: var(--text-light);
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.notices-cards {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+}
+
+.notice-card {
+  background: var(--bg-secondary);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--primary);
+}
+
+.notice-card:hover {
+  transform: translateX(5px);
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.15);
+}
+
+.notice-card:last-child {
+  margin-bottom: 0;
+}
+
+.notice-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.notice-summary {
+  font-size: 14px;
+  color: var(--text-light);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.notice-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.no-notices {
+  text-align: center;
+  color: var(--text-light);
+  font-style: italic;
+  padding: 40px 20px;
+}
+
+.notices-actions {
+  text-align: center;
+}
+
+.btn-notice {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 12px 25px;
+  border-radius: 15px;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+}
+
+.btn-notice:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(255, 107, 53, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.notices-graphic {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notice-icon {
+  width: 120px;
+  height: 120px;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: white;
+  box-shadow: 0 15px 40px rgba(255, 107, 53, 0.3);
+}
+
+/* Responsive Design for Notices */
+@media (max-width: 768px) {
+  .notices-wrap {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    text-align: center;
+  }
+  
+  .notice-card {
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+  }
+  
+  .notice-icon {
+    width: 100px;
+    height: 100px;
+    font-size: 40px;
+  }
+  
+  .notices-section {
+    padding: 30px 25px;
+  }
 }
 </style>
 </head>
@@ -884,90 +1703,102 @@ body::before {
 
 <div class="container">
   
-  <!-- Canteen Information Section -->
-  <div class="info-section fade-in-up">
-    <div class="info-card">
-      <h3><i class="fas fa-clock"></i> Operating Hours</h3>
-      <ul>
-        <li><strong>Breakfast:</strong> 7:30 AM - 9:30 AM</li>
-        <li><strong>Lunch:</strong> 12:00 PM - 2:30 PM</li>
-        <li><strong>Snacks:</strong> 4:30 PM - 6:00 PM</li>
-        <li><strong>Dinner:</strong> 7:30 PM - 10:00 PM</li>
-      </ul>
-    </div>
-    
-    <div class="info-card">
-      <h3><i class="fas fa-map-marker-alt"></i> Location & Contact</h3>
-      <p><strong>📍 Location:</strong> MANET Building, Ground Floor</p>
-      <p><strong>👥 Capacity:</strong> 200 Students</p>
-      <p><strong>📞 Contact:</strong> +91 98765 43210</p>
-      <p><strong>👨‍🍳 Chef:</strong> Mr. Rajesh Kumar</p>
-    </div>
-    
-    <div class="info-card">
-      <h3><i class="fas fa-star"></i> Why Choose Us?</h3>
-      <ul>
-        <li>Fresh Ingredients Daily</li>
-        <li>Hygienic Food Preparation</li>
-        <li>Vegetarian & Jain Options</li>
-        <li>Special Diet Plans</li>
-        <li>Student-Friendly Prices</li>
-      </ul>
-    </div>
-    
-    <div class="info-card">
-      <h3><i class="fas fa-fire"></i> Today's Specials</h3>
-      <ul>
-        <li>🍛 Rajma Rice (4.9/5)</li>
-        <li>🧈 Paneer Butter Masala (4.8/5)</li>
-        <li>🥘 Chole Bhature (4.7/5)</li>
-        <li>🥗 Fresh Garden Salad (4.6/5)</li>
-        <li>🍰 Homemade Desserts (4.5/5)</li>
-      </ul>
-    </div>
-  </div>
-
   <!-- Menu Selection Section -->
   <div class="menu-selection fade-in-up">
-    <h2 class="section-title">
-      <i class="fas fa-calendar-week"></i>
-      Weekly Menu Explorer
-    </h2>
-    <p class="section-subtitle">
-      🔍 Discover our delicious menu options and rate your favorites!
-    </p>
+    <!-- Header Section -->
+    <div class="menu-header">
+      <h2 class="section-title">
+        <i class="fas fa-calendar-week"></i>
+        Weekly Menu Explorer
+      </h2>
+      <p class="section-subtitle">
+        🔍 Discover our delicious menu options and rate your favorites!
+      </p>
+    </div>
     
-    <form method="get" class="form-controls">
-      <div class="form-group">
-        <label><i class="fas fa-calendar-day"></i> Select Day</label>
-        <select name="day" class="select-box">
-          <option value="">🗓️ Choose Day</option>
-          {% for day in days %}
-          <option value="{{ day }}" {% if selected_day == day %}selected{% endif %}>
-            {{ day|title }}
-          </option>
-          {% endfor %}
-        </select>
-      </div>
+    <!-- Middle Form Section -->
+    <div class="form-middle-section">
+      <form method="get" id="menuForm">
+        <div class="form-group">
+          <label><i class="fas fa-calendar-day"></i> Select Day</label>
+          <select name="day" class="select-box">
+            <option value="">Choose Day</option>
+            {% for day in days %}
+            <option value="{{ day }}" {% if selected_day == day %}selected{% endif %}>
+              {{ day|title }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
 
-      <div class="form-group">
-        <label><i class="fas fa-utensils"></i> Select Meal</label>
-        <select name="meal" class="select-box">
-          <option value="">🍽️ Choose Meal</option>
-          {% for meal in meals %}
-          <option value="{{ meal }}" {% if selected_meal == meal %}selected{% endif %}>
-            {{ meal|title }}
-          </option>
-          {% endfor %}
-        </select>
-      </div>
+        <div class="form-group">
+          <label><i class="fas fa-utensils"></i> Select Meal</label>
+          <select name="meal" class="select-box">
+            <option value="">Choose Meal</option>
+            {% for meal in meals %}
+            <option value="{{ meal }}" {% if selected_meal == meal %}selected{% endif %}>
+              {{ meal|title }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
 
-      <button type="submit" class="view-btn">
-        <i class="fas fa-search"></i>
-        Explore Menu
-      </button>
-    </form>
+        <!-- Button in the same form section -->
+        <div class="button-container">
+          <button type="submit" class="view-btn">
+            <i class="fas fa-search"></i>
+            Explore Menu
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
+
+  <!-- Information Cards Section (Outside Weekly Menu Explorer) -->
+  <div class="info-cards-section fade-in-up">
+    <div class="info-card-grid">
+      <div class="info-card">
+        <h3><i class="fas fa-clock"></i> Operating Hours</h3>
+        <ul>
+          <li><strong>Breakfast:</strong> 7:30 AM - 9:30 AM</li>
+          <li><strong>Lunch:</strong> 12:00 PM - 2:30 PM</li>
+          <li><strong>Snacks:</strong> 4:30 PM - 6:00 PM</li>
+          <li><strong>Dinner:</strong> 7:30 PM - 10:00 PM</li>
+        </ul>
+      </div>
+      
+      <div class="info-card">
+        <h3><i class="fas fa-map-marker-alt"></i> Location & Contact</h3>
+        <p><strong>📍 Location:</strong> MANET Building, Ground Floor</p>
+        <p><strong>👥 Capacity:</strong> 200 Students</p>
+        <p><strong>📞 Contact:</strong> +91 98765 43210</p>
+        <p><strong>👨‍🍳 Chef:</strong> Mr. Rajesh Kumar</p>
+      </div>
+      
+      <div class="info-card">
+        <h3><i class="fas fa-star"></i> Why Choose Us?</h3>
+        <ul>
+          <li>Fresh Ingredients Daily</li>
+          <li>Hygienic Food Preparation</li>
+          <li>Vegetarian & Jain Options</li>
+          <li>Special Diet Plans</li>
+          <li>Student-Friendly Prices</li>
+        </ul>
+      </div>
+      
+      <div class="info-card">
+        <h3><i class="fas fa-fire"></i> Today's Specials</h3>
+        <ul>
+          <li>🍛 Rajma Rice (4.9/5)</li>
+          <li>🧈 Paneer Butter Masala (4.8/5)</li>
+          <li>🥘 Chole Bhature (4.7/5)</li>
+          <li>🥗 Fresh Garden Salad (4.6/5)</li>
+          <li>🍰 Homemade Desserts (4.5/5)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
   <!-- Menu Display Section -->
   {% if selected_day and selected_meal %}
   <div class="menu-display fade-in-up">
@@ -1079,6 +1910,51 @@ body::before {
       </ul>
     </div>
   </div>
+
+  <!-- Latest Notices Section -->
+  <section class="notices-section fade-in-up">
+    <div class="notices-wrap container">
+      <div class="notices-content">
+        <h2 class="notices-heading">
+          <i class="fas fa-bell"></i>
+          Latest Notices
+        </h2>
+        <p class="notices-lead">
+          Important announcements from MANET mess management — schedule changes, urgent alerts
+          and campus notices appear here. Stay tuned for updates.
+        </p>
+        {% if notices %}
+          <ul class="notices-cards">
+            {% for notice in notices|slice:":4" %}
+              <li class="notice-card" role="listitem">
+                <div class="notice-card-left">
+                  <h3 class="notice-title">{{ notice.title }}</h3>
+                  {% if notice.summary %}
+                    <p class="notice-summary">{{ notice.summary|truncatechars:150 }}</p>
+                  {% endif %}
+                </div>
+                <div class="notice-card-right">
+                  <time class="notice-date">{{ notice.created_at|date:"d M Y" }}</time>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="no-notices">No current notices available.</p>
+        {% endif %}
+
+        <div class="notices-actions">
+          <a href="{% url 'all_notices' %}" class="btn btn-notice">View All Notices</a>
+        </div>
+      </div>
+
+      <figure class="notices-graphic" aria-hidden="true">
+        <div class="notice-icon">
+          <i class="fas fa-bullhorn"></i>
+        </div>
+      </figure>
+    </div>
+  </section>
 
 </div>
 <script>

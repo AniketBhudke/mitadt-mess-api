@@ -49,6 +49,8 @@ urlpatterns = [
     
     # Admin Pages
     path('admin/', admin.site.urls),
+    path('admin-login/', views.admin_login_view, name='admin_login'),
+    path('admin-dashboard/', views.admin_dashboard_view, name='admin_dashboard'),
     path('admin_raj_mess/', views.add_dish, {'mess_id': 1}, name='admin_raj_mess'),
     path('admin_design_mess/', views.design_mess_admin_view, name='admin_design_mess'),
     path('admin_manet_mess/', views.manet_add_dish, name='admin_manet_mess'),
