@@ -584,8 +584,7 @@ def index_view(request):
         context = {
             'user': None,
             'is_authenticated': False,
-            'safe_user_authenticated': False,
-            'auth_error': True
+            'safe_user_authenticated': False
         }
         response = render(request, 'testapp/index.html', context)
         response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
