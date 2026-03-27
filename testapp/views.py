@@ -917,6 +917,12 @@ def add_dish(request, mess_id=1):
     notices = Notice.objects.all().order_by('-created_at')
     complaints = Complaint.objects.all().order_by('-id')
 
+    from .models import MessFeedback, Weekly_suggestion
+    from django.db.models import Avg
+
+    feedbacks = MessFeedback.objects.all().order_by('-submitted_at')
+    suggestions = Weekly_suggestion.objects.filter(mess_name__icontains='raj').order_by('-submitted_at')
+
     # Real avg ratings for charts
     fb_agg = MessFeedback.objects.aggregate(
         food=Avg('food_rating'), service=Avg('service_rating'),
