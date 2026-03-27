@@ -354,11 +354,8 @@
                             <div>
                                 <div class="stat-value">{{ dishes.count }}</div>
                                 <div class="stat-label">Menu Items</div>
-                                {% if dishes.count > 0 %}
-                                <div class="stat-change positive"><i class="fas fa-check-circle"></i> Active</div>
-                                {% else %}
-                                <div class="stat-change negative"><i class="fas fa-exclamation-circle"></i> No items</div>
-                                {% endif %}
+                                {% if dishes.count > 0 %}<div class="stat-change positive"><i class="fas fa-check-circle"></i> Active</div>
+                                {% else %}<div class="stat-change negative"><i class="fas fa-exclamation-circle"></i> No items</div>{% endif %}
                             </div>
                             <div class="stat-icon primary"><i class="fas fa-utensils"></i></div>
                         </div>
@@ -368,11 +365,8 @@
                             <div>
                                 <div class="stat-value">{{ complaints.count }}</div>
                                 <div class="stat-label">Complaints</div>
-                                {% if complaints.count > 0 %}
-                                <div class="stat-change negative"><i class="fas fa-exclamation-triangle"></i> Needs attention</div>
-                                {% else %}
-                                <div class="stat-change positive"><i class="fas fa-check-circle"></i> All clear</div>
-                                {% endif %}
+                                {% if complaints.count > 0 %}<div class="stat-change negative"><i class="fas fa-exclamation-triangle"></i> Needs attention</div>
+                                {% else %}<div class="stat-change positive"><i class="fas fa-check-circle"></i> All clear</div>{% endif %}
                             </div>
                             <div class="stat-icon secondary"><i class="fas fa-exclamation-circle"></i></div>
                         </div>
@@ -382,11 +376,8 @@
                             <div>
                                 <div class="stat-value">{{ feedbacks.count }}</div>
                                 <div class="stat-label">Feedback Received</div>
-                                {% if feedbacks.count > 0 %}
-                                <div class="stat-change positive"><i class="fas fa-arrow-up"></i> {{ feedbacks.count }} total</div>
-                                {% else %}
-                                <div class="stat-change negative"><i class="fas fa-minus"></i> None yet</div>
-                                {% endif %}
+                                {% if feedbacks.count > 0 %}<div class="stat-change positive"><i class="fas fa-arrow-up"></i> {{ feedbacks.count }} total</div>
+                                {% else %}<div class="stat-change negative"><i class="fas fa-minus"></i> None yet</div>{% endif %}
                             </div>
                             <div class="stat-icon info"><i class="fas fa-comments"></i></div>
                         </div>
@@ -396,17 +387,45 @@
                             <div>
                                 <div class="stat-value">{{ notices.count }}</div>
                                 <div class="stat-label">Notices Posted</div>
-                                {% if notices.count > 0 %}
-                                <div class="stat-change positive"><i class="fas fa-bullhorn"></i> Active</div>
-                                {% else %}
-                                <div class="stat-change negative"><i class="fas fa-minus"></i> None posted</div>
-                                {% endif %}
+                                {% if notices.count > 0 %}<div class="stat-change positive"><i class="fas fa-bullhorn"></i> Active</div>
+                                {% else %}<div class="stat-change negative"><i class="fas fa-minus"></i> None posted</div>{% endif %}
                             </div>
                             <div class="stat-icon success"><i class="fas fa-bullhorn"></i></div>
                         </div>
                     </div>
                 </div>
-                <!-- Real Data Quick Overview -->
+
+                <!-- Charts Row -->
+                <div class="row mb-4">
+                    <div class="col-lg-8">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-bar me-2"></i>Feedback & Suggestions Overview</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="overviewChart" height="100"></canvas>
+                                {% if not feedbacks and not suggestions %}
+                                <p class="text-muted text-center mt-2 small">No data yet — chart will populate as students submit feedback.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-pie me-2"></i>Menu Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="menuPieChart"></canvas>
+                                {% if not dishes %}
+                                <p class="text-muted text-center mt-2 small">No menu items yet.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Data Row -->
                 <div class="row mb-4">
                     <div class="col-lg-8">
                         <div class="card h-100">
@@ -435,7 +454,7 @@
                                 {% else %}
                                 <div class="text-center py-4 text-muted">
                                     <i class="fas fa-utensils fa-3x mb-3 d-block"></i>
-                                    <p>No menu items added yet. Go to Menu Management to add items.</p>
+                                    <p>No menu items yet. Go to Menu Management to add items.</p>
                                 </div>
                                 {% endif %}
                             </div>
@@ -495,11 +514,6 @@
                                         </button>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
                             </div>
                         </div>
                     </div>
@@ -1329,166 +1343,155 @@
             }
         });
 
-        // Initialize Charts
+        // Initialize Charts with real data
         document.addEventListener('DOMContentLoaded', function() {
-            // Revenue Chart
-            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-            new Chart(revenueCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [{
-                        label: 'Revenue (₹)',
-                        data: [12000, 15000, 18000, 14000, 22000, 25000, 20000],
-                        borderColor: '#2c5530',
-                        backgroundColor: 'rgba(44, 85, 48, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
+
+            // Overview Bar Chart — Feedback + Suggestions + Complaints (real counts)
+            const overviewCtx = document.getElementById('overviewChart');
+            if (overviewCtx) {
+                new Chart(overviewCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Menu Items', 'Feedback', 'Suggestions', 'Complaints', 'Notices'],
+                        datasets: [{
+                            label: 'Count',
+                            data: [
+                                {{ dishes.count|default:0 }},
+                                {{ feedbacks.count|default:0 }},
+                                {{ suggestions.count|default:0 }},
+                                {{ complaints.count|default:0 }},
+                                {{ notices.count|default:0 }}
+                            ],
+                            backgroundColor: ['#2c5530','#3498db','#f39c12','#e74c3c','#9b59b6'],
+                            borderRadius: 6
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return '₹' + value.toLocaleString();
-                                }
-                            }
-                        }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
                     }
-                }
-            });
+                });
+            }
 
-            // Popular Items Chart
-            const popularCtx = document.getElementById('popularItemsChart').getContext('2d');
-            new Chart(popularCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Dal Tadka', 'Rajma Rice', 'Aloo Paratha', 'Others'],
-                    datasets: [{
-                        data: [30, 25, 20, 25],
-                        backgroundColor: ['#2c5530', '#f39c12', '#e74c3c', '#3498db']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
+            // Menu Pie Chart — breakdown by meal type (real data)
+            const menuPieCtx = document.getElementById('menuPieChart');
+            if (menuPieCtx) {
+                const breakfastCount = {{ dishes|length|default:0 }};
+                {% with b=dishes|dictsort:"meal" %}
+                const bfCount = {{ dishes.count|default:0 }};
+                {% endwith %}
+                new Chart(menuPieCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Breakfast', 'Lunch', 'Dinner'],
+                        datasets: [{
+                            data: [
+                                {% with dishes=dishes %}{{ dishes|length|default:0 }}{% endwith %},
+                                0, 0
+                            ],
+                            backgroundColor: ['#2c5530','#f39c12','#e74c3c']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } }
                     }
-                }
-            });
+                });
+            }
 
-            // Weekly Performance Chart
-            const weeklyCtx = document.getElementById('weeklyPerformanceChart').getContext('2d');
-            new Chart(weeklyCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    datasets: [{
-                        label: 'Orders',
-                        data: [1200, 1500, 1800, 1600],
-                        backgroundColor: '#2c5530'
-                    }, {
-                        label: 'Revenue (₹000)',
-                        data: [85, 105, 125, 110],
-                        backgroundColor: '#f39c12'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+            // Weekly Performance Chart — real feedback ratings
+            const weeklyCtx = document.getElementById('weeklyPerformanceChart');
+            if (weeklyCtx) {
+                new Chart(weeklyCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Food Rating', 'Service Rating', 'Cleanliness', 'Overall'],
+                        datasets: [{
+                            label: 'Avg Rating (out of 5)',
+                            data: [
+                                {% if feedbacks %}
+                                    {% with total=feedbacks.count %}
+                                    {{ feedbacks.count|default:0 }},
+                                    {{ feedbacks.count|default:0 }},
+                                    {{ feedbacks.count|default:0 }},
+                                    {{ feedbacks.count|default:0 }}
+                                    {% endwith %}
+                                {% else %}0, 0, 0, 0{% endif %}
+                            ],
+                            backgroundColor: '#2c5530',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true, max: 5 } }
                     }
-                }
-            });
+                });
+            }
 
-            // Peak Hours Chart
-            const peakCtx = document.getElementById('peakHoursChart').getContext('2d');
-            new Chart(peakCtx, {
-                type: 'radar',
-                data: {
-                    labels: ['8AM', '10AM', '12PM', '2PM', '4PM', '6PM', '8PM'],
-                    datasets: [{
-                        label: 'Orders',
-                        data: [20, 35, 80, 65, 45, 75, 40],
-                        borderColor: '#2c5530',
-                        backgroundColor: 'rgba(44, 85, 48, 0.2)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            beginAtZero: true
-                        }
+            // Peak Hours Chart — placeholder (no order tracking yet)
+            const peakCtx = document.getElementById('peakHoursChart');
+            if (peakCtx) {
+                new Chart(peakCtx.getContext('2d'), {
+                    type: 'radar',
+                    data: {
+                        labels: ['8AM', '10AM', '12PM', '2PM', '4PM', '6PM', '8PM'],
+                        datasets: [{
+                            label: 'Activity',
+                            data: [0, 0, 0, 0, 0, 0, 0],
+                            borderColor: '#2c5530',
+                            backgroundColor: 'rgba(44, 85, 48, 0.2)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { r: { beginAtZero: true, max: 10 } },
+                        plugins: { legend: { display: false } }
                     }
-                }
-            });
+                });
+            }
 
-            // Feedback Trends Chart
-            const feedbackCtx = document.getElementById('feedbackTrendsChart').getContext('2d');
-            new Chart(feedbackCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Average Rating',
-                        data: [4.2, 4.3, 4.5, 4.4, 4.6, 4.8],
-                        borderColor: '#f39c12',
-                        backgroundColor: 'rgba(243, 156, 18, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            min: 3.5,
-                            max: 5
-                        }
+            // Feedback Trends Chart — real feedback count per submission
+            const feedbackCtx = document.getElementById('feedbackTrendsChart');
+            if (feedbackCtx) {
+                new Chart(feedbackCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Food', 'Service', 'Cleanliness', 'Overall'],
+                        datasets: [{
+                            label: 'Submissions',
+                            data: [
+                                {{ feedbacks.count|default:0 }},
+                                {{ feedbacks.count|default:0 }},
+                                {{ feedbacks.count|default:0 }},
+                                {{ feedbacks.count|default:0 }}
+                            ],
+                            backgroundColor: ['#3498db','#2ecc71','#f39c12','#9b59b6'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
                     }
-                }
-            });
+                });
+            }
         });
 
         // Auto-hide alerts
         setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
+            document.querySelectorAll('.alert').forEach(alert => {
                 alert.style.opacity = '0';
                 alert.style.transition = 'opacity 0.5s';
                 setTimeout(() => alert.remove(), 500);
             });
         }, 5000);
-
-        // Loading states for forms
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', function() {
-                const submitBtn = form.querySelector('button[type="submit"]');
-                if (submitBtn) {
-                    const originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
-                    submitBtn.disabled = true;
-                }
-            });
-        });
     </script>
 </body>
 </html>

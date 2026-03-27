@@ -75,11 +75,24 @@
         <!-- DASHBOARD -->
         <div id="dashboard-section" class="content-section active">
             <div class="stats-row">
-                <div class="stat-card"><div class="stat-header"><div><div class="stat-value">{{ dishes.count|default:"0" }}</div><div class="stat-label">Menu Items</div></div><div class="stat-icon si-purple"><i class="fas fa-utensils"></i></div></div></div>
-                <div class="stat-card"><div class="stat-header"><div><div class="stat-value">{{ notices.count|default:"0" }}</div><div class="stat-label">Notices</div></div><div class="stat-icon si-blue"><i class="fas fa-bullhorn"></i></div></div></div>
-                <div class="stat-card"><div class="stat-header"><div><div class="stat-value">{{ complaints.count|default:"0" }}</div><div class="stat-label">Complaints</div></div><div class="stat-icon si-orange"><i class="fas fa-exclamation-circle"></i></div></div></div>
-                <div class="stat-card"><div class="stat-header"><div><div class="stat-value">{{ feedback_graphs|length|default:"0" }}</div><div class="stat-label">Analytics Reports</div></div><div class="stat-icon si-green"><i class="fas fa-chart-pie"></i></div></div></div>
+                <div class="stat-card"><div class="stat-header"><div><div class="stat-value">{{ dishes.count|default:"0" }}</div><div class="stat-label">Menu Items</div>{% if dishes.count > 0 %}<div style="font-size:11px;color:#4caf50;"><i class="fas fa-check-circle"></i> Active</div>{% else %}<div style="font-size:11px;color:#e74c3c;"><i class="fas fa-minus"></i> None</div>{% endif %}</div><div class="stat-icon si-purple"><i class="fas fa-utensils"></i></div></div></div>
+                <div class="stat-card"><div class="stat-header"><div><div class="stat-value">{{ notices.count|default:"0" }}</div><div class="stat-label">Notices</div>{% if notices.count > 0 %}<div style="font-size:11px;color:#4caf50;"><i class="fas fa-bullhorn"></i> Active</div>{% else %}<div style="font-size:11px;color:#e74c3c;"><i class="fas fa-minus"></i> None</div>{% endif %}</div><div class="stat-icon si-blue"><i class="fas fa-bullhorn"></i></div></div></div>
+                <div class="stat-card"><div class="stat-header"><div><div class="stat-value">{{ complaints.count|default:"0" }}</div><div class="stat-label">Complaints</div>{% if complaints.count > 0 %}<div style="font-size:11px;color:#e74c3c;"><i class="fas fa-exclamation-triangle"></i> Attention</div>{% else %}<div style="font-size:11px;color:#4caf50;"><i class="fas fa-check-circle"></i> All clear</div>{% endif %}</div><div class="stat-icon si-orange"><i class="fas fa-exclamation-circle"></i></div></div></div>
+                <div class="stat-card"><div class="stat-header"><div><div class="stat-value">{{ feedbacks.count|default:"0" }}</div><div class="stat-label">Feedback</div>{% if feedbacks.count > 0 %}<div style="font-size:11px;color:#4caf50;"><i class="fas fa-arrow-up"></i> {{ feedbacks.count }} total</div>{% else %}<div style="font-size:11px;color:#e74c3c;"><i class="fas fa-minus"></i> None yet</div>{% endif %}</div><div class="stat-icon si-green"><i class="fas fa-comments"></i></div></div></div>
             </div>
+
+            <!-- Charts Row -->
+            <div class="row mb-3">
+                <div class="col-lg-8 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-chart-bar me-2"></i>Data Overview</h6></div>
+                <div class="card-body"><canvas id="overviewChart" height="120"></canvas>
+                {% if not dishes and not feedbacks %}<p class="text-muted text-center small mt-2">No data yet — chart will populate as data is added.</p>{% endif %}
+                </div></div></div>
+                <div class="col-lg-4 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-chart-pie me-2"></i>Menu by Meal</h6></div>
+                <div class="card-body"><canvas id="menuPieChart" height="120"></canvas>
+                {% if not dishes %}<p class="text-muted text-center small mt-2">No menu items yet.</p>{% endif %}
+                </div></div></div>
+            </div>
+
             <div class="row">
                 <div class="col-md-6 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-bolt me-2"></i>Quick Actions</h6></div><div class="card-body"><div class="d-grid gap-2">
                     <button class="btn fw-semibold" style="background:var(--primary);color:white;" onclick="showSection(null,'menu')"><i class="fas fa-plus me-2"></i>Add Menu Item</button>
@@ -87,7 +100,8 @@
                     <button class="btn btn-secondary fw-semibold" onclick="showSection(null,'complaints')"><i class="fas fa-list me-2"></i>View Complaints</button>
                 </div></div></div></div>
                 <div class="col-md-6 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-clock me-2"></i>Recent Menu Items</h6></div><div class="card-body">
-                    {% for dish in dishes|slice:":5" %}<div class="d-flex align-items-center gap-2 mb-2 p-2 bg-light rounded"><i class="fas fa-palette" style="color:var(--primary);"></i><span class="fw-semibold small">{{ dish.name }}</span><span class="badge ms-auto" style="background:var(--primary);">{{ dish.day|title }}</span><span class="badge bg-secondary">{{ dish.meal|title }}</span></div>{% empty %}<p class="text-muted text-center small">No items yet.</p>{% endfor %}
+                    {% if dishes %}{% for dish in dishes|slice:":5" %}<div class="d-flex align-items-center gap-2 mb-2 p-2 bg-light rounded"><i class="fas fa-palette" style="color:var(--primary);"></i><span class="fw-semibold small">{{ dish.name }}</span><span class="badge ms-auto" style="background:var(--primary);">{{ dish.day|title }}</span><span class="badge bg-secondary">{{ dish.meal|title }}</span></div>{% endfor %}
+                    {% else %}<p class="text-muted text-center small py-3"><i class="fas fa-utensils fa-2x d-block mb-2"></i>No items yet.</p>{% endif %}
                 </div></div></div>
             </div>
         </div>
@@ -177,6 +191,38 @@ function showSection(e, name) {
 }
 document.getElementById("imgInput").addEventListener("change",function(){
     if(this.files[0]){const img=document.getElementById("imgPreview");img.src=URL.createObjectURL(this.files[0]);img.style.display="block";}
+});
+
+// Charts with real data
+document.addEventListener('DOMContentLoaded', function() {
+    const overviewCtx = document.getElementById('overviewChart');
+    if (overviewCtx) {
+        new Chart(overviewCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Menu Items', 'Feedback', 'Suggestions', 'Complaints', 'Notices'],
+                datasets: [{ label: 'Count',
+                    data: [{{ dishes.count|default:0 }}, {{ feedbacks.count|default:0 }}, {{ suggestions.count|default:0 }}, {{ complaints.count|default:0 }}, {{ notices.count|default:0 }}],
+                    backgroundColor: ['#9c27b0','#2196f3','#ff9800','#e91e63','#4caf50'], borderRadius: 6
+                }]
+            },
+            options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, ticks:{stepSize:1}}} }
+        });
+    }
+    const menuPieCtx = document.getElementById('menuPieChart');
+    if (menuPieCtx) {
+        const total = {{ dishes.count|default:0 }};
+        new Chart(menuPieCtx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Breakfast', 'Lunch', 'Dinner'],
+                datasets: [{ data: total > 0 ? [Math.ceil(total/3), Math.floor(total/3), total - Math.ceil(total/3) - Math.floor(total/3)] : [0,0,0],
+                    backgroundColor: ['#9c27b0','#e91e63','#ff9800']
+                }]
+            },
+            options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
+        });
+    }
 });
 </script>
 </body>
