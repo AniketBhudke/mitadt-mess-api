@@ -683,7 +683,7 @@ def manet_add_dish(request):
     dishes = manet_menu.objects.all().order_by('day', 'meal')
     notices = Notice.objects.all().order_by('-created_at')
     complaints = Complaint.objects.all().order_by('-id')
-    feedback_graphs = get_feedback_graphs()
+    feedback_graphs = get_feedback_graphs(mess_name='manet')
 
     from .models import MessFeedback, Weekly_suggestion
     from django.db.models import Avg, Count
@@ -843,20 +843,24 @@ def create_pie_base64(counts_dict, title):
     return encoded
 
 
-def get_feedback_graphs():
+def get_feedback_graphs(mess_name=None):
+    """Generate pie charts from Weekly_suggestion data, filtered by mess if provided."""
     graphs = []
 
     for day in DAYS:
         for meal in MEALS:
             field = f"{day}_{meal}"
-            data =Weekly_suggestion.objects.values_list(field, flat=True)
+            qs = Weekly_suggestion.objects.all()
+            if mess_name:
+                qs = qs.filter(mess_name__icontains=mess_name)
+            data = qs.values_list(field, flat=True)
 
             counts = {}
             for d in data:
                 if d:
                     counts[d] = counts.get(d, 0) + 1
 
-            img = create_pie_base64(counts, f"{day.title()} - {meal.title()} Feedback")
+            img = create_pie_base64(counts, f"{day.title()} - {meal.title()}")
             graphs.append({
                 "day": day.title(),
                 "meal": meal.title(),
@@ -909,15 +913,9 @@ def add_dish(request, mess_id=1):
         return redirect('admin_raj_mess', mess_id=mess_id)
 
     dishes = Dish.objects.filter(mess_id=mess_id).order_by('day', 'meal')
-    feedback_graphs = get_feedback_graphs()
+    feedback_graphs = get_feedback_graphs(mess_name='raj')
     notices = Notice.objects.all().order_by('-created_at')
     complaints = Complaint.objects.all().order_by('-id')
-
-    from .models import MessFeedback, Weekly_suggestion
-    from django.db.models import Avg, Count
-
-    feedbacks = MessFeedback.objects.all().order_by('-submitted_at')
-    suggestions = Weekly_suggestion.objects.filter(mess_name__icontains='raj').order_by('-submitted_at')
 
     # Real avg ratings for charts
     fb_agg = MessFeedback.objects.aggregate(
@@ -1026,7 +1024,7 @@ def design_mess_admin_view(request):
     dishes = design_menu.objects.all().order_by('day', 'meal')
     notices = Notice.objects.all().order_by('-created_at')
     complaints = Complaint.objects.all().order_by('-id')
-    feedback_graphs = get_feedback_graphs()
+    feedback_graphs = get_feedback_graphs(mess_name='design')
 
     from .models import MessFeedback, Weekly_suggestion
     from django.db.models import Avg, Count
