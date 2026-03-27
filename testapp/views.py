@@ -1209,109 +1209,65 @@ def sign_up_views(request):
 def login_view(request):
     # Handle any database initialization issues first
     try:
-        # Test database connectivity
         from django.db import connection
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
     except Exception as db_error:
-        messages.error(request, f"Database not ready. Please visit /init-db/ first. Error: {str(db_error)}")
+        messages.error(request, f"Database not ready. Please visit /init-db/ first.")
         return render(request, 'testapp/working_login.html')
-    
+
     if request.method == 'POST':
         email_or_username = request.POST.get('email', '').strip()
         password = request.POST.get('password', '')
-        
+
         if not email_or_username or not password:
             messages.error(request, "Please provide both email/username and password.")
             return render(request, 'testapp/working_login.html')
-        
+
         try:
-            # First, try to initialize database if tables are missing
-            try:
-                from django.core.management import call_command
-                call_command('migrate', verbosity=0, interactive=False)
-            except:
-                pass
-            
-            # Debug: Let's see what we're looking for
-            print(f"DEBUG: Looking for user: '{email_or_username}'")
-            
-            # Try to find user by email first
+            # Find user by email or username
             user = None
             if '@' in email_or_username:
-                # It's an email
                 try:
                     user = User.objects.get(email=email_or_username)
-                    print(f"DEBUG: Found user by email: {user.username}")
                 except User.DoesNotExist:
-                    print(f"DEBUG: No user found with email: {email_or_username}")
                     pass
-            
-            # If not found by email, try username
+
             if user is None:
                 try:
                     user = User.objects.get(username=email_or_username)
-                    print(f"DEBUG: Found user by username: {user.username}")
                 except User.DoesNotExist:
-                    print(f"DEBUG: No user found with username: {email_or_username}")
                     pass
-            
+
             if user is None:
-                # Let's see what users actually exist
-                try:
-                    all_users = User.objects.all()
-                    print(f"DEBUG: Available users: {[u.username for u in all_users]}")
-                    messages.error(request, f"No account found with '{email_or_username}'. Please visit /init-db/ first to create admin user.")
-                except Exception as db_error:
-                    messages.error(request, f"Database not ready. Please visit /init-db/ first. Error: {str(db_error)}")
+                messages.error(request, f"No account found with '{email_or_username}'.")
                 return render(request, 'testapp/working_login.html')
-            
-            # Check password
-            print(f"DEBUG: Checking password for user: {user.username}")
+
             if user.check_password(password):
-                print(f"DEBUG: Password correct for user: {user.username}")
-                try:
-                    # Try to login with session
-                    login(request, user)
-                    messages.success(request, f"Welcome back, {user.username}!")
-                    
-                    # Clear any password manager interference
+                login(request, user)
+
+                # ── Admin routing ──────────────────────────────────────────
+                username = user.username.lower()
+                if 'raj' in username:
+                    return redirect('admin_raj_mess')
+                elif 'manet' in username:
+                    return redirect('admin_manet_mess')
+                elif 'design' in username:
+                    return redirect('admin_design_mess')
+                elif user.is_superuser or user.is_staff:
+                    return redirect('admin_raj_mess')   # superadmin → RAJ by default
+                # ── Regular user ───────────────────────────────────────────
+                else:
                     response = redirect('index')
                     response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-                    response['Pragma'] = 'no-cache'
-                    response['Expires'] = '0'
                     return response
-                    
-                except Exception as session_error:
-                    print(f"DEBUG: Session error during login: {str(session_error)}")
-                    # If session login fails, try to initialize database and retry
-                    try:
-                        from django.core.management import call_command
-                        call_command('migrate', verbosity=0, interactive=False)
-                        
-                        # Try login again
-                        login(request, user)
-                        messages.success(request, f"Welcome back, {user.username}! (Database initialized)")
-                        return redirect('index')
-                        
-                    except Exception as retry_error:
-                        print(f"DEBUG: Retry login failed: {str(retry_error)}")
-                        # Show success but redirect to a safe page
-                        messages.success(request, f"Login successful for {user.username}! Please visit /init-db/ to fix session issues.")
-                        return render(request, 'testapp/working_login.html', {
-                            'login_success': True, 
-                            'user': user,
-                            'session_error': True
-                        })
             else:
-                print(f"DEBUG: Password incorrect for user: {user.username}")
-                messages.error(request, f"Incorrect password for user '{user.username}'.")
-                
-        except Exception as e:
-            print(f"DEBUG: Exception occurred: {str(e)}")
-            messages.error(request, f"Login failed: {str(e)}. Please visit /init-db/ first.")
+                messages.error(request, "Incorrect password.")
 
-    return render(request, 'testapp/working_login.html')    
+        except Exception as e:
+            messages.error(request, f"Login failed: {str(e)}.")
+
+    return render(request, 'testapp/working_login.html')
 
 def logout_view(request):
     """Logout user and redirect to home page"""
@@ -1934,84 +1890,24 @@ def all_notices(request):
     return render(request, "testapp/all_notices.html", {"notices": notices})
 
 
-def admin_login_view(request):
-    """
-    Dedicated admin login page
-    """
-    if request.user.is_authenticated:
-        # If already logged in, redirect to admin dashboard
-        return redirect('admin_dashboard')
-    
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        
-        if username and password:
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                # Check if user is admin/staff
-                if user.is_staff or user.is_superuser or 'admin' in user.username.lower():
-                    login(request, user)
-                    messages.success(request, f"Welcome back, {user.username}!")
-                    return redirect('admin_dashboard')
-                else:
-                    messages.error(request, "Access denied. Admin privileges required.")
-            else:
-                messages.error(request, "Invalid username or password.")
-        else:
-            messages.error(request, "Please enter both username and password.")
-    
-    return render(request, 'testapp/admin_login.html')
 
 
-def admin_dashboard_view(request):
-    """
-    Admin dashboard that redirects to appropriate mess admin page
-    Based on username pattern: raj_admin, manet_admin, design_admin
-    """
-    if not request.user.is_authenticated:
-        messages.error(request, "Please login as admin first.")
-        return redirect('login')
-    
-    username = request.user.username.lower()
-    
-    # Check admin type based on username
-    if 'raj' in username or username == 'admin':
-        return redirect('admin_raj_mess')
-    elif 'manet' in username:
-        return redirect('admin_manet_mess')  
-    elif 'design' in username:
-        return redirect('admin_design_mess')
-    else:
-        # Default admin dashboard with options
-        context = {
-            'user': request.user,
-            'admin_options': [
-                {'name': 'RAJ Mess Admin', 'url': 'admin_raj_mess', 'icon': 'fas fa-utensils', 'color': '#4caf50'},
-                {'name': 'MANET Mess Admin', 'url': 'admin_manet_mess', 'icon': 'fas fa-utensils', 'color': '#ff6b35'},
-                {'name': 'Design Mess Admin', 'url': 'admin_design_mess', 'icon': 'fas fa-utensils', 'color': '#9c27b0'},
-            ]
-        }
-        return render(request, 'testapp/admin_dashboard.html', context)
 def admin_login_view(request):
-    """
-    Dedicated admin login page
-    """
+    """Dedicated admin login — routes each admin to their own mess panel."""
     if request.user.is_authenticated:
-        # If already logged in, redirect to admin dashboard
         return redirect('admin_dashboard')
 
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '').strip()
 
         if username and password:
             user = authenticate(request, username=username, password=password)
             if user is not None:
-                # Check if user is admin/staff
-                if user.is_staff or user.is_superuser or 'admin' in user.username.lower():
+                uname = user.username.lower()
+                if user.is_staff or user.is_superuser or 'admin' in uname:
                     login(request, user)
-                    messages.success(request, f"Welcome back, {user.username}!")
+                    messages.success(request, f"Welcome, {user.username}!")
                     return redirect('admin_dashboard')
                 else:
                     messages.error(request, "Access denied. Admin privileges required.")
@@ -2024,31 +1920,17 @@ def admin_login_view(request):
 
 
 def admin_dashboard_view(request):
-    """
-    Admin dashboard that redirects to appropriate mess admin page
-    Based on username pattern: raj_admin, manet_admin, design_admin
-    """
+    """Routes admin to the correct mess panel based on username."""
     if not request.user.is_authenticated:
-        messages.error(request, "Please login as admin first.")
         return redirect('admin_login')
-    
-    username = request.user.username.lower()
-    
-    # Check admin type based on username
-    if 'raj' in username or username == 'admin':
+
+    uname = request.user.username.lower()
+
+    if 'raj' in uname or uname == 'admin':
         return redirect('admin_raj_mess')
-    elif 'manet' in username:
-        return redirect('admin_manet_mess')  
-    elif 'design' in username:
+    elif 'manet' in uname:
+        return redirect('admin_manet_mess')
+    elif 'design' in uname:
         return redirect('admin_design_mess')
     else:
-        # Default admin dashboard with options
-        context = {
-            'user': request.user,
-            'admin_options': [
-                {'name': 'RAJ Mess Admin', 'url': 'admin_raj_mess', 'icon': 'fas fa-utensils', 'color': '#4caf50'},
-                {'name': 'MANET Mess Admin', 'url': 'admin_manet_mess', 'icon': 'fas fa-utensils', 'color': '#ff6b35'},
-                {'name': 'Design Mess Admin', 'url': 'admin_design_mess', 'icon': 'fas fa-utensils', 'color': '#9c27b0'},
-            ]
-        }
-        return render(request, 'testapp/admin_dashboard.html', context)
+        return redirect('admin_raj_mess')
