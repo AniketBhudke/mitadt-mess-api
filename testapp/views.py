@@ -655,27 +655,45 @@ from .forms import DesignForm, ManetForm
 from .models import DesignRating, Dish, DishRating, ManetRating,design_menu, manet_menu
 
 def manet_add_dish(request):
+    days = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
+    meals = ["breakfast", "lunch", "dinner"]
+
     if request.method == 'POST':
-        form = ManetForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
+        # Handle dish add
+        if 'name' in request.POST:
+            form = ManetForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Dish added successfully!")
+                return redirect('admin_manet_mess')
+            else:
+                messages.error(request, "Please correct the errors below.")
+        # Handle notice add
+        elif 'title' in request.POST:
+            title = request.POST.get('title')
+            body = request.POST.get('body')
+            attachment = request.FILES.get('attachment')
+            is_published = request.POST.get('is_published') == 'on'
+            Notice.objects.create(title=title, body=body, attachment=attachment, is_published=is_published)
+            messages.success(request, "Notice saved.")
             return redirect('admin_manet_mess')
     else:
         form = ManetForm()
 
-    # Group dishes day → meal → dishes
-    days = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
-    meals = ["breakfast", "lunch", "dinner"]
-
-    menu = {}
-    for day in days:
-        menu[day] = {}
-        for meal in meals:
-            menu[day][meal] = manet_menu.objects.filter(day=day, meal=meal)
+    dishes = manet_menu.objects.all().order_by('day', 'meal')
+    notices = Notice.objects.all().order_by('-created_at')
+    complaints = Complaint.objects.all().order_by('-id')
+    feedback_graphs = get_feedback_graphs()
 
     return render(request, 'testapp/admin_manet_mess.html', {
         'form': form,
-        'menu': menu
+        'days': days,
+        'meals': meals,
+        'dishes': dishes,
+        'notices': notices,
+        'complaints': complaints,
+        'feedback_graphs': feedback_graphs,
+        'user': request.user,
     })
 
 
@@ -892,13 +910,26 @@ def delete_notice(request, id, mess_id=1):
 
 def delete_dish(request, id):
     dish = get_object_or_404(Dish, id=id)
-    mess_id = dish.mess_id
-
     if request.method == 'POST':
         dish.delete()
         messages.success(request, "Dish deleted successfully ✅")
+    return redirect('admin_raj_mess')
 
-    return redirect('admin_raj_mess') if mess_id == 1 else redirect('admin_mess', mess_id=mess_id)
+
+def delete_manet_dish(request, id):
+    dish = get_object_or_404(manet_menu, id=id)
+    if request.method == 'POST':
+        dish.delete()
+        messages.success(request, "Dish deleted successfully ✅")
+    return redirect('admin_manet_mess')
+
+
+def delete_design_dish(request, id):
+    dish = get_object_or_404(design_menu, id=id)
+    if request.method == 'POST':
+        dish.delete()
+        messages.success(request, "Dish deleted successfully ✅")
+    return redirect('admin_design_mess')
 
 
 from django.db.models import Avg
@@ -906,31 +937,46 @@ from django.db.models import Avg
 
 
 def design_mess_admin_view(request):
-    if request.method == 'POST':
-        form = DesignForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Design menu item added successfully!')
-            return redirect('admin_design_mess')
-        else:
-            messages.error(request, 'Please correct the errors below.')
-    else:
-        form = DesignForm()
-
     days = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
     meals = ["breakfast", "lunch", "dinner"]
 
-    # Get all design menu items
-    dishes = design_menu.objects.all().order_by('-id')
-    
+    if request.method == 'POST':
+        # Handle dish add
+        if 'name' in request.POST:
+            form = DesignForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Design menu item added successfully!')
+                return redirect('admin_design_mess')
+            else:
+                messages.error(request, 'Please correct the errors below.')
+        # Handle notice add
+        elif 'title' in request.POST:
+            title = request.POST.get('title')
+            body = request.POST.get('body')
+            attachment = request.FILES.get('attachment')
+            is_published = request.POST.get('is_published') == 'on'
+            Notice.objects.create(title=title, body=body, attachment=attachment, is_published=is_published)
+            messages.success(request, "Notice saved.")
+            return redirect('admin_design_mess')
+    else:
+        form = DesignForm()
+
+    dishes = design_menu.objects.all().order_by('day', 'meal')
+    notices = Notice.objects.all().order_by('-created_at')
+    complaints = Complaint.objects.all().order_by('-id')
+    feedback_graphs = get_feedback_graphs()
+
     context = {
         'form': form,
         'days': days,
         'meals': meals,
         'dishes': dishes,
+        'notices': notices,
+        'complaints': complaints,
+        'feedback_graphs': feedback_graphs,
         'user': request.user,
     }
-    
     return render(request, 'testapp/admin_design_mess.html', context)
 # testapp/views.py
 from django.shortcuts import render, get_object_or_404

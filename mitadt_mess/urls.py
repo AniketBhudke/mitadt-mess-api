@@ -58,6 +58,8 @@ urlpatterns = [
     # Actions
     path('add_dish/<int:mess_id>/', views.add_dish, name='add_dish'),
     path('delete-dish/<int:id>/', views.delete_dish, name='delete_dish'),
+    path('delete-manet-dish/<int:id>/', views.delete_manet_dish, name='delete_manet_dish'),
+    path('delete-design-dish/<int:id>/', views.delete_design_dish, name='delete_design_dish'),
     path("rate_design_dish/", views.rate_design_dish, name="rate_design_dish"),
     path("rate-manet/", views.rate_manet_dish, name="rate_manet_dish"),
     path("rate-dish/", views.rate_dish, name="rate_dish"),

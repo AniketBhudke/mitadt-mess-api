@@ -4,457 +4,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MANET Canteen Management System</title>
+    <title>MANET Canteen Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --primary: #ff6b35;
-            --primary-light: #ff8a65;
-            --secondary: #2196f3;
-            --accent: #4caf50;
-            --success: #27ae60;
-            --warning: #f39c12;
-            --info: #3498db;
-            --dark: #2c3e50;
-            --light: #ecf0f1;
-            --white: #ffffff;
-            --gray-100: #f8f9fa;
-            --gray-200: #e9ecef;
-            --gray-300: #dee2e6;
-            --gray-600: #6c757d;
-            --gray-800: #495057;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
-            --shadow-lg: 0 8px 25px rgba(0,0,0,0.2);
-            --border-radius: 12px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-            color: var(--dark);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        /* Sidebar Navigation */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: 280px;
-            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            z-index: 1000;
-            transition: var(--transition);
-            overflow-y: auto;
-        }
-
-        .sidebar-header {
-            padding: 25px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 20px;
-            font-weight: 700;
-            color: white;
-            text-decoration: none;
-        }
-
-        .sidebar-brand i {
-            font-size: 28px;
-            color: var(--secondary);
-        }
-
-        .sidebar-nav {
-            padding: 20px 0;
-        }
-
-        .nav-item {
-            margin: 5px 15px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 15px;
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: var(--transition);
-            font-weight: 500;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            transform: translateX(5px);
-        }
-
-        .nav-link i {
-            width: 20px;
-            text-align: center;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 280px;
-            min-height: 100vh;
-            transition: var(--transition);
-        }
-
-        /* Top Header */
-        .top-header {
-            background: var(--white);
-            padding: 20px 30px;
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
-
-        .page-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 0;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: var(--gray-100);
-            padding: 8px 15px;
-            border-radius: 25px;
-        }
-
-        .user-avatar {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-        }
+        :root { --primary:#ff6b35; --primary-light:#ff8a65; --info:#3498db; --success:#27ae60; --warning:#f39c12; --dark:#2c3e50; --gray-100:#f8f9fa; --gray-600:#6c757d; }
+        body { font-family:Poppins,sans-serif; background:linear-gradient(135deg,#fff3e0,#ffe0b2); min-height:100vh; }
+        .sidebar { position:fixed; top:0; left:0; height:100vh; width:260px; background:linear-gradient(180deg,var(--primary),var(--primary-light)); color:white; z-index:1000; overflow-y:auto; }
+        .sidebar-header { padding:20px; border-bottom:1px solid rgba(255,255,255,0.1); }
+        .sidebar-brand { display:flex; align-items:center; gap:10px; font-size:17px; font-weight:700; color:white; text-decoration:none; }
+        .sidebar-brand i { font-size:22px; color:#ffd700; }
+        .sidebar-nav { padding:12px 0; }
+        .nav-item { margin:3px 10px; }
+        .nav-link { display:flex; align-items:center; gap:10px; padding:10px 13px; color:rgba(255,255,255,0.8); text-decoration:none; border-radius:8px; font-weight:500; font-size:14px; transition:all 0.2s; }
+        .nav-link:hover,.nav-link.active { background:rgba(255,255,255,0.15); color:white; }
+        .main-content { margin-left:260px; min-height:100vh; }
+        .top-header { background:white; padding:16px 25px; box-shadow:0 2px 4px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:999; }
+        .page-title { font-size:22px; font-weight:700; color:var(--primary); margin:0; }
+        .user-profile { display:flex; align-items:center; gap:10px; background:var(--gray-100); padding:7px 13px; border-radius:25px; }
+        .user-avatar { width:32px; height:32px; border-radius:50%; background:var(--primary); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:13px; }
+        .dashboard-content { padding:22px; }
+        .content-section { display:none; }
+        .content-section.active { display:block; }
+        .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:18px; margin-bottom:22px; }
+        .stat-card { background:white; border-radius:12px; padding:20px; box-shadow:0 2px 4px rgba(0,0,0,0.1); position:relative; overflow:hidden; }
+        .stat-card::before { content:""; position:absolute; top:0; left:0; width:4px; height:100%; background:var(--primary); }
+        .stat-header { display:flex; justify-content:space-between; align-items:center; }
+        .stat-value { font-size:30px; font-weight:800; color:var(--dark); }
+        .stat-label { font-size:12px; color:var(--gray-600); font-weight:500; margin-top:3px; }
+        .stat-icon { width:50px; height:50px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; color:white; }
+        .si-orange { background:linear-gradient(135deg,#ff6b35,#ff8a65); }
+        .si-blue { background:linear-gradient(135deg,#3498db,#5dade2); }
+        .si-green { background:linear-gradient(135deg,#27ae60,#2ecc71); }
+        .si-yellow { background:linear-gradient(135deg,#f39c12,#f7dc6f); }
+        @media(max-width:768px){ .sidebar{transform:translateX(-100%);} .main-content{margin-left:0;} }
     </style>
 </head>
 <body>
-    <!-- Sidebar Navigation -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <a href="#" class="sidebar-brand">
-                <i class="fas fa-utensils"></i>
-                <div>
-                    <div>MANET Canteen</div>
-                    <small style="font-size: 12px; opacity: 0.8;">Management System</small>
-                </div>
-            </a>
-        </div>
-        <nav class="sidebar-nav">
-            <div class="nav-item">
-                <a href="#dashboard" class="nav-link active" onclick="showSection('dashboard')">
-                    <i class="fas fa-tachometer-alt"></i>
-                    Dashboard
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="#menu" class="nav-link" onclick="showSection('menu')">
-                    <i class="fas fa-utensils"></i>
-                    Menu Management
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="#orders" class="nav-link" onclick="showSection('orders')">
-                    <i class="fas fa-shopping-cart"></i>
-                    Orders & Sales
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="#analytics" class="nav-link" onclick="showSection('analytics')">
-                    <i class="fas fa-chart-line"></i>
-                    Analytics
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="#notices" class="nav-link" onclick="showSection('notices')">
-                    <i class="fas fa-bullhorn"></i>
-                    Notices
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="#feedback" class="nav-link" onclick="showSection('feedback')">
-                    <i class="fas fa-comments"></i>
-                    Customer Feedback
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="#settings" class="nav-link" onclick="showSection('settings')">
-                    <i class="fas fa-cog"></i>
-                    Settings
-                </a>
-            </div>
-            <div class="nav-item mt-4">
-                <a href="{% url 'logout' %}" class="nav-link" style="color: #e74c3c;">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Logout
-                </a>
-            </div>
-        </nav>
+<div class="sidebar">
+    <div class="sidebar-header">
+        <a href="#" class="sidebar-brand">
+            <i class="fas fa-utensils"></i>
+            <div><div>MANET Canteen</div><small style="font-size:10px;opacity:0.8;">Management System</small></div>
+        </a>
     </div>
+    <nav class="sidebar-nav">
+        <div class="nav-item"><a href="#" class="nav-link active" onclick="showSection(event,'dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</a></div>
+        <div class="nav-item"><a href="#" class="nav-link" onclick="showSection(event,'menu')"><i class="fas fa-utensils"></i> Menu Management</a></div>
+        <div class="nav-item"><a href="#" class="nav-link" onclick="showSection(event,'notices')"><i class="fas fa-bullhorn"></i> Notices</a></div>
+        <div class="nav-item"><a href="#" class="nav-link" onclick="showSection(event,'complaints')"><i class="fas fa-exclamation-circle"></i> Complaints</a></div>
+        <div class="nav-item"><a href="#" class="nav-link" onclick="showSection(event,'analytics')"><i class="fas fa-chart-pie"></i> Analytics</a></div>
+        <div class="nav-item mt-3"><a href="{% url 'logout' %}" class="nav-link" style="color:#ff6b6b;"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
+    </nav>
+</div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Top Header -->
-        <div class="top-header">
-            <h1 class="page-title">
-                <i class="fas fa-tachometer-alt me-2"></i>
-                <span id="page-title-text">Dashboard Overview</span>
-            </h1>
-            <div class="header-actions">
-                <div class="user-profile">
-                    <div class="user-avatar">
-                        {{ user.username.0|upper|default:"M" }}
-                    </div>
-                    <div>
-                        <div style="font-weight: 600; font-size: 14px;">{{ user.username|default:"MANET Admin" }}</div>
-                        <div style="font-size: 12px; color: var(--gray-600);">Canteen Manager</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dashboard Content -->
-        <div class="dashboard-content" style="padding: 30px;">
-            <!-- Dashboard Section -->
-            <div id="dashboard-section" class="content-section">
-                <!-- Stats Cards -->
-                <div class="stats-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 30px;">
-                    <div class="stat-card" style="background: var(--white); border-radius: var(--border-radius); padding: 25px; box-shadow: var(--shadow-sm); transition: var(--transition); position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary);"></div>
-                        <div class="stat-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                            <div>
-                                <div class="stat-value" style="font-size: 36px; font-weight: 800; color: var(--dark); margin-bottom: 5px;">{{ dishes.count|default:"0" }}</div>
-                                <div class="stat-label" style="font-size: 14px; color: var(--gray-600); font-weight: 500;">Menu Items</div>
-                                <div class="stat-change positive" style="font-size: 12px; padding: 4px 8px; border-radius: 20px; font-weight: 600; background: rgba(39, 174, 96, 0.1); color: var(--success);">
-                                    <i class="fas fa-arrow-up"></i> +8%
-                                </div>
-                            </div>
-                            <div class="stat-icon primary" style="width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; background: linear-gradient(135deg, var(--primary), var(--primary-light));">
-                                <i class="fas fa-utensils"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-card" style="background: var(--white); border-radius: var(--border-radius); padding: 25px; box-shadow: var(--shadow-sm); transition: var(--transition); position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--success);"></div>
-                        <div class="stat-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                            <div>
-                                <div class="stat-value" style="font-size: 36px; font-weight: 800; color: var(--dark); margin-bottom: 5px;">₹28,450</div>
-                                <div class="stat-label" style="font-size: 14px; color: var(--gray-600); font-weight: 500;">Today's Revenue</div>
-                                <div class="stat-change positive" style="font-size: 12px; padding: 4px 8px; border-radius: 20px; font-weight: 600; background: rgba(39, 174, 96, 0.1); color: var(--success);">
-                                    <i class="fas fa-arrow-up"></i> +12%
-                                </div>
-                            </div>
-                            <div class="stat-icon success" style="width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; background: linear-gradient(135deg, var(--success), #2ecc71);">
-                                <i class="fas fa-rupee-sign"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-card" style="background: var(--white); border-radius: var(--border-radius); padding: 25px; box-shadow: var(--shadow-sm); transition: var(--transition); position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--info);"></div>
-                        <div class="stat-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                            <div>
-                                <div class="stat-value" style="font-size: 36px; font-weight: 800; color: var(--dark); margin-bottom: 5px;">398</div>
-                                <div class="stat-label" style="font-size: 14px; color: var(--gray-600); font-weight: 500;">Orders Today</div>
-                                <div class="stat-change positive" style="font-size: 12px; padding: 4px 8px; border-radius: 20px; font-weight: 600; background: rgba(39, 174, 96, 0.1); color: var(--success);">
-                                    <i class="fas fa-arrow-up"></i> +18%
-                                </div>
-                            </div>
-                            <div class="stat-icon info" style="width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; background: linear-gradient(135deg, var(--info), #5dade2);">
-                                <i class="fas fa-shopping-cart"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-card" style="background: var(--white); border-radius: var(--border-radius); padding: 25px; box-shadow: var(--shadow-sm); transition: var(--transition); position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--secondary);"></div>
-                        <div class="stat-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                            <div>
-                                <div class="stat-value" style="font-size: 36px; font-weight: 800; color: var(--dark); margin-bottom: 5px;">4.6</div>
-                                <div class="stat-label" style="font-size: 14px; color: var(--gray-600); font-weight: 500;">Customer Rating</div>
-                                <div class="stat-change positive" style="font-size: 12px; padding: 4px 8px; border-radius: 20px; font-weight: 600; background: rgba(39, 174, 96, 0.1); color: var(--success);">
-                                    <i class="fas fa-arrow-up"></i> +0.2
-                                </div>
-                            </div>
-                            <div class="stat-icon secondary" style="width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; background: linear-gradient(135deg, var(--secondary), #42a5f5);">
-                                <i class="fas fa-star"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Menu Management Section -->
-                <div class="row">
-                    <div class="col-lg-4">
-                        <div class="card" style="background: var(--white); border-radius: var(--border-radius); box-shadow: var(--shadow-sm); border: none;">
-                            <div class="card-header" style="background: var(--gray-100); border-bottom: 1px solid var(--gray-200); padding: 20px 25px; border-radius: var(--border-radius) var(--border-radius) 0 0;">
-                                <h5 style="margin: 0; font-weight: 600; color: var(--dark);"><i class="fas fa-plus-circle me-2"></i>Add New Menu Item</h5>
-                            </div>
-                            <div class="card-body" style="padding: 25px;">
-                                <form method="POST" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    <div class="mb-3">
-                                        <label class="form-label">Item Name</label>
-                                        <input type="text" name="name" class="form-control" required placeholder="Enter item name">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Item Image</label>
-                                        <input type="file" name="image" class="form-control" id="imageInput" accept="image/*" required>
-                                        <div class="mt-2">
-                                            <img id="imagePreview" style="width: 100%; max-width: 200px; height: 150px; object-fit: cover; border-radius: 8px; display: none;">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Day</label>
-                                                <select name="day" class="form-select" required>
-                                                    <option value="">Select Day</option>
-                                                    {% for d in days %}
-                                                        <option value="{{ d }}">{{ d|title }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Meal</label>
-                                                <select name="meal" class="form-select" required>
-                                                    <option value="">Select Meal</option>
-                                                    {% for m in meals %}
-                                                        <option value="{{ m }}">{{ m|title }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="btn w-100" style="background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: 600;">
-                                        <i class="fas fa-save me-2"></i>Add to Menu
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-8">
-                        <div class="card" style="background: var(--white); border-radius: var(--border-radius); box-shadow: var(--shadow-sm); border: none;">
-                            <div class="card-header" style="background: var(--gray-100); border-bottom: 1px solid var(--gray-200); padding: 20px 25px;">
-                                <h5 style="margin: 0; font-weight: 600; color: var(--dark);"><i class="fas fa-list me-2"></i>Current Menu Items</h5>
-                            </div>
-                            <div class="card-body" style="padding: 25px;">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead style="background: var(--primary); color: white;">
-                                            <tr>
-                                                <th>Image</th>
-                                                <th>Item Name</th>
-                                                <th>Day</th>
-                                                <th>Meal</th>
-                                                <th>Rating</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for dish in dishes %}
-                                            <tr>
-                                                <td><img src="{{ dish.image.url }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;"></td>
-                                                <td><strong>{{ dish.name }}</strong></td>
-                                                <td><span class="badge" style="background: var(--primary); color: white;">{{ dish.day|title }}</span></td>
-                                                <td><span class="badge" style="background: var(--secondary); color: white;">{{ dish.meal|title }}</span></td>
-                                                <td><i class="fas fa-star text-warning me-1"></i>4.3</td>
-                                                <td>
-                                                    <form action="{% url 'delete_dish' dish.id %}" method="POST" class="d-inline" onsubmit="return confirm('Delete {{ dish.name }}?');">
-                                                        {% csrf_token %}
-                                                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                            {% empty %}
-                                            <tr>
-                                                <td colspan="6" class="text-center text-muted py-4">
-                                                    <i class="fas fa-utensils fa-2x mb-3 d-block"></i>
-                                                    No menu items added yet
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="main-content">
+    <div class="top-header">
+        <h1 class="page-title"><i class="fas fa-tachometer-alt me-2"></i><span id="page-title-text">Dashboard</span></h1>
+        <div class="user-profile">
+            <div class="user-avatar">{{ user.username.0|upper|default:"M" }}</div>
+            <div><div style="font-weight:600;font-size:13px;">{{ user.username|default:"MANET Admin" }}</div><div style="font-size:11px;color:var(--gray-600);">Canteen Manager</div></div>
         </div>
     </div>
+    <div class="dashboard-content">
+        {% if messages %}
+        <div class="mb-3">{% for message in messages %}<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>{% endfor %}</div>
+        {% endif %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function showSection(sectionName) {
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.style.display = 'none';
-            });
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            document.getElementById(sectionName + '-section').style.display = 'block';
-            event.target.classList.add('active');
-            
-            const titles = {
-                'dashboard': 'Dashboard Overview',
-                'menu': 'Menu Management',
-                'orders': 'Orders & Sales',
-                'analytics': 'Analytics & Reports',
-                'notices': 'Notice Management',
-                'feedback': 'Customer Feedback',
-                'settings': 'System Settings'
-            };
-            document.getElementById('page-title-text').textContent = titles[sectionName];
-        }
+        <!-- DASHBOARD -->
+        <div id="dashboard-section" class="content-section active">
+            <div class="stats-row">
+                <div class="stat-card"><div class="stat-header"><div><div class="stat-value">{{ dishes.count|default:"0" }}</div><div class="stat-label">Menu Items</div></div><div class="stat-icon si-orange"><i class="fas fa-utensils"></i></div></div></div>
+                <div class="stat-card"><div class="stat-header"><div><div class="stat-value">{{ notices.count|default:"0" }}</div><div class="stat-label">Notices</div></div><div class="stat-icon si-blue"><i class="fas fa-bullhorn"></i></div></div></div>
+                <div class="stat-card"><div class="stat-header"><div><div class="stat-value">{{ complaints.count|default:"0" }}</div><div class="stat-label">Complaints</div></div><div class="stat-icon si-yellow"><i class="fas fa-exclamation-circle"></i></div></div></div>
+                <div class="stat-card"><div class="stat-header"><div><div class="stat-value">{{ feedback_graphs|length|default:"0" }}</div><div class="stat-label">Analytics Reports</div></div><div class="stat-icon si-green"><i class="fas fa-chart-pie"></i></div></div></div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-bolt me-2"></i>Quick Actions</h6></div><div class="card-body"><div class="d-grid gap-2">
+                    <button class="btn btn-warning fw-semibold" onclick="showSection(null,'menu')"><i class="fas fa-plus me-2"></i>Add Menu Item</button>
+                    <button class="btn btn-info text-white fw-semibold" onclick="showSection(null,'notices')"><i class="fas fa-bullhorn me-2"></i>Post Notice</button>
+                    <button class="btn btn-secondary fw-semibold" onclick="showSection(null,'complaints')"><i class="fas fa-list me-2"></i>View Complaints</button>
+                </div></div></div></div>
+                <div class="col-md-6 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-clock me-2"></i>Recent Menu Items</h6></div><div class="card-body">
+                    {% for dish in dishes|slice:":5" %}<div class="d-flex align-items-center gap-2 mb-2 p-2 bg-light rounded"><i class="fas fa-utensils text-warning"></i><span class="fw-semibold small">{{ dish.name }}</span><span class="badge ms-auto" style="background:var(--primary);">{{ dish.day|title }}</span><span class="badge bg-secondary">{{ dish.meal|title }}</span></div>{% empty %}<p class="text-muted text-center small">No items yet.</p>{% endfor %}
+                </div></div></div>
+            </div>
+        </div>
 
-        document.getElementById("imageInput").addEventListener("change", function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const img = document.getElementById("imagePreview");
-                img.src = URL.createObjectURL(file);
-                img.style.display = "block";
-            }
-        });
-    </script>
+        <!-- MENU MANAGEMENT -->
+        <div id="menu-section" class="content-section">
+            <div class="row">
+                <div class="col-lg-4 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-plus-circle me-2"></i>Add Menu Item</h6></div><div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+                        <div class="mb-3"><label class="form-label fw-semibold small">Item Name</label><input type="text" name="name" class="form-control" required placeholder="e.g. Dal Rice"></div>
+                        <div class="mb-3"><label class="form-label fw-semibold small">Image</label><input type="file" name="image" class="form-control" id="imgInput" accept="image/*"><img id="imgPreview" style="width:100%;max-width:180px;height:120px;object-fit:cover;border-radius:8px;display:none;margin-top:8px;"></div>
+                        <div class="row">
+                            <div class="col-6"><div class="mb-3"><label class="form-label fw-semibold small">Day</label><select name="day" class="form-select" required><option value="">Day</option>{% for d in days %}<option value="{{ d }}">{{ d|title }}</option>{% endfor %}</select></div></div>
+                            <div class="col-6"><div class="mb-3"><label class="form-label fw-semibold small">Meal</label><select name="meal" class="form-select" required><option value="">Meal</option>{% for m in meals %}<option value="{{ m }}">{{ m|title }}</option>{% endfor %}</select></div></div>
+                        </div>
+                        <button type="submit" class="btn w-100 fw-bold" style="background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;"><i class="fas fa-save me-2"></i>Add to Menu</button>
+                    </form>
+                </div></div></div>
+                <div class="col-lg-8 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-list me-2"></i>Menu Items ({{ dishes.count }})</h6></div><div class="card-body">
+                    <div class="table-responsive"><table class="table table-hover align-middle">
+                        <thead style="background:var(--primary);color:white;"><tr><th>Image</th><th>Name</th><th>Day</th><th>Meal</th><th>Action</th></tr></thead>
+                        <tbody>{% for dish in dishes %}<tr>
+                            <td>{% if dish.image %}<img src="{{ dish.image.url }}" style="width:42px;height:42px;object-fit:cover;border-radius:6px;">{% else %}<div style="width:42px;height:42px;background:#eee;border-radius:6px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-utensils text-muted"></i></div>{% endif %}</td>
+                            <td><strong>{{ dish.name }}</strong></td>
+                            <td><span class="badge" style="background:var(--primary);">{{ dish.day|title }}</span></td>
+                            <td><span class="badge bg-secondary">{{ dish.meal|title }}</span></td>
+                            <td><form action="{% url 'delete_manet_dish' dish.id %}" method="POST" class="d-inline" onsubmit="return confirm('Delete {{ dish.name }}?');"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"><button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></form></td>
+                        </tr>{% empty %}<tr><td colspan="5" class="text-center text-muted py-4">No menu items yet.</td></tr>{% endfor %}</tbody>
+                    </table></div>
+                </div></div></div>
+            </div>
+        </div>
+
+        <!-- NOTICES -->
+        <div id="notices-section" class="content-section">
+            <div class="row">
+                <div class="col-lg-5 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-plus me-2"></i>Post Notice</h6></div><div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+                        <div class="mb-3"><label class="form-label fw-semibold small">Title</label><input type="text" name="title" class="form-control" required placeholder="Notice title"></div>
+                        <div class="mb-3"><label class="form-label fw-semibold small">Message</label><textarea name="body" class="form-control" rows="4" required placeholder="Notice content..."></textarea></div>
+                        <div class="mb-3"><label class="form-label fw-semibold small">Attachment</label><input type="file" name="attachment" class="form-control"></div>
+                        <div class="mb-3 form-check"><input type="checkbox" name="is_published" class="form-check-input" id="pub" checked><label class="form-check-label small" for="pub">Publish immediately</label></div>
+                        <button type="submit" class="btn w-100 fw-bold" style="background:linear-gradient(135deg,var(--info),#5dade2);color:white;"><i class="fas fa-paper-plane me-2"></i>Post Notice</button>
+                    </form>
+                </div></div></div>
+                <div class="col-lg-7 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-list me-2"></i>All Notices ({{ notices.count }})</h6></div><div class="card-body">
+                    {% for notice in notices %}<div class="p-3 mb-2 rounded border-start border-4" style="border-color:var(--primary)!important;background:#fff8f3;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div><h6 class="fw-bold mb-1 small">{{ notice.title }}</h6><p class="text-muted small mb-1">{{ notice.body|truncatechars:80 }}</p><small class="text-muted">{{ notice.created_at|date:"d M Y" }} &bull; {% if notice.is_published %}<span class="badge bg-success">Published</span>{% else %}<span class="badge bg-secondary">Draft</span>{% endif %}</small></div>
+                            <form action="{% url 'delete_notice' notice.id 1 %}" method="POST" onsubmit="return confirm('Delete?');"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"><button class="btn btn-danger btn-sm ms-2"><i class="fas fa-trash"></i></button></form>
+                        </div>
+                    </div>{% empty %}<p class="text-muted text-center py-3">No notices yet.</p>{% endfor %}
+                </div></div></div>
+            </div>
+        </div>
+
+        <!-- COMPLAINTS -->
+        <div id="complaints-section" class="content-section">
+            <div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-exclamation-circle me-2"></i>Student Complaints ({{ complaints.count }})</h6></div><div class="card-body">
+                <div class="table-responsive"><table class="table table-hover align-middle">
+                    <thead class="table-dark"><tr><th>#</th><th>Student</th><th>Email</th><th>Mess</th><th>Message</th><th>Date</th></tr></thead>
+                    <tbody>{% for c in complaints %}<tr><td>{{ forloop.counter }}</td><td><strong>{{ c.student_name }}</strong></td><td>{{ c.email }}</td><td><span class="badge bg-warning text-dark">{{ c.mess_name|default:"General" }}</span></td><td>{{ c.message|truncatechars:60 }}</td><td><small>{{ c.created_at|date:"d M Y" }}</small></td></tr>{% empty %}<tr><td colspan="6" class="text-center text-muted py-4">No complaints received.</td></tr>{% endfor %}</tbody>
+                </table></div>
+            </div></div>
+        </div>
+
+        <!-- ANALYTICS -->
+        <div id="analytics-section" class="content-section">
+            <div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-chart-pie me-2"></i>Student Preference Analytics</h6></div><div class="card-body">
+                {% if feedback_graphs %}<div class="row">{% for g in feedback_graphs %}<div class="col-lg-4 col-md-6 mb-4"><div class="p-3 border rounded text-center"><h6 class="fw-bold small mb-2">{{ g.day }} - {{ g.meal }}</h6><img src="data:image/png;base64,{{ g.image }}" class="img-fluid" style="max-height:160px;"><p class="text-muted small mt-1">{{ g.counts|length }} responses</p></div></div>{% endfor %}</div>
+                {% else %}<p class="text-muted text-center py-5"><i class="fas fa-chart-pie fa-3x d-block mb-3"></i>No analytics data yet.</p>{% endif %}
+            </div></div>
+        </div>
+
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function showSection(e, name) {
+    if(e) e.preventDefault();
+    document.querySelectorAll(".content-section").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active"));
+    document.getElementById(name+"-section").classList.add("active");
+    if(e && e.target) e.target.closest(".nav-link").classList.add("active");
+    const t={dashboard:"Dashboard",menu:"Menu Management",notices:"Notices",complaints:"Complaints",analytics:"Analytics"};
+    document.getElementById("page-title-text").textContent = t[name]||name;
+}
+document.getElementById("imgInput").addEventListener("change",function(){
+    if(this.files[0]){const img=document.getElementById("imgPreview");img.src=URL.createObjectURL(this.files[0]);img.style.display="block";}
+});
+</script>
 </body>
 </html>
