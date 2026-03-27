@@ -285,8 +285,8 @@
             </div>
             <div class="nav-item">
                 <a href="#orders" class="nav-link" onclick="showSection('orders')">
-                    <i class="fas fa-shopping-cart"></i>
-                    Orders & Sales
+                    <i class="fas fa-exclamation-circle"></i>
+                    Complaints
                 </a>
             </div>
             <div class="nav-item">
@@ -309,8 +309,8 @@
             </div>
             <div class="nav-item">
                 <a href="#settings" class="nav-link" onclick="showSection('settings')">
-                    <i class="fas fa-cog"></i>
-                    Settings
+                    <i class="fas fa-lightbulb"></i>
+                    Weekly Suggestions
                 </a>
             </div>
             <div class="nav-item mt-4">
@@ -347,84 +347,119 @@
         <div class="dashboard-content">
             <!-- Dashboard Section -->
             <div id="dashboard-section" class="content-section">
-                <!-- Stats Cards -->
+                <!-- Stats Cards - Real Database Data -->
                 <div class="stats-row">
                     <div class="stat-card">
                         <div class="stat-header">
                             <div>
-                                <div class="stat-value">{{ dishes.count|default:"0" }}</div>
+                                <div class="stat-value">{{ dishes.count }}</div>
                                 <div class="stat-label">Menu Items</div>
-                                <div class="stat-change positive">
-                                    <i class="fas fa-arrow-up"></i> +12%
-                                </div>
+                                {% if dishes.count > 0 %}
+                                <div class="stat-change positive"><i class="fas fa-check-circle"></i> Active</div>
+                                {% else %}
+                                <div class="stat-change negative"><i class="fas fa-exclamation-circle"></i> No items</div>
+                                {% endif %}
                             </div>
-                            <div class="stat-icon primary">
-                                <i class="fas fa-utensils"></i>
-                            </div>
+                            <div class="stat-icon primary"><i class="fas fa-utensils"></i></div>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-header">
                             <div>
-                                <div class="stat-value">₹24,580</div>
-                                <div class="stat-label">Today's Revenue</div>
-                                <div class="stat-change positive">
-                                    <i class="fas fa-arrow-up"></i> +8.5%
-                                </div>
+                                <div class="stat-value">{{ complaints.count }}</div>
+                                <div class="stat-label">Complaints</div>
+                                {% if complaints.count > 0 %}
+                                <div class="stat-change negative"><i class="fas fa-exclamation-triangle"></i> Needs attention</div>
+                                {% else %}
+                                <div class="stat-change positive"><i class="fas fa-check-circle"></i> All clear</div>
+                                {% endif %}
                             </div>
-                            <div class="stat-icon success">
-                                <i class="fas fa-rupee-sign"></i>
-                            </div>
+                            <div class="stat-icon secondary"><i class="fas fa-exclamation-circle"></i></div>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-header">
                             <div>
-                                <div class="stat-value">342</div>
-                                <div class="stat-label">Orders Today</div>
-                                <div class="stat-change positive">
-                                    <i class="fas fa-arrow-up"></i> +15%
-                                </div>
+                                <div class="stat-value">{{ feedbacks.count }}</div>
+                                <div class="stat-label">Feedback Received</div>
+                                {% if feedbacks.count > 0 %}
+                                <div class="stat-change positive"><i class="fas fa-arrow-up"></i> {{ feedbacks.count }} total</div>
+                                {% else %}
+                                <div class="stat-change negative"><i class="fas fa-minus"></i> None yet</div>
+                                {% endif %}
                             </div>
-                            <div class="stat-icon info">
-                                <i class="fas fa-shopping-cart"></i>
-                            </div>
+                            <div class="stat-icon info"><i class="fas fa-comments"></i></div>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-header">
                             <div>
-                                <div class="stat-value">4.8</div>
-                                <div class="stat-label">Customer Rating</div>
-                                <div class="stat-change positive">
-                                    <i class="fas fa-arrow-up"></i> +0.3
-                                </div>
+                                <div class="stat-value">{{ notices.count }}</div>
+                                <div class="stat-label">Notices Posted</div>
+                                {% if notices.count > 0 %}
+                                <div class="stat-change positive"><i class="fas fa-bullhorn"></i> Active</div>
+                                {% else %}
+                                <div class="stat-change negative"><i class="fas fa-minus"></i> None posted</div>
+                                {% endif %}
                             </div>
-                            <div class="stat-icon secondary">
-                                <i class="fas fa-star"></i>
-                            </div>
+                            <div class="stat-icon success"><i class="fas fa-bullhorn"></i></div>
                         </div>
                     </div>
                 </div>
-                <!-- Analytics Charts Row -->
+                <!-- Real Data Quick Overview -->
                 <div class="row mb-4">
                     <div class="col-lg-8">
                         <div class="card h-100">
                             <div class="card-header">
-                                <h5><i class="fas fa-chart-line me-2"></i>Revenue Analytics</h5>
+                                <h5><i class="fas fa-list me-2"></i>Recent Menu Items</h5>
                             </div>
                             <div class="card-body">
-                                <canvas id="revenueChart" height="100"></canvas>
+                                {% if dishes %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead class="table-dark">
+                                            <tr><th>Image</th><th>Name</th><th>Day</th><th>Meal</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for dish in dishes|slice:":6" %}
+                                            <tr>
+                                                <td>{% if dish.image %}<img src="{{ dish.image.url }}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;">{% else %}<div style="width:40px;height:40px;background:#eee;border-radius:6px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-utensils text-muted"></i></div>{% endif %}</td>
+                                                <td><strong>{{ dish.name }}</strong></td>
+                                                <td><span class="badge bg-primary">{{ dish.day|title }}</span></td>
+                                                <td><span class="badge bg-secondary">{{ dish.meal|title }}</span></td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <div class="text-center py-4 text-muted">
+                                    <i class="fas fa-utensils fa-3x mb-3 d-block"></i>
+                                    <p>No menu items added yet. Go to Menu Management to add items.</p>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4">
                         <div class="card h-100">
                             <div class="card-header">
-                                <h5><i class="fas fa-chart-pie me-2"></i>Popular Items</h5>
+                                <h5><i class="fas fa-bell me-2"></i>Recent Notices</h5>
                             </div>
                             <div class="card-body">
-                                <canvas id="popularItemsChart"></canvas>
+                                {% if notices %}
+                                    {% for notice in notices|slice:":4" %}
+                                    <div class="p-2 mb-2 rounded border-start border-3 border-primary bg-light">
+                                        <div class="fw-semibold small">{{ notice.title }}</div>
+                                        <div class="text-muted" style="font-size:12px;">{{ notice.created_at|date:"d M Y" }} &bull; {% if notice.is_published %}<span class="badge bg-success" style="font-size:10px;">Live</span>{% else %}<span class="badge bg-secondary" style="font-size:10px;">Draft</span>{% endif %}</div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                <div class="text-center py-4 text-muted">
+                                    <i class="fas fa-bell-slash fa-2x mb-2 d-block"></i>
+                                    <small>No notices posted yet.</small>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -441,12 +476,12 @@
                                 <div class="row">
                                     <div class="col-md-3 mb-3">
                                         <button class="btn btn-primary w-100" onclick="showSection('menu')">
-                                            <i class="fas fa-plus-circle me-2"></i>Add New Item
+                                            <i class="fas fa-plus-circle me-2"></i>Add Menu Item
                                         </button>
                                     </div>
                                     <div class="col-md-3 mb-3">
-                                        <button class="btn btn-success w-100" onclick="showSection('orders')">
-                                            <i class="fas fa-eye me-2"></i>View Orders
+                                        <button class="btn btn-danger w-100" onclick="showSection('orders')">
+                                            <i class="fas fa-exclamation-circle me-2"></i>View Complaints
                                         </button>
                                     </div>
                                     <div class="col-md-3 mb-3">
@@ -460,6 +495,11 @@
                                         </button>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
                             </div>
                         </div>
                     </div>
@@ -804,155 +844,89 @@
             </div>
             <!-- Feedback Section -->
             <div id="feedback-section" class="content-section" style="display: none;">
+                <!-- Real Feedback Stats -->
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5><i class="fas fa-comments me-2"></i>Customer Feedback Overview</h5>
+                                <h5><i class="fas fa-comments me-2"></i>Student Feedback ({{ feedbacks.count }} total)</h5>
                             </div>
                             <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="feedback-stat">
-                                            <div class="feedback-value">4.8</div>
-                                            <div class="feedback-label">Overall Rating</div>
-                                            <div class="rating-stars">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                            </div>
-                                        </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-3 text-center">
+                                        <div style="font-size:32px;font-weight:800;color:var(--primary);">{{ feedbacks.count }}</div>
+                                        <div class="text-muted small">Total Submissions</div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="feedback-stat">
-                                            <div class="feedback-value">342</div>
-                                            <div class="feedback-label">Total Reviews</div>
-                                        </div>
+                                    <div class="col-md-3 text-center">
+                                        <div style="font-size:32px;font-weight:800;color:var(--success);">{{ suggestions.count }}</div>
+                                        <div class="text-muted small">Weekly Suggestions</div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="feedback-stat">
-                                            <div class="feedback-value">89%</div>
-                                            <div class="feedback-label">Satisfaction Rate</div>
-                                        </div>
+                                    <div class="col-md-3 text-center">
+                                        <div style="font-size:32px;font-weight:800;color:var(--info);">{{ complaints.count }}</div>
+                                        <div class="text-muted small">Complaints</div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="feedback-stat">
-                                            <div class="feedback-value">24</div>
-                                            <div class="feedback-label">This Week</div>
-                                        </div>
+                                    <div class="col-md-3 text-center">
+                                        <div style="font-size:32px;font-weight:800;color:var(--warning);">{{ notices.count }}</div>
+                                        <div class="text-muted small">Notices Posted</div>
                                     </div>
+                                </div>
+                                <!-- Real Feedback Table -->
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-dark">
+                                            <tr><th>Name</th><th>Email</th><th>Mess</th><th>Food</th><th>Service</th><th>Overall</th><th>Date</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for fb in feedbacks %}
+                                            <tr>
+                                                <td><strong>{{ fb.full_name }}</strong></td>
+                                                <td>{{ fb.email }}</td>
+                                                <td><span class="badge bg-primary">{{ fb.mess_name }}</span></td>
+                                                <td>
+                                                    {% for i in "12345" %}{% if forloop.counter <= fb.food_rating %}<i class="fas fa-star text-warning"></i>{% else %}<i class="far fa-star text-muted"></i>{% endif %}{% endfor %}
+                                                </td>
+                                                <td>
+                                                    {% for i in "12345" %}{% if forloop.counter <= fb.service_rating %}<i class="fas fa-star text-warning"></i>{% else %}<i class="far fa-star text-muted"></i>{% endif %}{% endfor %}
+                                                </td>
+                                                <td><span class="badge bg-success">{{ fb.overall_rating }}/5</span></td>
+                                                <td><small>{{ fb.submitted_at|date:"d M Y" }}</small></td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr><td colspan="7" class="text-center text-muted py-4">No feedback submitted yet.</td></tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
+                <!-- Weekly Suggestions -->
                 <div class="row">
-                    <div class="col-lg-8">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><i class="fas fa-chart-bar me-2"></i>Feedback Trends</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="feedbackTrendsChart" height="100"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><i class="fas fa-list-alt me-2"></i>Recent Feedback</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="feedback-list">
-                                    <div class="feedback-item">
-                                        <div class="feedback-header">
-                                            <strong>Excellent Dal Tadka!</strong>
-                                            <div class="rating-small">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                            </div>
-                                        </div>
-                                        <div class="feedback-text">Perfect taste and quality. Keep it up!</div>
-                                        <div class="feedback-meta">Student • 2 hours ago</div>
-                                    </div>
-                                    <div class="feedback-item">
-                                        <div class="feedback-header">
-                                            <strong>Good variety</strong>
-                                            <div class="rating-small">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="far fa-star"></i>
-                                            </div>
-                                        </div>
-                                        <div class="feedback-text">Love the variety in menu options.</div>
-                                        <div class="feedback-meta">Faculty • 5 hours ago</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Orders Section -->
-            <div id="orders-section" class="content-section" style="display: none;">
-                <div class="row mb-4">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5><i class="fas fa-shopping-cart me-2"></i>Today's Orders</h5>
-                                <div class="order-filters">
-                                    <button class="btn btn-sm btn-outline-primary active">All</button>
-                                    <button class="btn btn-sm btn-outline-success">Completed</button>
-                                    <button class="btn btn-sm btn-outline-warning">Pending</button>
-                                </div>
+                            <div class="card-header">
+                                <h5><i class="fas fa-lightbulb me-2"></i>Weekly Suggestions for RAJ Mess ({{ suggestions.count }})</h5>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-hover">
                                         <thead class="table-dark">
-                                            <tr>
-                                                <th>Order ID</th>
-                                                <th>Customer</th>
-                                                <th>Items</th>
-                                                <th>Amount</th>
-                                                <th>Time</th>
-                                                <th>Status</th>
-                                            </tr>
+                                            <tr><th>Student</th><th>Email</th><th>Mon Breakfast</th><th>Mon Lunch</th><th>Mon Dinner</th><th>Submitted</th></tr>
                                         </thead>
                                         <tbody>
+                                            {% for s in suggestions %}
                                             <tr>
-                                                <td><strong>#ORD-001</strong></td>
-                                                <td>Rahul Sharma</td>
-                                                <td>Dal Tadka, Rice, Roti (2)</td>
-                                                <td>₹85</td>
-                                                <td>12:30 PM</td>
-                                                <td><span class="badge bg-success">Completed</span></td>
+                                                <td><strong>{{ s.student_name|default:"Anonymous" }}</strong></td>
+                                                <td>{{ s.email }}</td>
+                                                <td>{{ s.monday_breakfast }}</td>
+                                                <td>{{ s.monday_lunch }}</td>
+                                                <td>{{ s.monday_dinner }}</td>
+                                                <td><small>{{ s.submitted_at|date:"d M Y" }}</small></td>
                                             </tr>
-                                            <tr>
-                                                <td><strong>#ORD-002</strong></td>
-                                                <td>Priya Patel</td>
-                                                <td>Rajma Rice, Salad</td>
-                                                <td>₹75</td>
-                                                <td>12:45 PM</td>
-                                                <td><span class="badge bg-warning">Preparing</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>#ORD-003</strong></td>
-                                                <td>Amit Kumar</td>
-                                                <td>Aloo Paratha (2), Curd</td>
-                                                <td>₹60</td>
-                                                <td>1:00 PM</td>
-                                                <td><span class="badge bg-info">Ready</span></td>
-                                            </tr>
+                                            {% empty %}
+                                            <tr><td colspan="6" class="text-center text-muted py-4">No suggestions for RAJ Mess yet.</td></tr>
+                                            {% endfor %}
                                         </tbody>
                                     </table>
                                 </div>
@@ -962,58 +936,65 @@
                 </div>
             </div>
 
-            <!-- Settings Section -->
-            <div id="settings-section" class="content-section" style="display: none;">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><i class="fas fa-cog me-2"></i>Canteen Settings</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="setting-item">
-                                    <div class="setting-label">Operating Hours</div>
-                                    <div class="setting-control">
-                                        <input type="time" class="form-control" value="07:00"> - 
-                                        <input type="time" class="form-control" value="22:00">
-                                    </div>
-                                </div>
-                                <div class="setting-item">
-                                    <div class="setting-label">Maximum Orders per Hour</div>
-                                    <div class="setting-control">
-                                        <input type="number" class="form-control" value="50">
-                                    </div>
-                                </div>
-                                <div class="setting-item">
-                                    <div class="setting-label">Enable Online Ordering</div>
-                                    <div class="setting-control">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" checked>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button class="btn btn-primary">Save Settings</button>
-                            </div>
+            <!-- Complaints Section (replaces fake Orders) -->
+            <div id="orders-section" class="content-section" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-exclamation-circle me-2"></i>Student Complaints ({{ complaints.count }})</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-dark">
+                                    <tr><th>#</th><th>Student</th><th>Email</th><th>Mess</th><th>Message</th><th>Date</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for c in complaints %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td><strong>{{ c.student_name }}</strong></td>
+                                        <td>{{ c.email }}</td>
+                                        <td><span class="badge bg-warning text-dark">{{ c.mess_name|default:"General" }}</span></td>
+                                        <td>{{ c.message|truncatechars:80 }}</td>
+                                        <td><small>{{ c.created_at|date:"d M Y" }}</small></td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="6" class="text-center text-muted py-4">No complaints received.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><i class="fas fa-users me-2"></i>Staff Management</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="staff-list">
-                                    <div class="staff-item">
-                                        <div class="staff-info">
-                                            <div class="staff-name">{{ user.username|default:"Admin" }}</div>
-                                            <div class="staff-role">Canteen Manager</div>
-                                        </div>
-                                        <div class="staff-status">
-                                            <span class="badge bg-success">Active</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                </div>
+            </div>
+
+            <!-- Weekly Suggestions Section (replaces fake Settings) -->
+            <div id="settings-section" class="content-section" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-lightbulb me-2"></i>Weekly Suggestions for RAJ Mess ({{ suggestions.count }})</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-dark">
+                                    <tr><th>Student</th><th>Email</th><th>Mon B/F</th><th>Mon Lunch</th><th>Mon Dinner</th><th>Submitted</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for s in suggestions %}
+                                    <tr>
+                                        <td><strong>{{ s.student_name|default:"Anonymous" }}</strong></td>
+                                        <td>{{ s.email }}</td>
+                                        <td>{{ s.monday_breakfast }}</td>
+                                        <td>{{ s.monday_lunch }}</td>
+                                        <td>{{ s.monday_dinner }}</td>
+                                        <td><small>{{ s.submitted_at|date:"d M Y" }}</small></td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="6" class="text-center text-muted py-4">No suggestions for RAJ Mess yet.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

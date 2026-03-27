@@ -685,6 +685,10 @@ def manet_add_dish(request):
     complaints = Complaint.objects.all().order_by('-id')
     feedback_graphs = get_feedback_graphs()
 
+    from .models import MessFeedback, Weekly_suggestion
+    feedbacks = MessFeedback.objects.all().order_by('-submitted_at')
+    suggestions = Weekly_suggestion.objects.filter(mess_name__icontains='manet').order_by('-submitted_at')
+
     return render(request, 'testapp/admin_manet_mess.html', {
         'form': form,
         'days': days,
@@ -693,6 +697,8 @@ def manet_add_dish(request):
         'notices': notices,
         'complaints': complaints,
         'feedback_graphs': feedback_graphs,
+        'feedbacks': feedbacks,
+        'suggestions': suggestions,
         'user': request.user,
     })
 
@@ -879,13 +885,15 @@ def add_dish(request, mess_id=1):
         messages.success(request, "Notice saved.")
         return redirect('admin_raj_mess', mess_id=mess_id)
 
-    dishes = Dish.objects.filter(mess_id=mess_id).order_by('day','meal')
+    dishes = Dish.objects.filter(mess_id=mess_id).order_by('day', 'meal')
     feedback_graphs = get_feedback_graphs()
-
-    # include notices for admin table
-    notices = Notice.objects.all()
-
+    notices = Notice.objects.all().order_by('-created_at')
     complaints = Complaint.objects.all().order_by('-id')
+
+    # Real feedback and suggestions data
+    from .models import MessFeedback, Weekly_suggestion
+    feedbacks = MessFeedback.objects.all().order_by('-submitted_at')
+    suggestions = Weekly_suggestion.objects.filter(mess_name__icontains='raj').order_by('-submitted_at')
 
     return render(request, "testapp/add_dish.html", {
         "days": days,
@@ -894,7 +902,9 @@ def add_dish(request, mess_id=1):
         "mess_id": mess_id,
         "feedback_graphs": feedback_graphs,
         "notices": notices,
-        'complaints':complaints
+        "complaints": complaints,
+        "feedbacks": feedbacks,
+        "suggestions": suggestions,
     })
 
 
@@ -967,6 +977,10 @@ def design_mess_admin_view(request):
     complaints = Complaint.objects.all().order_by('-id')
     feedback_graphs = get_feedback_graphs()
 
+    from .models import MessFeedback, Weekly_suggestion
+    feedbacks = MessFeedback.objects.all().order_by('-submitted_at')
+    suggestions = Weekly_suggestion.objects.filter(mess_name__icontains='design').order_by('-submitted_at')
+
     context = {
         'form': form,
         'days': days,
@@ -975,6 +989,8 @@ def design_mess_admin_view(request):
         'notices': notices,
         'complaints': complaints,
         'feedback_graphs': feedback_graphs,
+        'feedbacks': feedbacks,
+        'suggestions': suggestions,
         'user': request.user,
     }
     return render(request, 'testapp/admin_design_mess.html', context)
