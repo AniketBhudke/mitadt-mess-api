@@ -1,576 +1,208 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mess Payment - MIT ADT University</title>
-
+<title>{{ mess|default:"Mess" }} Payment - MIT ADT University</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
 :root {
-  --primary: #d68642;
-  --primary-dark: #b8541a;
-  --secondary: #28a745;
-  --bg: #fffaf3;
-  --card: #ffffff;
-  --text: #2c3e50;
-  --text-light: #6c757d;
-  --border: #e1e8f0;
-  --shadow: 0 4px 20px rgba(214, 134, 66, 0.15);
-  --shadow-hover: 0 8px 30px rgba(214, 134, 66, 0.25);
+  {% if mess == "RAJ Mess" %}
+  --primary: #2c5530; --primary-light: #4a7c59; --bg: #f0f7f0;
+  {% elif mess == "Design Mess" %}
+  --primary: #9c27b0; --primary-light: #ba68c8; --bg: #f9f0ff;
+  {% else %}
+  --primary: #ff6b35; --primary-light: #ff8a65; --bg: #fff8f3;
+  {% endif %}
+  --success: #27ae60; --dark: #2c3e50; --gray: #6c757d; --border: #e1e8f0;
 }
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
-  background: linear-gradient(135deg, #fff7e6 0%, #ffe8cc 100%);
-  min-height: 100vh;
-  color: var(--text);
-  padding: 20px 10px;
-}
-
-.container {
-  max-width: 500px;
-  margin: 0 auto;
-  background: var(--card);
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: var(--shadow);
-  border-top: 6px solid var(--primary);
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #f8f9fa;
-}
-
-.title {
-  color: var(--primary);
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.subtitle {
-  color: var(--text-light);
-  font-size: 16px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 8px;
-  font-size: 15px;
-}
-
-select {
-  width: 100%;
-  padding: 14px 16px;
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  font-size: 15px;
-  background: var(--bg);
-  color: var(--text);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-select:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(214, 134, 66, 0.1);
-}
-
-.qty-section {
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 15px;
-  margin: 20px 0;
-}
-
-.qty-section h4 {
-  color: var(--primary);
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.qty-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-}
-
-.qty-btn {
-  width: 45px;
-  height: 45px;
-  border: none;
-  border-radius: 50%;
-  font-size: 20px;
-  font-weight: 700;
-  cursor: pointer;
-  background: var(--primary);
-  color: white;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.qty-btn:hover {
-  background: var(--primary-dark);
-  transform: scale(1.1);
-}
-
-.qty-display {
-  font-size: 24px;
-  font-weight: 700;
-  padding: 10px 20px;
-  background: white;
-  border-radius: 10px;
-  border: 2px solid var(--border);
-  min-width: 80px;
-  text-align: center;
-}
-
-.summary-box {
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  padding: 25px;
-  border-radius: 15px;
-  margin-top: 25px;
-  border-left: 4px solid var(--secondary);
-}
-
-.summary-box h3 {
-  text-align: center;
-  color: var(--secondary);
-  margin-bottom: 20px;
-  font-size: 22px;
-}
-
-.summary-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.summary-item:last-child {
-  border-bottom: none;
-  font-weight: 700;
-  font-size: 18px;
-  color: var(--secondary);
-  margin-top: 10px;
-  padding-top: 15px;
-  border-top: 2px solid var(--secondary);
-}
-
-.summary-label {
-  font-weight: 600;
-  color: var(--text);
-}
-
-.summary-value {
-  font-weight: 600;
-  color: var(--primary);
-}
-
-.pay-btn {
-  width: 100%;
-  padding: 16px 24px;
-  background: linear-gradient(135deg, var(--secondary), #20c997);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  margin-top: 20px;
-  font-size: 18px;
-  font-weight: 700;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.pay-btn:hover {
-  background: linear-gradient(135deg, #218838, #1ea080);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-}
-
-.pay-btn:disabled {
-  background: #6c757d;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.payment-methods {
-  margin-top: 20px;
-  padding: 20px;
-  background: #e8f5e8;
-  border-radius: 10px;
-  border-left: 4px solid var(--secondary);
-}
-
-.payment-methods h4 {
-  color: var(--secondary);
-  margin-bottom: 10px;
-  font-size: 16px;
-}
-
-.payment-methods ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.payment-methods li {
-  padding: 5px 0;
-  color: #155724;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: 600;
-  margin-bottom: 20px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.back-btn:hover {
-  background: rgba(214, 134, 66, 0.1);
-  transform: translateX(-5px);
-}
-
-.price-info {
-  background: #fff3cd;
-  border: 1px solid #ffeaa7;
-  border-radius: 10px;
-  padding: 15px;
-  margin: 15px 0;
-  border-left: 4px solid #ffc107;
-}
-
-.price-info h4 {
-  color: #856404;
-  margin-bottom: 10px;
-  font-size: 16px;
-}
-
-.price-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.price-item {
-  text-align: center;
-  padding: 10px;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #ffeaa7;
-}
-
-.price-item .meal {
-  font-weight: 600;
-  color: var(--text);
-  font-size: 14px;
-}
-
-.price-item .amount {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--primary);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .container {
-    margin: 10px;
-    padding: 25px 20px;
-  }
-  
-  .title {
-    font-size: 24px;
-  }
-  
-  .price-grid {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  body {
-    padding: 10px 5px;
-  }
-  
-  .container {
-    padding: 20px 15px;
-  }
-  
-  .title {
-    font-size: 22px;
-    flex-direction: column;
-    gap: 5px;
-  }
-  
-  .qty-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
-  }
-  
-  .qty-display {
-    font-size: 20px;
-    padding: 8px 16px;
-  }
-  
-  .summary-item {
-    font-size: 14px;
-  }
-  
-  .pay-btn {
-    font-size: 16px;
-    padding: 14px 20px;
-  }
-}
-
-/* Loading animation */
-.loading {
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-.loading .pay-btn::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Segoe UI',sans-serif; background:var(--bg); min-height:100vh; padding:20px 10px; }
+.container { max-width:520px; margin:0 auto; background:white; border-radius:20px; padding:30px; box-shadow:0 8px 30px rgba(0,0,0,0.12); border-top:6px solid var(--primary); }
+.back-btn { display:inline-flex; align-items:center; gap:8px; color:var(--primary); text-decoration:none; font-weight:600; margin-bottom:20px; padding:8px 14px; border-radius:8px; transition:all 0.2s; }
+.back-btn:hover { background:rgba(0,0,0,0.05); transform:translateX(-4px); }
+.header { text-align:center; margin-bottom:25px; padding-bottom:20px; border-bottom:2px solid #f0f0f0; }
+.mess-badge { display:inline-block; background:var(--primary); color:white; padding:6px 18px; border-radius:20px; font-size:14px; font-weight:600; margin-bottom:12px; }
+.title { font-size:26px; font-weight:800; color:var(--dark); margin-bottom:6px; }
+.subtitle { color:var(--gray); font-size:14px; }
+.price-info { background:var(--bg); border:2px solid var(--primary); border-radius:14px; padding:18px; margin-bottom:22px; }
+.price-info h4 { color:var(--primary); font-size:15px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.price-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.price-item { text-align:center; padding:12px 8px; background:white; border-radius:10px; border:1px solid var(--border); }
+.price-item .meal-name { font-size:12px; font-weight:600; color:var(--dark); margin-bottom:4px; }
+.price-item .meal-price { font-size:20px; font-weight:800; color:var(--primary); }
+.form-group { margin-bottom:18px; }
+.form-group label { display:block; font-weight:600; color:var(--dark); margin-bottom:7px; font-size:14px; }
+select, input[type=number] { width:100%; padding:12px 14px; border:2px solid var(--border); border-radius:10px; font-size:15px; background:white; color:var(--dark); transition:all 0.2s; }
+select:focus, input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(0,0,0,0.06); }
+.qty-section { background:#f8f9fa; padding:18px; border-radius:12px; margin:18px 0; text-align:center; }
+.qty-section h4 { color:var(--primary); margin-bottom:12px; font-size:15px; }
+.qty-box { display:flex; align-items:center; justify-content:center; gap:15px; }
+.qty-btn { width:42px; height:42px; border:none; border-radius:50%; font-size:20px; font-weight:700; cursor:pointer; background:var(--primary); color:white; transition:all 0.2s; }
+.qty-btn:hover { opacity:0.85; transform:scale(1.1); }
+.qty-display { font-size:22px; font-weight:800; padding:8px 20px; background:white; border-radius:10px; border:2px solid var(--border); min-width:70px; }
+.summary-box { background:linear-gradient(135deg,#f8f9fa,#e9ecef); padding:22px; border-radius:14px; margin-top:20px; border-left:4px solid var(--success); }
+.summary-box h3 { text-align:center; color:var(--success); margin-bottom:16px; font-size:18px; }
+.summary-item { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid #dee2e6; font-size:14px; }
+.summary-item:last-child { border-bottom:none; font-weight:800; font-size:18px; color:var(--success); margin-top:8px; padding-top:12px; border-top:2px solid var(--success); }
+.summary-label { font-weight:600; color:var(--dark); }
+.summary-value { font-weight:600; color:var(--primary); }
+.pay-btn { width:100%; padding:15px; background:linear-gradient(135deg,var(--success),#20c997); color:white; border:none; border-radius:12px; cursor:pointer; margin-top:18px; font-size:17px; font-weight:700; transition:all 0.2s; box-shadow:0 4px 15px rgba(40,167,69,0.3); }
+.pay-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(40,167,69,0.4); }
+.pay-btn:disabled { background:#adb5bd; cursor:not-allowed; transform:none; box-shadow:none; }
+.payment-methods { margin-top:18px; padding:16px; background:#e8f5e8; border-radius:10px; border-left:4px solid var(--success); }
+.payment-methods h4 { color:var(--success); margin-bottom:10px; font-size:14px; font-weight:700; }
+.payment-methods ul { list-style:none; padding:0; }
+.payment-methods li { padding:4px 0; color:#155724; font-size:13px; display:flex; align-items:center; gap:8px; }
+@media(max-width:480px){ .price-grid{grid-template-columns:1fr 1fr 1fr;} .container{padding:20px 15px;} }
 </style>
 </head>
 <body>
-
 <div class="container">
-  <a href="/manet_mess/" class="back-btn">
-    ← Back to MANET Mess
-  </a>
-  
+  <!-- Back button — goes to correct mess -->
+  {% if mess == "RAJ Mess" %}
+  <a href="{% url 'raj_mess' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Back to RAJ Mess</a>
+  {% elif mess == "Design Mess" %}
+  <a href="{% url 'design_mess' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Design Mess</a>
+  {% else %}
+  <a href="{% url 'manet_mess' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Back to MANET Mess</a>
+  {% endif %}
+
   <div class="header">
-    <div class="title">
-      💳 Mess Payment
-    </div>
-    <div class="subtitle">
-      MIT ADT University - Secure Payment Gateway
-    </div>
+    <div class="mess-badge"><i class="fas fa-utensils me-1"></i> {{ mess|default:"Mess" }}</div>
+    <div class="title"><i class="fas fa-credit-card me-2"></i>Mess Payment</div>
+    <div class="subtitle">MIT ADT University — Secure Payment Gateway</div>
   </div>
 
-  <!-- Price Information -->
+  <!-- Mess-specific pricing -->
   <div class="price-info">
-    <h4>💰 Current Meal Prices</h4>
+    <h4><i class="fas fa-tag"></i> {{ mess|default:"Mess" }} Meal Prices</h4>
     <div class="price-grid">
       <div class="price-item">
-        <div class="meal">🌅 Breakfast</div>
-        <div class="amount">₹40</div>
+        <div class="meal-name">🌅 Breakfast</div>
+        <div class="meal-price">₹{{ prices.Breakfast|default:40 }}</div>
       </div>
       <div class="price-item">
-        <div class="meal">🌞 Lunch</div>
-        <div class="amount">₹60</div>
+        <div class="meal-name">🌞 Lunch</div>
+        <div class="meal-price">₹{{ prices.Lunch|default:60 }}</div>
       </div>
       <div class="price-item">
-        <div class="meal">🌙 Dinner</div>
-        <div class="amount">₹80</div>
+        <div class="meal-name">🌙 Dinner</div>
+        <div class="meal-price">₹{{ prices.Dinner|default:80 }}</div>
       </div>
     </div>
   </div>
 
-  <!-- Mess Selection -->
+  <!-- Mess (pre-selected, read-only if passed) -->
   <div class="form-group">
-    <label>Select Mess</label>
+    <label><i class="fas fa-store me-1"></i> Mess</label>
     <select id="messSelect" onchange="updateSummary()">
-      <option value="">-- Choose Your Mess --</option>
-      <option value="MANET Mess" {{ mess == "MANET Mess" and "selected" or "" }}>MANET Mess</option>
-      <option value="Raj Mess">Raj Mess</option>
-      <option value="Design Mess">Design Mess</option>
-      <option value="Sangeet Mess">Sangeet Mess</option>
-      <option value="Sofa Mess">Sofa Mess</option>
+      <option value="">-- Select Mess --</option>
+      <option value="RAJ Mess" {% if mess == "RAJ Mess" %}selected{% endif %}>RAJ Mess</option>
+      <option value="MANET Mess" {% if mess == "MANET Mess" %}selected{% endif %}>MANET Mess</option>
+      <option value="Design Mess" {% if mess == "Design Mess" %}selected{% endif %}>Design Mess</option>
     </select>
   </div>
 
-  <!-- Meal Selection -->
+  <!-- Meal -->
   <div class="form-group">
-    <label>Select Meal</label>
+    <label><i class="fas fa-bowl-food me-1"></i> Meal</label>
     <select id="mealSelect" onchange="updateSummary()">
-      <option value="">-- Choose Your Meal --</option>
-      <option value="Breakfast">🌅 Breakfast (₹40)</option>
-      <option value="Lunch">🌞 Lunch (₹60)</option>
-      <option value="Dinner">🌙 Dinner (₹80)</option>
+      <option value="">-- Select Meal --</option>
+      <option value="Breakfast" {% if meal == "Breakfast" %}selected{% endif %}>🌅 Breakfast</option>
+      <option value="Lunch" {% if meal == "Lunch" %}selected{% endif %}>🌞 Lunch</option>
+      <option value="Dinner" {% if meal == "Dinner" %}selected{% endif %}>🌙 Dinner</option>
     </select>
   </div>
 
-  <!-- Quantity Section -->
+  <!-- Quantity -->
   <div class="qty-section">
-    <h4>📊 Select Quantity</h4>
+    <h4><i class="fas fa-hashtag me-1"></i> Quantity</h4>
     <div class="qty-box">
       <button class="qty-btn" onclick="updateQty(-1)" type="button">−</button>
-      <div class="qty-display" id="qty">1</div>
+      <div class="qty-display" id="qty">{{ qty|default:1 }}</div>
       <button class="qty-btn" onclick="updateQty(1)" type="button">+</button>
     </div>
   </div>
 
-  <!-- Order Summary -->
+  <!-- Summary -->
   <div class="summary-box">
-    <h3>📋 Order Summary</h3>
-    <div class="summary-item">
-      <span class="summary-label">Mess:</span>
-      <span class="summary-value" id="sumMess">Please select</span>
-    </div>
-    <div class="summary-item">
-      <span class="summary-label">Meal:</span>
-      <span class="summary-value" id="sumMeal">Please select</span>
-    </div>
-    <div class="summary-item">
-      <span class="summary-label">Quantity:</span>
-      <span class="summary-value" id="sumQty">1</span>
-    </div>
-    <div class="summary-item">
-      <span class="summary-label">Total Amount:</span>
-      <span class="summary-value">₹ <span id="sumAmount">0</span></span>
-    </div>
+    <h3><i class="fas fa-receipt me-2"></i>Order Summary</h3>
+    <div class="summary-item"><span class="summary-label">Mess:</span><span class="summary-value" id="sumMess">{{ mess|default:"—" }}</span></div>
+    <div class="summary-item"><span class="summary-label">Meal:</span><span class="summary-value" id="sumMeal">{{ meal|default:"—" }}</span></div>
+    <div class="summary-item"><span class="summary-label">Price per meal:</span><span class="summary-value">₹<span id="sumPrice">{{ price|default:0 }}</span></span></div>
+    <div class="summary-item"><span class="summary-label">Quantity:</span><span class="summary-value" id="sumQty">{{ qty|default:1 }}</span></div>
+    <div class="summary-item"><span class="summary-label">Total Amount:</span><span class="summary-value">₹<span id="sumAmount">{{ total|default:0 }}</span></span></div>
   </div>
 
-  <button class="pay-btn" id="payBtn" onclick="proceedToPay()" disabled>
-    🔒 Proceed to Secure Payment
+  <button class="pay-btn" id="payBtn" onclick="proceedToPay()" {% if not total %}disabled{% endif %}>
+    <i class="fas fa-lock me-2"></i>Proceed to Secure Payment
   </button>
 
-  <!-- Payment Methods -->
   <div class="payment-methods">
-    <h4>💳 Accepted Payment Methods</h4>
+    <h4><i class="fas fa-credit-card me-1"></i> Accepted Payment Methods</h4>
     <ul>
-      <li>💳 Credit/Debit Cards (Visa, MasterCard, RuPay)</li>
-      <li>📱 UPI (Google Pay, PhonePe, Paytm, BHIM)</li>
-      <li>🏦 Net Banking (All Major Banks)</li>
-      <li>💰 Digital Wallets (Paytm, Amazon Pay)</li>
+      <li><i class="fas fa-credit-card"></i> Credit/Debit Cards (Visa, MasterCard, RuPay)</li>
+      <li><i class="fas fa-mobile-alt"></i> UPI (Google Pay, PhonePe, Paytm, BHIM)</li>
+      <li><i class="fas fa-university"></i> Net Banking (All Major Banks)</li>
+      <li><i class="fas fa-wallet"></i> Digital Wallets (Paytm, Amazon Pay)</li>
     </ul>
   </div>
 </div>
 
 <script>
-let qty = 1;
+// Mess-specific prices
+const MESS_PRICES = {
+  "RAJ Mess":    { Breakfast: 35, Lunch: 55, Dinner: 75 },
+  "MANET Mess":  { Breakfast: 40, Lunch: 60, Dinner: 80 },
+  "Design Mess": { Breakfast: 45, Lunch: 65, Dinner: 85 },
+};
+
+let qty = {{ qty|default:1 }};
 
 function updateQty(val) {
-  qty += val;
-  if (qty < 1) qty = 1;
-  if (qty > 10) qty = 10; // Maximum limit
+  qty = Math.min(10, Math.max(1, qty + val));
   document.getElementById("qty").innerText = qty;
   updateSummary();
 }
 
 function updateSummary() {
-  let mess = document.getElementById("messSelect").value || "Please select";
-  let meal = document.getElementById("mealSelect").value || "Please select";
-  let payBtn = document.getElementById("payBtn");
+  const mess = document.getElementById("messSelect").value;
+  const meal = document.getElementById("mealSelect").value;
+  const prices = MESS_PRICES[mess] || { Breakfast: 40, Lunch: 60, Dinner: 80 };
+  const price = prices[meal] || 0;
+  const total = qty * price;
 
-  // Pricing logic
-  let price = 0;
-  if (meal === "Breakfast") price = 40;
-  else if (meal === "Lunch") price = 60;
-  else if (meal === "Dinner") price = 80;
-
-  let total = qty * price;
-
-  document.getElementById("sumMess").innerText = mess;
-  document.getElementById("sumMeal").innerText = meal;
+  document.getElementById("sumMess").innerText = mess || "—";
+  document.getElementById("sumMeal").innerText = meal || "—";
+  document.getElementById("sumPrice").innerText = price;
   document.getElementById("sumQty").innerText = qty;
   document.getElementById("sumAmount").innerText = total;
 
-  // Enable/disable pay button
-  if (mess !== "Please select" && meal !== "Please select" && total > 0) {
-    payBtn.disabled = false;
-    payBtn.style.opacity = "1";
-  } else {
-    payBtn.disabled = true;
-    payBtn.style.opacity = "0.6";
-  }
+  const payBtn = document.getElementById("payBtn");
+  payBtn.disabled = !(mess && meal && total > 0);
 }
 
 function proceedToPay() {
-  let mess = document.getElementById("messSelect").value;
-  let meal = document.getElementById("mealSelect").value;
-  let total = document.getElementById("sumAmount").innerText;
-  
-  if (!mess || !meal) {
-    alert("Please select both mess and meal before proceeding.");
-    return;
-  }
-  
-  // Add loading state
-  document.body.classList.add('loading');
-  document.getElementById("payBtn").innerHTML = "🔄 Processing...";
-  
-  // Simulate payment processing (replace with actual payment gateway)
+  const mess = document.getElementById("messSelect").value;
+  const meal = document.getElementById("mealSelect").value;
+  const total = document.getElementById("sumAmount").innerText;
+  if (!mess || !meal) { alert("Please select both mess and meal."); return; }
+
+  const btn = document.getElementById("payBtn");
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+  btn.disabled = true;
+
   setTimeout(() => {
-    alert(`Payment of ₹${total} for ${meal} at ${mess} (Qty: ${qty}) is being processed.\n\nYou will be redirected to the secure payment gateway.`);
-    
-    // Reset form
-    document.getElementById("messSelect").value = "";
-    document.getElementById("mealSelect").value = "";
-    qty = 1;
+    alert(`Payment of ₹${total} for ${meal} at ${mess} (Qty: ${qty})\n\nYou will be redirected to the secure payment gateway.`);
+    btn.innerHTML = '<i class="fas fa-lock me-2"></i>Proceed to Secure Payment';
     updateSummary();
-    
-    // Remove loading state
-    document.body.classList.remove('loading');
-    document.getElementById("payBtn").innerHTML = "🔒 Proceed to Secure Payment";
-  }, 2000);
+  }, 1500);
 }
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-  // Pre-select mess if passed in URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const messParam = urlParams.get('mess');
-  if (messParam) {
-    document.getElementById("messSelect").value = messParam;
-  }
-  updateSummary();
-});
+// Init
+document.addEventListener('DOMContentLoaded', updateSummary);
 </script>
-
 </body>
 </html>

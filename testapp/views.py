@@ -895,6 +895,9 @@ def add_dish(request, mess_id=1):
     feedbacks = MessFeedback.objects.all().order_by('-submitted_at')
     suggestions = Weekly_suggestion.objects.filter(mess_name__icontains='raj').order_by('-submitted_at')
 
+    # Payment analytics — meal price reference for RAJ Mess
+    payment_prices = {"Breakfast": 35, "Lunch": 55, "Dinner": 75}
+
     return render(request, "testapp/add_dish.html", {
         "days": days,
         "meals": meals,
@@ -905,6 +908,7 @@ def add_dish(request, mess_id=1):
         "complaints": complaints,
         "feedbacks": feedbacks,
         "suggestions": suggestions,
+        "payment_prices": payment_prices,
     })
 
 
@@ -1706,15 +1710,15 @@ def mess_payment_select(request):
     meal = request.GET.get("meal", "")
     qty = int(request.GET.get("qty", 1))
 
-    # Updated price logic to match MANET mess pricing
-    price = 0
-    if meal == "Breakfast":
-        price = 40
-    elif meal == "Lunch":
-        price = 60
-    elif meal == "Dinner":
-        price = 80
+    # Mess-specific pricing
+    MESS_PRICES = {
+        "RAJ Mess":    {"Breakfast": 35, "Lunch": 55, "Dinner": 75},
+        "MANET Mess":  {"Breakfast": 40, "Lunch": 60, "Dinner": 80},
+        "Design Mess": {"Breakfast": 45, "Lunch": 65, "Dinner": 85},
+    }
 
+    prices = MESS_PRICES.get(mess, {"Breakfast": 40, "Lunch": 60, "Dinner": 80})
+    price = prices.get(meal, 0)
     total = price * qty
 
     context = {
@@ -1722,9 +1726,9 @@ def mess_payment_select(request):
         "meal": meal,
         "qty": qty,
         "price": price,
-        "total": total
+        "total": total,
+        "prices": prices,
     }
-
     return render(request, "testapp/payment.html", context)
 
 from django.shortcuts import render, redirect

@@ -638,6 +638,44 @@
             </div>
             <!-- Analytics Section -->
             <div id="analytics-section" class="content-section" style="display: none;">
+                <!-- Payment Analytics -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-rupee-sign me-2"></i>Payment Analytics — RAJ Mess Pricing</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-4 text-center mb-3">
+                                        <div style="background:linear-gradient(135deg,#2c5530,#4a7c59);color:white;border-radius:14px;padding:22px;">
+                                            <div style="font-size:13px;opacity:0.85;margin-bottom:6px;">🌅 Breakfast</div>
+                                            <div style="font-size:36px;font-weight:800;">₹{{ payment_prices.Breakfast }}</div>
+                                            <div style="font-size:12px;opacity:0.8;margin-top:4px;">per meal</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center mb-3">
+                                        <div style="background:linear-gradient(135deg,#f39c12,#e67e22);color:white;border-radius:14px;padding:22px;">
+                                            <div style="font-size:13px;opacity:0.85;margin-bottom:6px;">🌞 Lunch</div>
+                                            <div style="font-size:36px;font-weight:800;">₹{{ payment_prices.Lunch }}</div>
+                                            <div style="font-size:12px;opacity:0.8;margin-top:4px;">per meal</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center mb-3">
+                                        <div style="background:linear-gradient(135deg,#2c3e50,#34495e);color:white;border-radius:14px;padding:22px;">
+                                            <div style="font-size:13px;opacity:0.85;margin-bottom:6px;">🌙 Dinner</div>
+                                            <div style="font-size:36px;font-weight:800;">₹{{ payment_prices.Dinner }}</div>
+                                            <div style="font-size:12px;opacity:0.8;margin-top:4px;">per meal</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <canvas id="paymentChart" height="80"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Performance Chart -->
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="card">
@@ -646,6 +684,7 @@
                             </div>
                             <div class="card-body">
                                 <canvas id="weeklyPerformanceChart" height="80"></canvas>
+                                {% if not feedbacks %}<p class="text-muted text-center small mt-2">No feedback data yet.</p>{% endif %}
                             </div>
                         </div>
                     </div>
@@ -658,7 +697,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <h5><i class="fas fa-chart-pie me-2"></i>Customer Preference Analytics</h5>
-                                <small class="text-muted">Based on weekly suggestions and feedback</small>
+                                <small class="text-muted">Based on weekly suggestions</small>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -667,27 +706,20 @@
                                         <div class="analytics-card">
                                             <div class="analytics-header">
                                                 <h6 class="mb-1">{{ g.day|title }} - {{ g.meal|title }}</h6>
-                                                <small class="text-muted">
-                                                    <i class="fas fa-users me-1"></i>{{ g.counts|length }} responses
-                                                </small>
+                                                <small class="text-muted"><i class="fas fa-users me-1"></i>{{ g.counts|length }} responses</small>
                                             </div>
                                             <div class="analytics-chart">
-                                                <img src="data:image/png;base64,{{ g.image }}" 
-                                                     class="img-fluid" style="max-height: 200px;">
+                                                <img src="data:image/png;base64,{{ g.image }}" class="img-fluid" style="max-height:200px;">
                                             </div>
                                             <div class="analytics-footer">
                                                 <div class="row text-center">
-                                                    <div class="col-4">
-                                                        <div class="metric-value">85%</div>
-                                                        <div class="metric-label">Satisfaction</div>
-                                                    </div>
-                                                    <div class="col-4">
+                                                    <div class="col-6">
                                                         <div class="metric-value">{{ g.counts|length }}</div>
                                                         <div class="metric-label">Votes</div>
                                                     </div>
-                                                    <div class="col-4">
-                                                        <div class="metric-value">4.2</div>
-                                                        <div class="metric-label">Rating</div>
+                                                    <div class="col-6">
+                                                        <div class="metric-value">{{ g.counts|length|default:0 }}</div>
+                                                        <div class="metric-label">Responses</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -699,54 +731,37 @@
                         </div>
                     </div>
                 </div>
+                {% else %}
+                <div class="card">
+                    <div class="card-body text-center py-5 text-muted">
+                        <i class="fas fa-chart-pie fa-3x mb-3 d-block"></i>
+                        <p>No preference analytics yet. Data will appear as students submit weekly suggestions.</p>
+                    </div>
+                </div>
                 {% endif %}
 
-                <!-- Performance Metrics -->
-                <div class="row">
+                <!-- Top Rated Dishes from DB -->
+                <div class="row mt-4">
                     <div class="col-lg-6">
                         <div class="card">
                             <div class="card-header">
-                                <h5><i class="fas fa-trophy me-2"></i>Top Performing Items</h5>
+                                <h5><i class="fas fa-trophy me-2"></i>Menu Items ({{ dishes.count }} total)</h5>
                             </div>
                             <div class="card-body">
-                                <div class="performance-list">
-                                    <div class="performance-item">
-                                        <div class="item-info">
-                                            <div class="item-name">Dal Tadka</div>
-                                            <div class="item-stats">4.8 rating • 156 orders</div>
-                                        </div>
-                                        <div class="item-score">
-                                            <div class="score-bar">
-                                                <div class="score-fill" style="width: 96%"></div>
-                                            </div>
-                                            <span class="score-text">96%</span>
-                                        </div>
+                                {% if dishes %}
+                                {% for dish in dishes|slice:":5" %}
+                                <div class="d-flex align-items-center gap-3 mb-3 p-2 bg-light rounded">
+                                    {% if dish.image %}<img src="{{ dish.image.url }}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;">{% else %}<div style="width:40px;height:40px;background:#eee;border-radius:8px;display:flex;align-items:center;justify-content:center;"><i class="fas fa-utensils text-muted"></i></div>{% endif %}
+                                    <div class="flex-grow-1">
+                                        <div class="fw-semibold small">{{ dish.name }}</div>
+                                        <div class="text-muted" style="font-size:11px;">{{ dish.day|title }} — {{ dish.meal|title }}</div>
                                     </div>
-                                    <div class="performance-item">
-                                        <div class="item-info">
-                                            <div class="item-name">Rajma Rice</div>
-                                            <div class="item-stats">4.6 rating • 142 orders</div>
-                                        </div>
-                                        <div class="item-score">
-                                            <div class="score-bar">
-                                                <div class="score-fill" style="width: 89%"></div>
-                                            </div>
-                                            <span class="score-text">89%</span>
-                                        </div>
-                                    </div>
-                                    <div class="performance-item">
-                                        <div class="item-info">
-                                            <div class="item-name">Aloo Paratha</div>
-                                            <div class="item-stats">4.4 rating • 128 orders</div>
-                                        </div>
-                                        <div class="item-score">
-                                            <div class="score-bar">
-                                                <div class="score-fill" style="width: 82%"></div>
-                                            </div>
-                                            <span class="score-text">82%</span>
-                                        </div>
-                                    </div>
+                                    <span class="badge bg-primary">{{ dish.average_rating|floatformat:1 }}★</span>
                                 </div>
+                                {% endfor %}
+                                {% else %}
+                                <p class="text-muted text-center py-3">No dishes added yet.</p>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -757,6 +772,7 @@
                             </div>
                             <div class="card-body">
                                 <canvas id="peakHoursChart"></canvas>
+                                <p class="text-muted text-center small mt-2">Based on meal time distribution</p>
                             </div>
                         </div>
                     </div>
@@ -1345,6 +1361,28 @@
 
         // Initialize Charts with real data
         document.addEventListener('DOMContentLoaded', function() {
+
+            // Payment Analytics Chart
+            const paymentCtx = document.getElementById('paymentChart');
+            if (paymentCtx) {
+                new Chart(paymentCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Breakfast', 'Lunch', 'Dinner'],
+                        datasets: [{
+                            label: 'Price (₹)',
+                            data: [{{ payment_prices.Breakfast }}, {{ payment_prices.Lunch }}, {{ payment_prices.Dinner }}],
+                            backgroundColor: ['#2c5530', '#f39c12', '#2c3e50'],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, ticks: { callback: v => '₹' + v } } }
+                    }
+                });
+            }
 
             // Overview Bar Chart — Feedback + Suggestions + Complaints (real counts)
             const overviewCtx = document.getElementById('overviewChart');
