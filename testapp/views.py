@@ -713,6 +713,14 @@ def manet_add_dish(request):
 
     payment_prices = {"Breakfast": 40, "Lunch": 60, "Dinner": 80}
 
+    from .models import Payment
+    payments = Payment.objects.filter(mess_name__icontains='manet').order_by('-paid_at')
+    total_revenue = sum(p.total_amount for p in payments)
+    payment_count = payments.count()
+    bf_payments = payments.filter(meal='Breakfast').count()
+    ln_payments = payments.filter(meal='Lunch').count()
+    dn_payments = payments.filter(meal='Dinner').count()
+
     return render(request, 'testapp/admin_manet_mess.html', {
         'form': form, 'days': days, 'meals': meals, 'dishes': dishes,
         'notices': notices, 'complaints': complaints, 'feedback_graphs': feedback_graphs,
@@ -723,6 +731,9 @@ def manet_add_dish(request):
         'sugg_raj': sugg_raj, 'sugg_manet': sugg_manet, 'sugg_design': sugg_design,
         'fb_raj': fb_raj, 'fb_manet': fb_manet, 'fb_design': fb_design,
         'bf_count': bf_count, 'ln_count': ln_count, 'dn_count': dn_count,
+        'payments': payments, 'total_revenue': total_revenue,
+        'payment_count': payment_count,
+        'bf_payments': bf_payments, 'ln_payments': ln_payments, 'dn_payments': dn_payments,
     })
 
 
@@ -950,6 +961,14 @@ def add_dish(request, mess_id=1):
 
     payment_prices = {"Breakfast": 35, "Lunch": 55, "Dinner": 75}
 
+    from .models import Payment
+    payments = Payment.objects.filter(mess_name__icontains='raj').order_by('-paid_at')
+    total_revenue = sum(p.total_amount for p in payments)
+    payment_count = payments.count()
+    bf_payments = payments.filter(meal='Breakfast').count()
+    ln_payments = payments.filter(meal='Lunch').count()
+    dn_payments = payments.filter(meal='Dinner').count()
+
     return render(request, "testapp/add_dish.html", {
         "days": days, "meals": meals, "dishes": dishes, "mess_id": mess_id,
         "feedback_graphs": feedback_graphs, "notices": notices,
@@ -960,6 +979,9 @@ def add_dish(request, mess_id=1):
         "sugg_raj": sugg_raj, "sugg_manet": sugg_manet, "sugg_design": sugg_design,
         "fb_raj": fb_raj, "fb_manet": fb_manet, "fb_design": fb_design,
         "bf_count": bf_count, "ln_count": ln_count, "dn_count": dn_count,
+        "payments": payments, "total_revenue": total_revenue,
+        "payment_count": payment_count,
+        "bf_payments": bf_payments, "ln_payments": ln_payments, "dn_payments": dn_payments,
     })
 
 
@@ -1060,6 +1082,14 @@ def design_mess_admin_view(request):
 
     payment_prices = {"Breakfast": 45, "Lunch": 65, "Dinner": 85}
 
+    from .models import Payment
+    payments = Payment.objects.filter(mess_name__icontains='design').order_by('-paid_at')
+    total_revenue = sum(p.total_amount for p in payments)
+    payment_count = payments.count()
+    bf_payments = payments.filter(meal='Breakfast').count()
+    ln_payments = payments.filter(meal='Lunch').count()
+    dn_payments = payments.filter(meal='Dinner').count()
+
     context = {
         'form': form, 'days': days, 'meals': meals, 'dishes': dishes,
         'notices': notices, 'complaints': complaints, 'feedback_graphs': feedback_graphs,
@@ -1070,6 +1100,9 @@ def design_mess_admin_view(request):
         'sugg_raj': sugg_raj, 'sugg_manet': sugg_manet, 'sugg_design': sugg_design,
         'fb_raj': fb_raj, 'fb_manet': fb_manet, 'fb_design': fb_design,
         'bf_count': bf_count, 'ln_count': ln_count, 'dn_count': dn_count,
+        'payments': payments, 'total_revenue': total_revenue,
+        'payment_count': payment_count,
+        'bf_payments': bf_payments, 'ln_payments': ln_payments, 'dn_payments': dn_payments,
     }
     return render(request, 'testapp/admin_design_mess.html', context)
 # testapp/views.py
@@ -1804,6 +1837,33 @@ def mess_payment_select(request):
         "prices": prices,
     }
     return render(request, "testapp/payment.html", context)
+
+
+def complete_payment(request):
+    """Called via POST when user confirms payment — saves to DB."""
+    if request.method == 'POST':
+        from .models import Payment
+        mess = request.POST.get('mess', '')
+        meal = request.POST.get('meal', '')
+        qty  = int(request.POST.get('qty', 1))
+        price = int(request.POST.get('price', 0))
+        total = int(request.POST.get('total', 0))
+
+        if mess and meal and total > 0:
+            Payment.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                mess_name=mess,
+                meal=meal,
+                quantity=qty,
+                price_per_meal=price,
+                total_amount=total,
+                status='completed'
+            )
+            messages.success(request, f"Payment of ₹{total} for {meal} at {mess} completed successfully!")
+        else:
+            messages.error(request, "Invalid payment details.")
+
+    return redirect('index')
 
 from django.shortcuts import render, redirect
 from .forms import MessFeedbackForm

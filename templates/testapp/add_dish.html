@@ -361,12 +361,12 @@
                     <div class="stat-card">
                         <div class="stat-header">
                             <div>
-                                <div class="stat-value">{{ complaints.count }}</div>
-                                <div class="stat-label">Complaints</div>
-                                {% if complaints.count > 0 %}<div class="stat-change negative"><i class="fas fa-exclamation-triangle"></i> Needs attention</div>
-                                {% else %}<div class="stat-change positive"><i class="fas fa-check-circle"></i> All clear</div>{% endif %}
+                                <div class="stat-value">₹{{ total_revenue }}</div>
+                                <div class="stat-label">Total Revenue</div>
+                                {% if total_revenue > 0 %}<div class="stat-change positive"><i class="fas fa-arrow-up"></i> {{ payment_count }} payments</div>
+                                {% else %}<div class="stat-change negative"><i class="fas fa-minus"></i> No payments yet</div>{% endif %}
                             </div>
-                            <div class="stat-icon secondary"><i class="fas fa-exclamation-circle"></i></div>
+                            <div class="stat-icon success"><i class="fas fa-rupee-sign"></i></div>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -383,12 +383,12 @@
                     <div class="stat-card">
                         <div class="stat-header">
                             <div>
-                                <div class="stat-value">{{ notices.count }}</div>
-                                <div class="stat-label">Notices Posted</div>
-                                {% if notices.count > 0 %}<div class="stat-change positive"><i class="fas fa-bullhorn"></i> Active</div>
-                                {% else %}<div class="stat-change negative"><i class="fas fa-minus"></i> None posted</div>{% endif %}
+                                <div class="stat-value">{{ complaints.count }}</div>
+                                <div class="stat-label">Complaints</div>
+                                {% if complaints.count > 0 %}<div class="stat-change negative"><i class="fas fa-exclamation-triangle"></i> Needs attention</div>
+                                {% else %}<div class="stat-change positive"><i class="fas fa-check-circle"></i> All clear</div>{% endif %}
                             </div>
-                            <div class="stat-icon success"><i class="fas fa-bullhorn"></i></div>
+                            <div class="stat-icon secondary"><i class="fas fa-exclamation-circle"></i></div>
                         </div>
                     </div>
                 </div>
@@ -640,34 +640,89 @@
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header">
-                                <h5><i class="fas fa-rupee-sign me-2"></i>Payment Analytics — RAJ Mess Pricing</h5>
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5><i class="fas fa-rupee-sign me-2"></i>Payment Analytics — RAJ Mess</h5>
+                                <span class="badge bg-success fs-6">Total Revenue: ₹{{ total_revenue }}</span>
                             </div>
                             <div class="card-body">
+                                <!-- Summary Cards -->
                                 <div class="row mb-4">
-                                    <div class="col-md-4 text-center mb-3">
+                                    <div class="col-md-3 text-center mb-3">
+                                        <div style="background:linear-gradient(135deg,#2c5530,#4a7c59);color:white;border-radius:14px;padding:22px;">
+                                            <div style="font-size:13px;opacity:0.85;margin-bottom:6px;">💰 Total Revenue</div>
+                                            <div style="font-size:30px;font-weight:800;">₹{{ total_revenue }}</div>
+                                            <div style="font-size:12px;opacity:0.8;margin-top:4px;">{{ payment_count }} transactions</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 text-center mb-3">
                                         <div style="background:linear-gradient(135deg,#2c5530,#4a7c59);color:white;border-radius:14px;padding:22px;">
                                             <div style="font-size:13px;opacity:0.85;margin-bottom:6px;">🌅 Breakfast</div>
-                                            <div style="font-size:36px;font-weight:800;">₹{{ payment_prices.Breakfast }}</div>
-                                            <div style="font-size:12px;opacity:0.8;margin-top:4px;">per meal</div>
+                                            <div style="font-size:30px;font-weight:800;">₹{{ payment_prices.Breakfast }}</div>
+                                            <div style="font-size:12px;opacity:0.8;margin-top:4px;">{{ bf_payments }} orders</div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4 text-center mb-3">
+                                    <div class="col-md-3 text-center mb-3">
                                         <div style="background:linear-gradient(135deg,#f39c12,#e67e22);color:white;border-radius:14px;padding:22px;">
                                             <div style="font-size:13px;opacity:0.85;margin-bottom:6px;">🌞 Lunch</div>
-                                            <div style="font-size:36px;font-weight:800;">₹{{ payment_prices.Lunch }}</div>
-                                            <div style="font-size:12px;opacity:0.8;margin-top:4px;">per meal</div>
+                                            <div style="font-size:30px;font-weight:800;">₹{{ payment_prices.Lunch }}</div>
+                                            <div style="font-size:12px;opacity:0.8;margin-top:4px;">{{ ln_payments }} orders</div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4 text-center mb-3">
+                                    <div class="col-md-3 text-center mb-3">
                                         <div style="background:linear-gradient(135deg,#2c3e50,#34495e);color:white;border-radius:14px;padding:22px;">
                                             <div style="font-size:13px;opacity:0.85;margin-bottom:6px;">🌙 Dinner</div>
-                                            <div style="font-size:36px;font-weight:800;">₹{{ payment_prices.Dinner }}</div>
-                                            <div style="font-size:12px;opacity:0.8;margin-top:4px;">per meal</div>
+                                            <div style="font-size:30px;font-weight:800;">₹{{ payment_prices.Dinner }}</div>
+                                            <div style="font-size:12px;opacity:0.8;margin-top:4px;">{{ dn_payments }} orders</div>
                                         </div>
                                     </div>
                                 </div>
-                                <canvas id="paymentChart" height="80"></canvas>
+                                <!-- Payment Chart -->
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <canvas id="paymentChart" height="120"></canvas>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <canvas id="paymentPieChart" height="120"></canvas>
+                                    </div>
+                                </div>
+                                {% if not payment_count %}
+                                <p class="text-muted text-center mt-3 small"><i class="fas fa-info-circle me-1"></i>No payments recorded yet. Charts will update as students make payments.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Payments Table -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-history me-2"></i>Recent Payments ({{ payment_count }} total)</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead class="table-dark">
+                                            <tr><th>#</th><th>Student</th><th>Meal</th><th>Qty</th><th>Amount</th><th>Status</th><th>Date</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for p in payments|slice:":10" %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ p.user.username|default:"Guest" }}</td>
+                                                <td><span class="badge bg-primary">{{ p.meal }}</span></td>
+                                                <td>{{ p.quantity }}</td>
+                                                <td><strong>₹{{ p.total_amount }}</strong></td>
+                                                <td><span class="badge bg-success">{{ p.status|title }}</span></td>
+                                                <td><small>{{ p.paid_at|date:"d M Y, H:i" }}</small></td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr><td colspan="7" class="text-center text-muted py-4">No payments yet.</td></tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1408,30 +1463,53 @@
                 });
             }
 
-            // 3. Payment Analytics — meal prices bar chart
+            // 3. Payment Analytics — prices + real order counts (dual axis)
             const paymentCtx = document.getElementById('paymentChart');
             if (paymentCtx) {
                 new Chart(paymentCtx.getContext('2d'), {
                     type: 'bar',
                     data: {
                         labels: ['Breakfast', 'Lunch', 'Dinner'],
-                        datasets: [{
-                            label: 'Price (₹)',
-                            data: [{{ payment_prices.Breakfast }}, {{ payment_prices.Lunch }}, {{ payment_prices.Dinner }}],
-                            backgroundColor: ['rgba(44,85,48,0.85)','rgba(243,156,18,0.85)','rgba(44,62,80,0.85)'],
-                            borderColor: ['#2c5530','#f39c12','#2c3e50'],
-                            borderWidth: 2, borderRadius: 8
-                        }]
+                        datasets: [
+                            { label: 'Price (₹)',
+                              data: [{{ payment_prices.Breakfast }}, {{ payment_prices.Lunch }}, {{ payment_prices.Dinner }}],
+                              backgroundColor: ['rgba(44,85,48,0.85)','rgba(243,156,18,0.85)','rgba(44,62,80,0.85)'],
+                              borderColor: ['#2c5530','#f39c12','#2c3e50'], borderWidth: 2, borderRadius: 8, yAxisID: 'y'
+                            },
+                            { label: 'Orders',
+                              data: [{{ bf_payments }}, {{ ln_payments }}, {{ dn_payments }}],
+                              backgroundColor: ['rgba(44,85,48,0.3)','rgba(243,156,18,0.3)','rgba(44,62,80,0.3)'],
+                              borderRadius: 8, yAxisID: 'y1'
+                            }
+                        ]
                     },
                     options: {
                         responsive: true, maintainAspectRatio: false,
-                        plugins: { legend: { display: false },
-                            tooltip: { callbacks: { label: ctx => ' ₹' + ctx.parsed.y + ' per meal' } }
-                        },
-                        scales: { y: { beginAtZero: true,
-                            ticks: { callback: v => '₹' + v, stepSize: 10 },
-                            grid: { color: 'rgba(0,0,0,0.05)' }
-                        } }
+                        plugins: { legend: { position: 'bottom' } },
+                        scales: {
+                            y:  { beginAtZero: true, position: 'left',  ticks: { callback: v => '₹' + v }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                            y1: { beginAtZero: true, position: 'right', ticks: { stepSize: 1, precision: 0 }, grid: { drawOnChartArea: false } }
+                        }
+                    }
+                });
+            }
+
+            // Payment pie — orders by meal type
+            const payPieCtx = document.getElementById('paymentPieChart');
+            if (payPieCtx) {
+                new Chart(payPieCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Breakfast', 'Lunch', 'Dinner'],
+                        datasets: [{ data: [{{ bf_payments }}, {{ ln_payments }}, {{ dn_payments }}],
+                            backgroundColor: ['#2c5530','#f39c12','#2c3e50'], borderWidth: 2, borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, cutout: '60%',
+                        plugins: { legend: { position: 'bottom', labels: { padding: 12, font: { size: 11 } } },
+                            title: { display: true, text: 'Orders by Meal Type', font: { size: 13 } }
+                        }
                     }
                 });
             }

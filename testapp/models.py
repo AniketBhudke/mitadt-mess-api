@@ -384,3 +384,36 @@ class Complaint(models.Model):
 
     def __str__(self):
         return f"{self.student_name} - {self.mess_name or 'N/A'}"
+
+
+class Payment(models.Model):
+    MEAL_CHOICES = [
+        ('Breakfast', 'Breakfast'),
+        ('Lunch', 'Lunch'),
+        ('Dinner', 'Dinner'),
+    ]
+    MESS_CHOICES = [
+        ('RAJ Mess', 'RAJ Mess'),
+        ('MANET Mess', 'MANET Mess'),
+        ('Design Mess', 'Design Mess'),
+    ]
+    STATUS_CHOICES = [
+        ('completed', 'Completed'),
+        ('pending', 'Pending'),
+        ('failed', 'Failed'),
+    ]
+
+    user = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True)
+    mess_name = models.CharField(max_length=50, choices=MESS_CHOICES)
+    meal = models.CharField(max_length=20, choices=MEAL_CHOICES)
+    quantity = models.PositiveIntegerField(default=1)
+    price_per_meal = models.PositiveIntegerField()
+    total_amount = models.PositiveIntegerField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='completed')
+    paid_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.mess_name} | {self.meal} x{self.quantity} = ₹{self.total_amount}"
+
+    class Meta:
+        ordering = ['-paid_at']

@@ -140,6 +140,16 @@ select:focus, input:focus { outline:none; border-color:var(--primary); box-shado
     <i class="fas fa-lock me-2"></i>Proceed to Secure Payment
   </button>
 
+  <!-- Hidden form to POST payment to server -->
+  <form id="paymentForm" method="POST" action="{% url 'complete_payment' %}" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="mess" id="formMess" value="{{ mess }}">
+    <input type="hidden" name="meal" id="formMeal" value="{{ meal }}">
+    <input type="hidden" name="qty" id="formQty" value="{{ qty|default:1 }}">
+    <input type="hidden" name="price" id="formPrice" value="{{ price|default:0 }}">
+    <input type="hidden" name="total" id="formTotal" value="{{ total|default:0 }}">
+  </form>
+
   <div class="payment-methods">
     <h4><i class="fas fa-credit-card me-1"></i> Accepted Payment Methods</h4>
     <ul>
@@ -187,6 +197,7 @@ function updateSummary() {
 function proceedToPay() {
   const mess = document.getElementById("messSelect").value;
   const meal = document.getElementById("mealSelect").value;
+  const price = document.getElementById("sumPrice").innerText;
   const total = document.getElementById("sumAmount").innerText;
   if (!mess || !meal) { alert("Please select both mess and meal."); return; }
 
@@ -194,10 +205,16 @@ function proceedToPay() {
   btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
   btn.disabled = true;
 
+  // Update hidden form values
+  document.getElementById("formMess").value  = mess;
+  document.getElementById("formMeal").value  = meal;
+  document.getElementById("formQty").value   = qty;
+  document.getElementById("formPrice").value = price;
+  document.getElementById("formTotal").value = total;
+
+  // Simulate payment gateway delay then submit
   setTimeout(() => {
-    alert(`Payment of ₹${total} for ${meal} at ${mess} (Qty: ${qty})\n\nYou will be redirected to the secure payment gateway.`);
-    btn.innerHTML = '<i class="fas fa-lock me-2"></i>Proceed to Secure Payment';
-    updateSummary();
+    document.getElementById("paymentForm").submit();
   }, 1500);
 }
 

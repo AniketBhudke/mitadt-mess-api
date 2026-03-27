@@ -66,6 +66,7 @@ urlpatterns = [
     
     # Other Pages
     path("payment_selection/", views.mess_payment_select, name="payment_selection"),
+    path("payment/complete/", views.complete_payment, name="complete_payment"),
     path("feedback/", views.feedback_form, name="feedback"),
     path('thank-you/', views.thank_you, name='thank_you'),
     path('weekly_suggestion/', views.weekly_suggestion, name='weekly_suggestion'),
