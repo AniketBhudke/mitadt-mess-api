@@ -1359,10 +1359,58 @@
             }
         });
 
-        // Initialize Charts with real data
+        // ── Charts: all use real DB data ──────────────────────────────
         document.addEventListener('DOMContentLoaded', function() {
 
-            // Payment Analytics Chart
+            // 1. Overview — counts of all key data
+            const overviewCtx = document.getElementById('overviewChart');
+            if (overviewCtx) {
+                new Chart(overviewCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Menu Items', 'Feedback', 'Suggestions', 'Complaints', 'Notices'],
+                        datasets: [{
+                            label: 'Count',
+                            data: [{{ dishes.count }}, {{ feedbacks.count }}, {{ suggestions.count }}, {{ complaints.count }}, {{ notices.count }}],
+                            backgroundColor: ['#2c5530','#3498db','#f39c12','#e74c3c','#9b59b6'],
+                            borderRadius: 8, borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false },
+                            tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y + ' records' } }
+                        },
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 },
+                            grid: { color: 'rgba(0,0,0,0.05)' } } }
+                    }
+                });
+            }
+
+            // 2. Menu by Meal — doughnut (real meal distribution)
+            const menuPieCtx = document.getElementById('menuPieChart');
+            if (menuPieCtx) {
+                const bf = {{ bf_count }}, ln = {{ ln_count }}, dn = {{ dn_count }};
+                new Chart(menuPieCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Breakfast', 'Lunch', 'Dinner'],
+                        datasets: [{ data: [bf, ln, dn],
+                            backgroundColor: ['#2c5530','#f39c12','#e74c3c'],
+                            borderWidth: 2, borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { padding: 15, font: { size: 12 } } },
+                            tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.parsed + ' items' } }
+                        },
+                        cutout: '60%'
+                    }
+                });
+            }
+
+            // 3. Payment Analytics — meal prices bar chart
             const paymentCtx = document.getElementById('paymentChart');
             if (paymentCtx) {
                 new Chart(paymentCtx.getContext('2d'), {
@@ -1372,129 +1420,75 @@
                         datasets: [{
                             label: 'Price (₹)',
                             data: [{{ payment_prices.Breakfast }}, {{ payment_prices.Lunch }}, {{ payment_prices.Dinner }}],
-                            backgroundColor: ['#2c5530', '#f39c12', '#2c3e50'],
-                            borderRadius: 8
+                            backgroundColor: ['rgba(44,85,48,0.85)','rgba(243,156,18,0.85)','rgba(44,62,80,0.85)'],
+                            borderColor: ['#2c5530','#f39c12','#2c3e50'],
+                            borderWidth: 2, borderRadius: 8
                         }]
                     },
                     options: {
                         responsive: true, maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { y: { beginAtZero: true, ticks: { callback: v => '₹' + v } } }
+                        plugins: { legend: { display: false },
+                            tooltip: { callbacks: { label: ctx => ' ₹' + ctx.parsed.y + ' per meal' } }
+                        },
+                        scales: { y: { beginAtZero: true,
+                            ticks: { callback: v => '₹' + v, stepSize: 10 },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        } }
                     }
                 });
             }
 
-            // Overview Bar Chart — Feedback + Suggestions + Complaints (real counts)
-            const overviewCtx = document.getElementById('overviewChart');
-            if (overviewCtx) {
-                new Chart(overviewCtx.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: ['Menu Items', 'Feedback', 'Suggestions', 'Complaints', 'Notices'],
-                        datasets: [{
-                            label: 'Count',
-                            data: [
-                                {{ dishes.count|default:0 }},
-                                {{ feedbacks.count|default:0 }},
-                                {{ suggestions.count|default:0 }},
-                                {{ complaints.count|default:0 }},
-                                {{ notices.count|default:0 }}
-                            ],
-                            backgroundColor: ['#2c5530','#3498db','#f39c12','#e74c3c','#9b59b6'],
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-                    }
-                });
-            }
-
-            // Menu Pie Chart — breakdown by meal type (real data)
-            const menuPieCtx = document.getElementById('menuPieChart');
-            if (menuPieCtx) {
-                const breakfastCount = {{ dishes|length|default:0 }};
-                {% with b=dishes|dictsort:"meal" %}
-                const bfCount = {{ dishes.count|default:0 }};
-                {% endwith %}
-                new Chart(menuPieCtx.getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Breakfast', 'Lunch', 'Dinner'],
-                        datasets: [{
-                            data: [
-                                {% with dishes=dishes %}{{ dishes|length|default:0 }}{% endwith %},
-                                0, 0
-                            ],
-                            backgroundColor: ['#2c5530','#f39c12','#e74c3c']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom' } }
-                    }
-                });
-            }
-
-            // Weekly Performance Chart — real feedback ratings
+            // 4. Feedback Ratings — real avg ratings from DB
             const weeklyCtx = document.getElementById('weeklyPerformanceChart');
             if (weeklyCtx) {
                 new Chart(weeklyCtx.getContext('2d'), {
                     type: 'bar',
                     data: {
-                        labels: ['Food Rating', 'Service Rating', 'Cleanliness', 'Overall'],
+                        labels: ['Food Quality', 'Service', 'Cleanliness', 'Overall'],
                         datasets: [{
                             label: 'Avg Rating (out of 5)',
-                            data: [
-                                {% if feedbacks %}
-                                    {% with total=feedbacks.count %}
-                                    {{ feedbacks.count|default:0 }},
-                                    {{ feedbacks.count|default:0 }},
-                                    {{ feedbacks.count|default:0 }},
-                                    {{ feedbacks.count|default:0 }}
-                                    {% endwith %}
-                                {% else %}0, 0, 0, 0{% endif %}
-                            ],
-                            backgroundColor: '#2c5530',
-                            borderRadius: 6
+                            data: [{{ avg_food }}, {{ avg_service }}, {{ avg_clean }}, {{ avg_overall }}],
+                            backgroundColor: ['#3498db','#2ecc71','#f39c12','#9b59b6'],
+                            borderRadius: 8, borderSkipped: false
                         }]
                     },
                     options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: { y: { beginAtZero: true, max: 5 } }
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false },
+                            tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y + ' / 5' } }
+                        },
+                        scales: { y: { beginAtZero: true, max: 5,
+                            ticks: { stepSize: 1, callback: v => v + '★' },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        } }
                     }
                 });
             }
 
-            // Peak Hours Chart — placeholder (no order tracking yet)
+            // 5. Suggestions per Mess — horizontal bar
             const peakCtx = document.getElementById('peakHoursChart');
             if (peakCtx) {
                 new Chart(peakCtx.getContext('2d'), {
-                    type: 'radar',
+                    type: 'bar',
                     data: {
-                        labels: ['8AM', '10AM', '12PM', '2PM', '4PM', '6PM', '8PM'],
-                        datasets: [{
-                            label: 'Activity',
-                            data: [0, 0, 0, 0, 0, 0, 0],
-                            borderColor: '#2c5530',
-                            backgroundColor: 'rgba(44, 85, 48, 0.2)'
-                        }]
+                        labels: ['RAJ Mess', 'MANET Mess', 'Design Mess'],
+                        datasets: [
+                            { label: 'Suggestions', data: [{{ sugg_raj }}, {{ sugg_manet }}, {{ sugg_design }}],
+                              backgroundColor: ['#2c5530','#ff6b35','#9c27b0'], borderRadius: 6 },
+                            { label: 'Feedback', data: [{{ fb_raj }}, {{ fb_manet }}, {{ fb_design }}],
+                              backgroundColor: ['rgba(44,85,48,0.4)','rgba(255,107,53,0.4)','rgba(156,39,176,0.4)'], borderRadius: 6 }
+                        ]
                     },
                     options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: { r: { beginAtZero: true, max: 10 } },
-                        plugins: { legend: { display: false } }
+                        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { padding: 12, font: { size: 11 } } } },
+                        scales: { x: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 },
+                            grid: { color: 'rgba(0,0,0,0.05)' } } }
                     }
                 });
             }
 
-            // Feedback Trends Chart — real feedback count per submission
+            // 6. Feedback Trends — line chart (submissions over time)
             const feedbackCtx = document.getElementById('feedbackTrendsChart');
             if (feedbackCtx) {
                 new Chart(feedbackCtx.getContext('2d'), {
@@ -1502,21 +1496,19 @@
                     data: {
                         labels: ['Food', 'Service', 'Cleanliness', 'Overall'],
                         datasets: [{
-                            label: 'Submissions',
-                            data: [
-                                {{ feedbacks.count|default:0 }},
-                                {{ feedbacks.count|default:0 }},
-                                {{ feedbacks.count|default:0 }},
-                                {{ feedbacks.count|default:0 }}
-                            ],
+                            label: 'Avg Rating',
+                            data: [{{ avg_food }}, {{ avg_service }}, {{ avg_clean }}, {{ avg_overall }}],
                             backgroundColor: ['#3498db','#2ecc71','#f39c12','#9b59b6'],
                             borderRadius: 6
                         }]
                     },
                     options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, max: 5,
+                            ticks: { callback: v => v + '★', stepSize: 1 },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        } }
                     }
                 });
             }
@@ -1524,10 +1516,9 @@
 
         // Auto-hide alerts
         setTimeout(function() {
-            document.querySelectorAll('.alert').forEach(alert => {
-                alert.style.opacity = '0';
-                alert.style.transition = 'opacity 0.5s';
-                setTimeout(() => alert.remove(), 500);
+            document.querySelectorAll('.alert').forEach(a => {
+                a.style.opacity = '0'; a.style.transition = 'opacity 0.5s';
+                setTimeout(() => a.remove(), 500);
             });
         }, 5000);
     </script>

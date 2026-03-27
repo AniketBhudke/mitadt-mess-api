@@ -84,13 +84,23 @@
             <!-- Charts Row -->
             <div class="row mb-3">
                 <div class="col-lg-8 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-chart-bar me-2"></i>Data Overview</h6></div>
-                <div class="card-body"><canvas id="overviewChart" height="120"></canvas>
-                {% if not dishes and not feedbacks %}<p class="text-muted text-center small mt-2">No data yet — chart will populate as data is added.</p>{% endif %}
+                <div class="card-body" style="height:220px;"><canvas id="overviewChart"></canvas>
+                {% if not dishes and not feedbacks %}<p class="text-muted text-center small mt-2">No data yet.</p>{% endif %}
                 </div></div></div>
                 <div class="col-lg-4 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-chart-pie me-2"></i>Menu by Meal</h6></div>
-                <div class="card-body"><canvas id="menuPieChart" height="120"></canvas>
+                <div class="card-body" style="height:220px;"><canvas id="menuPieChart"></canvas>
                 {% if not dishes %}<p class="text-muted text-center small mt-2">No menu items yet.</p>{% endif %}
                 </div></div></div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-lg-4 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-rupee-sign me-2"></i>Meal Prices</h6></div>
+                <div class="card-body" style="height:200px;"><canvas id="paymentChart"></canvas></div></div></div>
+                <div class="col-lg-4 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-star me-2"></i>Feedback Ratings</h6></div>
+                <div class="card-body" style="height:200px;"><canvas id="feedbackRatingsChart"></canvas>
+                {% if not feedbacks %}<p class="text-muted text-center small mt-2">No feedback yet.</p>{% endif %}
+                </div></div></div>
+                <div class="col-lg-4 mb-3"><div class="card border-0 shadow-sm"><div class="card-header bg-light"><h6 class="mb-0 fw-bold"><i class="fas fa-chart-bar me-2"></i>Suggestions per Mess</h6></div>
+                <div class="card-body" style="height:200px;"><canvas id="suggMessChart"></canvas></div></div></div>
             </div>
 
             <div class="row">
@@ -195,6 +205,9 @@ document.getElementById("imgInput").addEventListener("change",function(){
 
 // Charts with real data
 document.addEventListener('DOMContentLoaded', function() {
+    const chartDefaults = { responsive: true, maintainAspectRatio: false };
+
+    // Overview bar
     const overviewCtx = document.getElementById('overviewChart');
     if (overviewCtx) {
         new Chart(overviewCtx.getContext('2d'), {
@@ -202,25 +215,92 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 labels: ['Menu Items', 'Feedback', 'Suggestions', 'Complaints', 'Notices'],
                 datasets: [{ label: 'Count',
-                    data: [{{ dishes.count|default:0 }}, {{ feedbacks.count|default:0 }}, {{ suggestions.count|default:0 }}, {{ complaints.count|default:0 }}, {{ notices.count|default:0 }}],
-                    backgroundColor: ['#ff6b35','#3498db','#f39c12','#e74c3c','#9b59b6'], borderRadius: 6
+                    data: [{{ dishes.count }}, {{ feedbacks.count }}, {{ suggestions.count }}, {{ complaints.count }}, {{ notices.count }}],
+                    backgroundColor: ['#ff6b35','#3498db','#f39c12','#e74c3c','#9b59b6'],
+                    borderRadius: 8, borderSkipped: false
                 }]
             },
-            options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, ticks:{stepSize:1}}} }
+            options: { ...chartDefaults,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 }, grid: { color: 'rgba(0,0,0,0.05)' } } }
+            }
         });
     }
+
+    // Menu by meal doughnut
     const menuPieCtx = document.getElementById('menuPieChart');
     if (menuPieCtx) {
-        const total = {{ dishes.count|default:0 }};
         new Chart(menuPieCtx.getContext('2d'), {
             type: 'doughnut',
             data: {
                 labels: ['Breakfast', 'Lunch', 'Dinner'],
-                datasets: [{ data: total > 0 ? [Math.ceil(total/3), Math.floor(total/3), total - Math.ceil(total/3) - Math.floor(total/3)] : [0,0,0],
-                    backgroundColor: ['#ff6b35','#f39c12','#e74c3c']
+                datasets: [{ data: [{{ bf_count }}, {{ ln_count }}, {{ dn_count }}],
+                    backgroundColor: ['#ff6b35','#f39c12','#e74c3c'], borderWidth: 2, borderColor: '#fff'
                 }]
             },
-            options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} }
+            options: { ...chartDefaults, cutout: '60%',
+                plugins: { legend: { position: 'bottom', labels: { padding: 12, font: { size: 11 } } } }
+            }
+        });
+    }
+
+    // Payment prices bar
+    const payCtx = document.getElementById('paymentChart');
+    if (payCtx) {
+        new Chart(payCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Breakfast', 'Lunch', 'Dinner'],
+                datasets: [{ label: 'Price (₹)',
+                    data: [{{ payment_prices.Breakfast }}, {{ payment_prices.Lunch }}, {{ payment_prices.Dinner }}],
+                    backgroundColor: ['rgba(255,107,53,0.85)','rgba(243,156,18,0.85)','rgba(44,62,80,0.85)'],
+                    borderColor: ['#ff6b35','#f39c12','#2c3e50'], borderWidth: 2, borderRadius: 8
+                }]
+            },
+            options: { ...chartDefaults,
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ₹' + ctx.parsed.y } } },
+                scales: { y: { beginAtZero: true, ticks: { callback: v => '₹' + v, stepSize: 10 }, grid: { color: 'rgba(0,0,0,0.05)' } } }
+            }
+        });
+    }
+
+    // Feedback ratings bar
+    const fbCtx = document.getElementById('feedbackRatingsChart');
+    if (fbCtx) {
+        new Chart(fbCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Food Quality', 'Service', 'Cleanliness', 'Overall'],
+                datasets: [{ label: 'Avg Rating',
+                    data: [{{ avg_food }}, {{ avg_service }}, {{ avg_clean }}, {{ avg_overall }}],
+                    backgroundColor: ['#3498db','#2ecc71','#f39c12','#9b59b6'], borderRadius: 8
+                }]
+            },
+            options: { ...chartDefaults,
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y + ' / 5' } } },
+                scales: { y: { beginAtZero: true, max: 5, ticks: { callback: v => v + '★', stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } } }
+            }
+        });
+    }
+
+    // Suggestions per mess horizontal bar
+    const suggCtx = document.getElementById('suggMessChart');
+    if (suggCtx) {
+        new Chart(suggCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['RAJ Mess', 'MANET Mess', 'Design Mess'],
+                datasets: [
+                    { label: 'Suggestions', data: [{{ sugg_raj }}, {{ sugg_manet }}, {{ sugg_design }}],
+                      backgroundColor: ['#2c5530','#ff6b35','#9c27b0'], borderRadius: 6 },
+                    { label: 'Feedback', data: [{{ fb_raj }}, {{ fb_manet }}, {{ fb_design }}],
+                      backgroundColor: ['rgba(44,85,48,0.4)','rgba(255,107,53,0.4)','rgba(156,39,176,0.4)'], borderRadius: 6 }
+                ]
+            },
+            options: { indexAxis: 'y', ...chartDefaults,
+                plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 11 } } } },
+                scales: { x: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 }, grid: { color: 'rgba(0,0,0,0.05)' } } }
+            }
         });
     }
 });

@@ -686,20 +686,43 @@ def manet_add_dish(request):
     feedback_graphs = get_feedback_graphs()
 
     from .models import MessFeedback, Weekly_suggestion
+    from django.db.models import Avg, Count
+
     feedbacks = MessFeedback.objects.all().order_by('-submitted_at')
     suggestions = Weekly_suggestion.objects.filter(mess_name__icontains='manet').order_by('-submitted_at')
 
+    fb_agg = MessFeedback.objects.aggregate(
+        food=Avg('food_rating'), service=Avg('service_rating'),
+        clean=Avg('cleanliness_rating'), overall=Avg('overall_rating')
+    )
+    avg_food    = round(fb_agg['food'] or 0, 1)
+    avg_service = round(fb_agg['service'] or 0, 1)
+    avg_clean   = round(fb_agg['clean'] or 0, 1)
+    avg_overall = round(fb_agg['overall'] or 0, 1)
+
+    sugg_raj    = Weekly_suggestion.objects.filter(mess_name__icontains='raj').count()
+    sugg_manet  = Weekly_suggestion.objects.filter(mess_name__icontains='manet').count()
+    sugg_design = Weekly_suggestion.objects.filter(mess_name__icontains='design').count()
+    fb_raj      = MessFeedback.objects.filter(mess_name__icontains='raj').count()
+    fb_manet    = MessFeedback.objects.filter(mess_name__icontains='manet').count()
+    fb_design   = MessFeedback.objects.filter(mess_name__icontains='design').count()
+
+    bf_count = dishes.filter(meal='breakfast').count()
+    ln_count = dishes.filter(meal='lunch').count()
+    dn_count = dishes.filter(meal='dinner').count()
+
+    payment_prices = {"Breakfast": 40, "Lunch": 60, "Dinner": 80}
+
     return render(request, 'testapp/admin_manet_mess.html', {
-        'form': form,
-        'days': days,
-        'meals': meals,
-        'dishes': dishes,
-        'notices': notices,
-        'complaints': complaints,
-        'feedback_graphs': feedback_graphs,
-        'feedbacks': feedbacks,
-        'suggestions': suggestions,
-        'user': request.user,
+        'form': form, 'days': days, 'meals': meals, 'dishes': dishes,
+        'notices': notices, 'complaints': complaints, 'feedback_graphs': feedback_graphs,
+        'feedbacks': feedbacks, 'suggestions': suggestions, 'user': request.user,
+        'payment_prices': payment_prices,
+        'avg_food': avg_food, 'avg_service': avg_service,
+        'avg_clean': avg_clean, 'avg_overall': avg_overall,
+        'sugg_raj': sugg_raj, 'sugg_manet': sugg_manet, 'sugg_design': sugg_design,
+        'fb_raj': fb_raj, 'fb_manet': fb_manet, 'fb_design': fb_design,
+        'bf_count': bf_count, 'ln_count': ln_count, 'dn_count': dn_count,
     })
 
 
@@ -890,25 +913,49 @@ def add_dish(request, mess_id=1):
     notices = Notice.objects.all().order_by('-created_at')
     complaints = Complaint.objects.all().order_by('-id')
 
-    # Real feedback and suggestions data
     from .models import MessFeedback, Weekly_suggestion
+    from django.db.models import Avg, Count
+
     feedbacks = MessFeedback.objects.all().order_by('-submitted_at')
     suggestions = Weekly_suggestion.objects.filter(mess_name__icontains='raj').order_by('-submitted_at')
 
-    # Payment analytics — meal price reference for RAJ Mess
+    # Real avg ratings for charts
+    fb_agg = MessFeedback.objects.aggregate(
+        food=Avg('food_rating'), service=Avg('service_rating'),
+        clean=Avg('cleanliness_rating'), overall=Avg('overall_rating')
+    )
+    avg_food     = round(fb_agg['food'] or 0, 1)
+    avg_service  = round(fb_agg['service'] or 0, 1)
+    avg_clean    = round(fb_agg['clean'] or 0, 1)
+    avg_overall  = round(fb_agg['overall'] or 0, 1)
+
+    # Suggestions per mess
+    sugg_raj    = Weekly_suggestion.objects.filter(mess_name__icontains='raj').count()
+    sugg_manet  = Weekly_suggestion.objects.filter(mess_name__icontains='manet').count()
+    sugg_design = Weekly_suggestion.objects.filter(mess_name__icontains='design').count()
+
+    # Feedback per mess
+    fb_raj    = MessFeedback.objects.filter(mess_name__icontains='raj').count()
+    fb_manet  = MessFeedback.objects.filter(mess_name__icontains='manet').count()
+    fb_design = MessFeedback.objects.filter(mess_name__icontains='design').count()
+
+    # Meal distribution for RAJ
+    bf_count  = dishes.filter(meal='breakfast').count()
+    ln_count  = dishes.filter(meal='lunch').count()
+    dn_count  = dishes.filter(meal='dinner').count()
+
     payment_prices = {"Breakfast": 35, "Lunch": 55, "Dinner": 75}
 
     return render(request, "testapp/add_dish.html", {
-        "days": days,
-        "meals": meals,
-        "dishes": dishes,
-        "mess_id": mess_id,
-        "feedback_graphs": feedback_graphs,
-        "notices": notices,
-        "complaints": complaints,
-        "feedbacks": feedbacks,
-        "suggestions": suggestions,
+        "days": days, "meals": meals, "dishes": dishes, "mess_id": mess_id,
+        "feedback_graphs": feedback_graphs, "notices": notices,
+        "complaints": complaints, "feedbacks": feedbacks, "suggestions": suggestions,
         "payment_prices": payment_prices,
+        "avg_food": avg_food, "avg_service": avg_service,
+        "avg_clean": avg_clean, "avg_overall": avg_overall,
+        "sugg_raj": sugg_raj, "sugg_manet": sugg_manet, "sugg_design": sugg_design,
+        "fb_raj": fb_raj, "fb_manet": fb_manet, "fb_design": fb_design,
+        "bf_count": bf_count, "ln_count": ln_count, "dn_count": dn_count,
     })
 
 
@@ -982,20 +1029,43 @@ def design_mess_admin_view(request):
     feedback_graphs = get_feedback_graphs()
 
     from .models import MessFeedback, Weekly_suggestion
+    from django.db.models import Avg, Count
+
     feedbacks = MessFeedback.objects.all().order_by('-submitted_at')
     suggestions = Weekly_suggestion.objects.filter(mess_name__icontains='design').order_by('-submitted_at')
 
+    fb_agg = MessFeedback.objects.aggregate(
+        food=Avg('food_rating'), service=Avg('service_rating'),
+        clean=Avg('cleanliness_rating'), overall=Avg('overall_rating')
+    )
+    avg_food    = round(fb_agg['food'] or 0, 1)
+    avg_service = round(fb_agg['service'] or 0, 1)
+    avg_clean   = round(fb_agg['clean'] or 0, 1)
+    avg_overall = round(fb_agg['overall'] or 0, 1)
+
+    sugg_raj    = Weekly_suggestion.objects.filter(mess_name__icontains='raj').count()
+    sugg_manet  = Weekly_suggestion.objects.filter(mess_name__icontains='manet').count()
+    sugg_design = Weekly_suggestion.objects.filter(mess_name__icontains='design').count()
+    fb_raj      = MessFeedback.objects.filter(mess_name__icontains='raj').count()
+    fb_manet    = MessFeedback.objects.filter(mess_name__icontains='manet').count()
+    fb_design   = MessFeedback.objects.filter(mess_name__icontains='design').count()
+
+    bf_count = dishes.filter(meal='breakfast').count()
+    ln_count = dishes.filter(meal='lunch').count()
+    dn_count = dishes.filter(meal='dinner').count()
+
+    payment_prices = {"Breakfast": 45, "Lunch": 65, "Dinner": 85}
+
     context = {
-        'form': form,
-        'days': days,
-        'meals': meals,
-        'dishes': dishes,
-        'notices': notices,
-        'complaints': complaints,
-        'feedback_graphs': feedback_graphs,
-        'feedbacks': feedbacks,
-        'suggestions': suggestions,
-        'user': request.user,
+        'form': form, 'days': days, 'meals': meals, 'dishes': dishes,
+        'notices': notices, 'complaints': complaints, 'feedback_graphs': feedback_graphs,
+        'feedbacks': feedbacks, 'suggestions': suggestions, 'user': request.user,
+        'payment_prices': payment_prices,
+        'avg_food': avg_food, 'avg_service': avg_service,
+        'avg_clean': avg_clean, 'avg_overall': avg_overall,
+        'sugg_raj': sugg_raj, 'sugg_manet': sugg_manet, 'sugg_design': sugg_design,
+        'fb_raj': fb_raj, 'fb_manet': fb_manet, 'fb_design': fb_design,
+        'bf_count': bf_count, 'ln_count': ln_count, 'dn_count': dn_count,
     }
     return render(request, 'testapp/admin_design_mess.html', context)
 # testapp/views.py
